@@ -4,23 +4,13 @@ using PainKiller.CommandPrompt.CoreLib.Core.Presentation;
 
 namespace PainKiller.CommandPrompt.CoreLib.Core.BaseClasses;
 
-public class ConsoleCommandBase(string identifier) : IConsoleCommand
+public abstract class ConsoleCommandBase<TConfig>(string identifier) : IConsoleCommand
 {
     protected IConsoleWriter Console { get; } = new SpectreConsoleWriter();
     public string Identifier { get; } = identifier;
-
-    public bool InitializeAndValidateInput(string input)
-    {
-        throw new NotImplementedException();
-    }
-    public void RunCompleted()
-    {
-        throw new NotImplementedException();
-    }
-
-    public virtual RunResult Run()
-    {
-        Console.WriteLine("OK");
-        return new RunResult(nameof(ConsoleCommandBase), "input", "output");
-    }
+    public TConfig Configuration { get; private set; } = default!;
+    private void SetConfiguration(TConfig config) => Configuration = config;
+    public abstract RunResult Run(ICommandLineInput input);
+    protected RunResult Ok(string message = "") => new RunResult(Identifier, true, message);
+    protected RunResult Nok(string message = "") => new RunResult(Identifier, false, message);
 }

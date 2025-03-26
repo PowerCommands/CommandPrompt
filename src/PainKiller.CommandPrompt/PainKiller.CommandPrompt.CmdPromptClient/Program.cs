@@ -1,4 +1,7 @@
 ﻿using PainKiller.CommandPrompt.CmdPromptClient.Bootstrap;
 using PainKiller.CommandPrompt.CoreLib.Core.Runtime;
-Startup.ConfigureServices();
-new CommandLoop(new CommandRuntime()).Start();
+using PainKiller.CommandPrompt.CoreLib.Core.Services;
+
+var config = Startup.ConfigureServices();
+var commands = CommandDiscoveryService.DiscoverCommands(config);
+new CommandLoop(new CommandRuntime(commands), config).Start();

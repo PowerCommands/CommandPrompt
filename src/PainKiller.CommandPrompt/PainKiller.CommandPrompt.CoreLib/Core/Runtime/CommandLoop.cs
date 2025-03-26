@@ -1,19 +1,20 @@
-﻿namespace PainKiller.CommandPrompt.CoreLib.Core.Runtime;
+﻿using PainKiller.CommandPrompt.CoreLib.Configuration.Contracts;
 
-public class CommandLoop(CommandRuntime runtime)
+namespace PainKiller.CommandPrompt.CoreLib.Core.Runtime;
+
+public class CommandLoop(CommandRuntime runtime, ICoreConfiguration config)
 {
     public void Start()
     {
         while (true)
         {
-            Console.Write("> ");
+            Console.Write(config.Prompt);
             var input = Console.ReadLine();
 
             if (string.IsNullOrWhiteSpace(input)) continue;
             if (input.Equals("exit", StringComparison.OrdinalIgnoreCase)) break;
 
             var result = runtime.Execute(input);
-            Console.WriteLine($"[{result.Output}] {result.Output}");
         }
     }
 }

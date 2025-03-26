@@ -1,0 +1,9 @@
+version: 1.0
+configuration:
+  prompt: cp>
+  defaultCommand: ''
+  log:
+    fileName: commandprompt.log
+    filePath: logs
+    rollingIntervall: Day
+    restrictedToMinimumLevel: Information

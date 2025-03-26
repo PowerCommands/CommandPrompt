@@ -9,23 +9,23 @@ public class CommandExecutor
 { 
     private readonly ILogger<CommandExecutor> _logger = LoggerProvider.CreateLogger<CommandExecutor>();
 
-    public RunResult Execute(IConsoleCommand? command, string rawInput)
+    public RunResult Execute(IConsoleCommand? command, ICommandLineInput commandLineInput)
     {
         if (command == null)
         {
             _logger.LogError($"Command {command} not found");
-            return new RunResult("", "Command not found", "RunResultStatus.NotFound");
+            return new RunResult("",false,  "Command not found");
         }
         try
         {
-            command.Run();
+            var runResult = command.Run(commandLineInput);
             _logger.LogDebug("This is a debug log");
-            return new RunResult(command.Identifier, "Success", "RunResultStatus.Ok");
+            return runResult;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex.Message);
-            return new RunResult(command.Identifier, ex.Message, "RunResultStatus.ExceptionThrown");
+            return new RunResult(command.Identifier, false, ex.Message);
         }
     }
 }
