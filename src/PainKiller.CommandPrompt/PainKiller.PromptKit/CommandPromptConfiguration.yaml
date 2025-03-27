@@ -1,9 +1,11 @@
 version: 1.0
 configuration:
   prompt: cp>
-  defaultCommand: ''
+  defaultCommand: 'hello'
   log:
     fileName: commandprompt.log
     filePath: logs
     rollingIntervall: Day
     restrictedToMinimumLevel: Information
+  suggestions:
+  - exit

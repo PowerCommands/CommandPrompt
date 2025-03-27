@@ -1,9 +1,9 @@
-﻿using PainKiller.CommandPrompt.CmdPromptClient.Bootstrap;
-using PainKiller.CommandPrompt.CoreLib.Core.BaseClasses;
+﻿using PainKiller.CommandPrompt.CoreLib.Core.BaseClasses;
 using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
 using PainKiller.CommandPrompt.CoreLib.Core.DomainObjects;
+using PainKiller.PromptKit.Bootstrap;
 
-namespace PainKiller.CommandPrompt.CmdPromptClient.Commands;
+namespace PainKiller.PromptKit.Commands;
 
 public class HelloCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {

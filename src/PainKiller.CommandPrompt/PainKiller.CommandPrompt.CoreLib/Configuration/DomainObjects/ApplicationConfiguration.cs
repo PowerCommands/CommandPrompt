@@ -6,5 +6,6 @@ public class ApplicationConfiguration : ICoreConfiguration
 {
     public string Prompt { get; set; } = "pcm>";
     public string DefaultCommand { get; set; } = "";
-    public LogConfiguration Log { get; set; } = new LogConfiguration() { FileName = "commandprompt.log", FilePath = "logs", RestrictedToMinimumLevel = "Information", RollingIntervall = "Day" };
+    public LogConfiguration Log { get; set; } = new(fileName: "commandprompt.log", filePath: "logs", restrictedToMinimumLevel: "Information", rollingIntervall: "Day");
+    public List<string> Suggestions { get; set; } = [];
 }

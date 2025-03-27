@@ -8,10 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="CommandPromptConfiguration.yaml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="CommandPromptConfiguration.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -19,10 +15,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PainKiller.CommandPrompt.CoreLib\PainKiller.CommandPrompt.CoreLib.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Commands\" />
   </ItemGroup>
 
 </Project>

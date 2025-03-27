@@ -1,6 +1,6 @@
 ﻿using PainKiller.CommandPrompt.CoreLib.Configuration.DomainObjects;
 
-namespace PainKiller.CommandPrompt.CmdPromptClient.Bootstrap;
+namespace PainKiller.PromptKit.Bootstrap;
 
 public class CommandPromptConfiguration : ApplicationConfiguration
 {

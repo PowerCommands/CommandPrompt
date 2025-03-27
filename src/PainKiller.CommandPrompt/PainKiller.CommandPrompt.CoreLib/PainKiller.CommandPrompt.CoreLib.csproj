@@ -19,4 +19,7 @@
 	  <Folder Include="Core\Enums\" />
 	  <Folder Include="Logging\Extensions\" />
 	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\PainKiller.ReadLine\PainKiller.ReadLine.csproj" />
+	</ItemGroup>
 </Project>

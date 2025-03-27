@@ -1,15 +1,27 @@
 ﻿using PainKiller.CommandPrompt.CoreLib.Configuration.DomainObjects;
 using PainKiller.CommandPrompt.CoreLib.Configuration.Services;
+using PainKiller.CommandPrompt.CoreLib.Core.Runtime;
+using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Logging.Services;
+using PainKiller.ReadLine;
 using Serilog;
 using Serilog.Events;
 using Serilog.Extensions.Logging;
 
-namespace PainKiller.CommandPrompt.CmdPromptClient.Bootstrap;
+namespace PainKiller.PromptKit.Bootstrap;
 
 public static class Startup
 {
-    public static CommandPromptConfiguration ConfigureServices()
+    public static CommandLoop Build()
+    {
+        var config = ReadConfiguration();
+        var commands = CommandDiscoveryService.DiscoverCommands(config);
+        var suggestions = config.Suggestions;
+        suggestions.AddRange(commands.Select(c => c.Identifier).ToArray());
+        ReadLineService.InitializeAutoComplete([], suggestions.ToArray());
+        return new CommandLoop(new CommandRuntime(commands), new ReadLineInputReader(), config);
+    }
+    private static CommandPromptConfiguration ReadConfiguration()
     {
         var configuration = ConfigurationService.Service.Get<CommandPromptConfiguration>();
         ConfigureLogging(configuration.Configuration.Log);
