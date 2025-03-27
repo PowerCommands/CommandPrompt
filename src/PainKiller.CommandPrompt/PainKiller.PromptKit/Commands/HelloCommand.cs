@@ -6,7 +6,7 @@ using PainKiller.PromptKit.Bootstrap;
 
 namespace PainKiller.PromptKit.Commands;
 
-[CommandDesign("Displays Hello")]
+[CommandDesign("Displays Hello", options: ["Word","Banan"])]
 public class HelloCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
     public override RunResult Run(ICommandLineInput input)

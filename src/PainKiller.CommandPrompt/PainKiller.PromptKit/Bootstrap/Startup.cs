@@ -3,7 +3,6 @@ using PainKiller.CommandPrompt.CoreLib.Configuration.Services;
 using PainKiller.CommandPrompt.CoreLib.Core.Runtime;
 using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Logging.Services;
-using PainKiller.CommandPrompt.CoreLib.Metadata;
 using PainKiller.ReadLine;
 using Serilog;
 using Serilog.Events;

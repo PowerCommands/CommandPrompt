@@ -1,65 +1,85 @@
 ﻿using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
-using Serilog;
 using Spectre.Console;
 using System.Runtime.CompilerServices;
+using static Serilog.Log;
 
 namespace PainKiller.CommandPrompt.CoreLib.Core.Presentation;
-public class SpectreConsoleWriter() : IConsoleWriter
+
+
+
+public class SpectreConsoleWriter : IConsoleWriter
 {
     public void Write(string text, bool writeLog = true, ConsoleColor color = ConsoleColor.Black, [CallerMemberName] string scope = "")
     {
-        AnsiConsole.Markup($"{WrapColor(text, color)}");
-        if (writeLog) Log.Information("{Scope}: {Text}", scope, text);
+        var escaped = Markup.Escape(text);
+        AnsiConsole.Markup($"{WrapColor(escaped, color)}");
+        if (writeLog) Information("{Scope}: {Text}", scope, text);
     }
+
     public void WriteLine(string text, bool writeLog = true, ConsoleColor color = ConsoleColor.Black, [CallerMemberName] string scope = "")
     {
-        AnsiConsole.MarkupLine($"{WrapColor(text, color)}");
-        if (writeLog) Log.Information("{Scope}: {Text}", scope, text);
+        var escaped = Markup.Escape(text);
+        AnsiConsole.MarkupLine($"{WrapColor(escaped, color)}");
+        if (writeLog) Information("{Scope}: {Text}", scope, text);
     }
+
     public void WriteSuccessLine(string text, bool writeLog = true, [CallerMemberName] string scope = "")
     {
-        AnsiConsole.MarkupLine($"[green]{text}[/]");
-        if (writeLog) Log.Information("{Scope}: {Text}", scope, text);
+        var escaped = Markup.Escape(text);
+        AnsiConsole.MarkupLine($"[green]{escaped}[/]");
+        if (writeLog) Information("{Scope}: {Text}", scope, text);
     }
+
     public void WriteWarning(string text, [CallerMemberName] string scope = "")
     {
-        AnsiConsole.MarkupLine($"[yellow]{text}[/]");
-        Log.Warning("{Scope}: {Text}", scope, text);
+        var escaped = Markup.Escape(text);
+        AnsiConsole.MarkupLine($"[yellow]{escaped}[/]");
+        Warning("{Scope}: {Text}", scope, text);
     }
+
     public void WriteError(string text, [CallerMemberName] string scope = "")
     {
-        AnsiConsole.MarkupLine($"[red]{text}[/]");
-        Log.Error("{Scope}: {Text}", scope, text);
+        var escaped = Markup.Escape(text);
+        AnsiConsole.MarkupLine($"[red]{escaped}[/]");
+        Error("{Scope}: {Text}", scope, text);
     }
+
     public void WriteCritical(string text, [CallerMemberName] string scope = "")
     {
-        AnsiConsole.MarkupLine($"[bold red]{text}[/]");
-        Log.Fatal("{Scope}: {Text}", scope, text);
+        var escaped = Markup.Escape(text);
+        AnsiConsole.MarkupLine($"[bold red]{escaped}[/]");
+        Fatal("{Scope}: {Text}", scope, text);
     }
+
     public void WriteHeaderLine(string text, bool writeLog = true, [CallerMemberName] string scope = "")
     {
-        AnsiConsole.MarkupLine($"[bold blue]{text}[/]");
-        if (writeLog) Log.Information("{Scope}: {Text}", scope, text);
+        var escaped = Markup.Escape(text);
+        AnsiConsole.MarkupLine($"[bold blue]{escaped}[/]");
+        if (writeLog) Information("{Scope}: {Text}", scope, text);
     }
+
     public void WriteUrl(string text, bool writeLog = true, [CallerMemberName] string scope = "")
     {
-        AnsiConsole.MarkupLine($"[underline blue]{text}[/]");
-        if (writeLog) Log.Information("{Scope} [URL]: {Text}", scope, text);
+        var escaped = Markup.Escape(text);
+        AnsiConsole.MarkupLine($"[underline blue]{escaped}[/]");
+        if (writeLog) Information("{Scope} [URL]: {Text}", scope, text);
     }
+
     public void WritePrompt(string prompt)
     {
-        AnsiConsole.Markup($"[bold]{prompt} [/]");
+        var escaped = Markup.Escape(prompt);
+        AnsiConsole.Markup($"[bold]{escaped} [/]");
     }
-    public void Clear()
-    {
-        AnsiConsole.Clear();
-    }
+
+    public void Clear() => AnsiConsole.Clear();
+
     private string WrapColor(string text, ConsoleColor color)
     {
         if (color == ConsoleColor.Black) return text;
         var markup = ToMarkup(color);
         return string.IsNullOrEmpty(markup) ? text : $"[{markup}]{text}[/]";
     }
+
     private string ToMarkup(ConsoleColor color) => color switch
     {
         ConsoleColor.Red => "red",
@@ -81,3 +101,4 @@ public class SpectreConsoleWriter() : IConsoleWriter
         _ => string.Empty
     };
 }
+

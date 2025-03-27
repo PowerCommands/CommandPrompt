@@ -18,6 +18,7 @@
 	<ItemGroup>
 	  <Folder Include="Core\Enums\" />
 	  <Folder Include="Core\Extensions\" />
+	  <Folder Include="Core\Utils\" />
 	  <Folder Include="Logging\Extensions\" />
 	</ItemGroup>
 	<ItemGroup>

@@ -9,7 +9,7 @@ using Spectre.Console;
 
 namespace PainKiller.PromptKit.Commands;
 
-[CommandDesign("Shows the latest log entries")]
+[CommandDesign("Shows the latest log entries", options: ["hejsan","hoppsan"])]
 public class LogCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
     public override RunResult Run(ICommandLineInput input)

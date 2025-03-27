@@ -7,7 +7,7 @@ using PainKiller.PromptKit.Bootstrap;
 namespace PainKiller.PromptKit.Commands;
 
 
-[CommandDesign("Just a dumie test Commando")]
+[CommandDesign("Just a dumie test Commando", suggestions: ["förlag1","förslag2"])]
 public class TestCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
     public override RunResult Run(ICommandLineInput input)

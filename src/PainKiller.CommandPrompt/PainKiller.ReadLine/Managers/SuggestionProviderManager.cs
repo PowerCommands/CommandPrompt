@@ -16,11 +16,13 @@ namespace PainKiller.ReadLine.Managers
 
         public static void AppendContextBoundSuggestions(string contextId, string[] suggestions, bool clearAllExceptOptions = true)
         {
-            if (!ContextBoundSuggestions.TryGetValue(contextId, out var values)) return;
-            var keepValues = values.Length == 0 ? new List<string>() : values.Where(v => v.StartsWith("--")).ToList();
-            keepValues.AddRange(suggestions);
-            ContextBoundSuggestions.Remove(contextId);
-            ContextBoundSuggestions.Add(contextId, keepValues.ToArray());
+            var keepValues = ContextBoundSuggestions.TryGetValue(contextId, out var values)
+                ? values.Where(v => v.StartsWith("--")).ToList()
+                : new List<string>();
+
+            keepValues.AddRange(suggestions.Distinct());
+
+            ContextBoundSuggestions[contextId] = keepValues.ToArray();
         }
         private static string[] GetSuggestions(string input)
         {

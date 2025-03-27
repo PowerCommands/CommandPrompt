@@ -1,0 +1,14 @@
+﻿C:\Repos\Github\CommandPrompt\src\PainKiller.CommandPrompt>taskkill /F /IM sqlservr.exe
+SUCCESS: The process "sqlservr.exe" with PID 15460 has been terminated.
+
+C:\Repos\Github\CommandPrompt\src\PainKiller.CommandPrompt>sqllocaldb stop MSSQLLocalDB
+LocalDB instance "MSSQLLocalDB" stopped.
+
+C:\Repos\Github\CommandPrompt\src\PainKiller.CommandPrompt>sqllocaldb delete MSSQLLocalDB
+LocalDB instance "MSSQLLocalDB" deleted.
+
+C:\Repos\Github\CommandPrompt\src\PainKiller.CommandPrompt>sqllocaldb create MSSQLLocalDB
+LocalDB instance "MSSQLLocalDB" created with version 15.0.4382.1.
+
+C:\Repos\Github\CommandPrompt\src\PainKiller.CommandPrompt>sqllocaldb start MSSQLLocalDB
+LocalDB instance "MSSQLLocalDB" started.
