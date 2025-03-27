@@ -12,7 +12,6 @@ public class HelloCommand(string identifier) : ConsoleCommandBase<CommandPromptC
     public override RunResult Run(ICommandLineInput input)
     {
         Console.WriteLine($"Hello {string.Join(",", input.Arguments)}");
-        Console.WriteSuccessLine(Configuration.Log.FileName);
         return Ok();
     }
 }

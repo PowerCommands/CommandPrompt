@@ -1,21 +1,21 @@
 ﻿using System.Reflection;
 using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
 using PainKiller.CommandPrompt.CoreLib.Metadata;
-using PainKiller.CommandPrompt.CoreLib.Metadata.Contracts;
 
 namespace PainKiller.CommandPrompt.CoreLib.Core.Services;
 
 public static class CommandDiscoveryService
 {
+    private static List<IConsoleCommand>? _cache;
     public static List<IConsoleCommand> DiscoverCommands(object? configuration = null)
     {
-        IMetadataRegistry metadataRegistry = MetadataRegistryService.WritableInstance;
-        var commands = new List<IConsoleCommand>();
+        if (_cache != null) return _cache;
+        var metadataRegistry = MetadataRegistryService.WritableInstance;
+        _cache = new List<IConsoleCommand>();
 
         var types = AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(a => a.GetTypes())
             .Where(t => typeof(IConsoleCommand).IsAssignableFrom(t) && !t.IsAbstract && t.Name.EndsWith("Command"));
-
         foreach (var type in types)
         {
             var identifier = type.Name[..^7].ToLowerInvariant();
@@ -36,10 +36,10 @@ public static class CommandDiscoveryService
                 }
             }
             var command = (IConsoleCommand)instance;
-            if (commands.Any(c => c.Identifier == command.Identifier)) continue;
-            commands.Add(command);
+            if (_cache.Any(c => c.Identifier == command.Identifier)) continue;
+            _cache.Add(command);
             metadataRegistry.Register(command);
         }
-        return commands;
+        return _cache;
     }
 }

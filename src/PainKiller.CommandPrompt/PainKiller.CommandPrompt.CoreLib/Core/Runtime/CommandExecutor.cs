@@ -19,7 +19,7 @@ public class CommandExecutor
         try
         {
             var runResult = command.Run(commandLineInput);
-            _logger.LogDebug("This is a debug log");
+            _logger.LogDebug($"{command.Identifier} Success: {runResult.Success} {runResult.Message}");
             return runResult;
         }
         catch (Exception ex)

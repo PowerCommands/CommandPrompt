@@ -6,6 +6,6 @@ configuration:
     fileName: commandprompt.log
     filePath: logs
     rollingIntervall: Day
-    restrictedToMinimumLevel: Information
+    restrictedToMinimumLevel: Debug
   suggestions:
   - exit
