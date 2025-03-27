@@ -1,5 +1,7 @@
 ﻿using System.Reflection;
 using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
+using PainKiller.CommandPrompt.CoreLib.Metadata;
+using PainKiller.CommandPrompt.CoreLib.Metadata.Contracts;
 
 namespace PainKiller.CommandPrompt.CoreLib.Core.Services;
 
@@ -7,6 +9,7 @@ public static class CommandDiscoveryService
 {
     public static List<IConsoleCommand> DiscoverCommands(object? configuration = null)
     {
+        IMetadataRegistry metadataRegistry = MetadataRegistryService.WritableInstance;
         var commands = new List<IConsoleCommand>();
 
         var types = AppDomain.CurrentDomain.GetAssemblies()
@@ -21,7 +24,7 @@ public static class CommandDiscoveryService
 
             var instance = ctor.Invoke([identifier]);
 
-            if (configuration != null && instance is not null)
+            if (configuration != null)
             {
                 var baseType = type.BaseType;
                 var setMethod = baseType?.GetMethod("SetConfiguration", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -32,7 +35,10 @@ public static class CommandDiscoveryService
                     setMethod.Invoke(instance, [configuration]);
                 }
             }
-            if(instance != null) commands.Add((IConsoleCommand)instance);
+            var command = (IConsoleCommand)instance;
+            if (commands.Any(c => c.Identifier == command.Identifier)) continue;
+            commands.Add(command);
+            metadataRegistry.Register(command);
         }
         return commands;
     }
