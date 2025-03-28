@@ -31,7 +31,7 @@ public class HelpCommand(string identity) : ConsoleCommandBase<ApplicationConfig
         if (string.IsNullOrWhiteSpace(filter)) return true;
         return entry.Identifier.Contains(filter, StringComparison.OrdinalIgnoreCase);
     }
-    private void DisplayTable(IEnumerable<HelpEntry> entries)
+    private void DisplayTable(IEnumerable<HelpEntry> entries, int selectedIndex)
     {
         var list = entries.ToList();
 
@@ -47,11 +47,23 @@ public class HelpCommand(string identity) : ConsoleCommandBase<ApplicationConfig
             .AddColumn(new TableColumn("[bold yellow]Command[/]").LeftAligned())
             .AddColumn(new TableColumn("[bold]Description[/]").LeftAligned());
 
-        foreach (var entry in list)
+        for (int i = 0; i < list.Count; i++)
         {
+            var entry = list[i];
+            var isSelected = i == selectedIndex;
+
+            var prefix = isSelected ? "[bold cyan]>[/] " : "  ";
+            var command = isSelected
+                ? $"[bold cyan]{Markup.Escape(entry.Identifier)}[/]"
+                : $"[green]{Markup.Escape(entry.Identifier)}[/]";
+
+            var description = isSelected
+                ? $"[italic]{Markup.Escape(entry.Description)}[/]"
+                : Markup.Escape(entry.Description);
+
             table.AddRow(
-                new Markup($"[green]{Markup.Escape(entry.Identifier)}[/]"),
-                new Markup(Markup.Escape(entry.Description))
+                new Markup(prefix + command),
+                new Markup(description)
             );
         }
 

@@ -51,13 +51,18 @@ public class LogCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
         while (!reader.EndOfStream) lines.Add(reader.ReadLine()!);
         return lines;
     }
-    private void DisplayTable(IEnumerable<LogEntry> entries)
+    private void DisplayTable(IEnumerable<LogEntry> entries, int selectedIndex)
     {
         var table = new Table().RoundedBorder().AddColumn("[grey]Timestamp[/]").AddColumn("[grey]Level[/]").AddColumn("[grey]Message[/]");
 
-        foreach (var entry in entries)
+        var list = entries.ToList();
+
+        for (int i = 0; i < list.Count; i++)
         {
-            var color = entry.Level switch
+            var entry = list[i];
+            var isSelected = i == selectedIndex;
+
+            var levelColor = entry.Level switch
             {
                 "INF" => "green",
                 "WRN" => "yellow",
@@ -66,7 +71,21 @@ public class LogCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
                 _ => "white"
             };
 
-            table.AddRow(new Markup($"[grey]{Markup.Escape(entry.Timestamp)}[/]"), new Markup($"[{color}]{Markup.Escape(entry.Level)}[/]"), new Markup(Markup.Escape(entry.Message)));
+            var prefix = isSelected ? "[bold cyan]>[/] " : "  ";
+            var timestamp = isSelected
+                ? $"[bold cyan]{Markup.Escape(entry.Timestamp)}[/]"
+                : $"[grey]{Markup.Escape(entry.Timestamp)}[/]";
+
+            var level = $"[{levelColor}]{Markup.Escape(entry.Level)}[/]";
+            var message = isSelected
+                ? $"[italic]{Markup.Escape(entry.Message)}[/]"
+                : Markup.Escape(entry.Message);
+
+            table.AddRow(
+                new Markup(prefix + timestamp),
+                new Markup(level),
+                new Markup(message)
+            );
         }
         AnsiConsole.Write(table);
     }

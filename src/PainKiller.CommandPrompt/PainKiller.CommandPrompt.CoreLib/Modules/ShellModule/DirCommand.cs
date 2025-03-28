@@ -52,6 +52,7 @@ public class DirCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
         Console.Clear();
 
         string currentFilter = "";
+
         InteractiveFilter<DirEntry>.Run(
             entries,
             (entry, filter) =>
@@ -59,11 +60,15 @@ public class DirCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
                 currentFilter = filter;
                 return EntryFilter(entry, filter);
             },
-            filteredEntries => DisplayTable(filteredEntries, currentFilter)
+            (filteredEntries, selectedIndex) =>
+            {
+                DisplayTable(filteredEntries, selectedIndex, currentFilter);
+            }
         );
 
         return Ok();
     }
+
 
 
     private List<DirEntry> GetDirectoryEntries()
@@ -161,7 +166,7 @@ public class DirCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
             || entry.Type.Contains(filter, StringComparison.OrdinalIgnoreCase);
     }
     private bool IsCategory(string type, string[] extensions) => extensions.Any(ext => type.Contains(ext, StringComparison.OrdinalIgnoreCase));
-    private void DisplayTable(IEnumerable<DirEntry> entries, string? activeFilter = null)
+    private void DisplayTable(IEnumerable<DirEntry> entries, int selectedIndex, string? activeFilter)
     {
         var list = entries.ToList();
 
@@ -191,19 +196,28 @@ public class DirCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
             .AddColumn(new TableColumn("[grey]Type[/]").Centered())
             .AddColumn(new TableColumn("[grey]Size[/]").RightAligned())
             .AddColumn(new TableColumn("[grey]Updated[/]").RightAligned());
-
-        foreach (var entry in list)
+        for (int i = 0; i < list.Count; i++)
         {
-            var color = entry.Type == "<DIR>" ? "yellow" : "white";
+            var entry = list[i];
+            var isSelected = i == selectedIndex;
+
+            var baseColor = entry.Type == "<DIR>" ? "yellow" : "white";
+            var prefix = isSelected ? "[bold cyan]>[/] " : "  ";
+            var name = isSelected
+                ? $"[bold cyan]{Markup.Escape(entry.Name)}[/]"
+                : $"[{baseColor}]{Markup.Escape(entry.Name)}[/]";
+
+            var type = $"[blue]{Markup.Escape(entry.Type)}[/]";
+            var size = Markup.Escape(entry.Size);
+            var updated = Markup.Escape(entry.Updated);
+
             table.AddRow(
-                new Markup($"[{color}]{Markup.Escape(entry.Name)}[/]"),
-                new Markup($"[blue]{Markup.Escape(entry.Type)}[/]"),
-                new Markup(Markup.Escape(entry.Size)),
-                new Markup(Markup.Escape(entry.Updated))
+                new Markup(prefix + name),
+                new Markup(type),
+                new Markup(size),
+                new Markup(updated)
             );
         }
-
-        // Summeringsrad
         table.AddEmptyRow();
         table.AddRow(
             new Markup("[bold]Total[/]"),
