@@ -8,4 +8,5 @@ public class ApplicationConfiguration : ICoreConfiguration
     public string DefaultCommand { get; set; } = "";
     public LogConfiguration Log { get; set; } = new(fileName: "commandprompt.log", filePath: "logs", restrictedToMinimumLevel: "Information", rollingIntervall: "Day");
     public List<string> Suggestions { get; set; } = [];
+    public string RoamingDirectoryName { get; set; } = $"{nameof(CommandPrompt)}";
 }

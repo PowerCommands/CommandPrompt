@@ -4,6 +4,7 @@ using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
 using PainKiller.CommandPrompt.CoreLib.Core.DomainObjects;
 using PainKiller.CommandPrompt.CoreLib.Metadata.Attributes;
 using PainKiller.ReadLine.Managers;
+using Spectre.Console;
 
 namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule;
 
@@ -28,20 +29,12 @@ public class CdCommand(string identifier) : ConsoleCommandBase<ApplicationConfig
         var arg = input.Arguments.FirstOrDefault();
         var lowerArgs = input.Options.Select(o => o.Key.ToLower()).ToList();
 
-        if (arg == "\\")
-        {
-            path = Directory.GetDirectoryRoot(path);
-        }
-        else if (arg == "..")
-        {
-            path = Path.GetDirectoryName(path) ?? path;
-        }
-        else if (!string.IsNullOrWhiteSpace(arg))
-        {
-            path = Path.Combine(path, arg);
-        }
+        if (arg == "\\") path = Directory.GetDirectoryRoot(path);
+        else if (arg == "..") path = Path.GetDirectoryName(path) ?? path;
+        else if (!string.IsNullOrWhiteSpace(arg)) path = Path.Combine(path, arg);
+
         if (lowerArgs.Contains("roaming"))
-            path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Configuration.RoamingDirectoryName);
         else if (lowerArgs.Contains("startup"))
             path = Path.GetDirectoryName(Environment.ProcessPath) ?? path;
         else if (lowerArgs.Contains("documents"))
@@ -71,39 +64,70 @@ public class CdCommand(string identifier) : ConsoleCommandBase<ApplicationConfig
         }
         else
         {
-            Console.WriteLine($"[cd] Path not found: {path}");
+            AnsiConsole.MarkupLine($"[red][cd][/]: Path not found: {Markup.Escape(path)}");
+            return Nok($"Path not found: {path}");
         }
 
-        ShowDirectories();
+        ShowCurrentDirectoryContent();
         return Ok();
     }
-    private void ShowDirectories(string filter = "")
+
+    private void ShowCurrentDirectoryContent()
     {
         var dirInfo = new DirectoryInfo(Environment.CurrentDirectory);
-        Console.WriteLine($"Current directory: {dirInfo.FullName}");
+        var entries = new List<DirEntry>();
 
-        var fileSuggestions = new List<string>();
-        var dirSuggestions = new List<string>();
-
-        var userFilter = filter.ToLowerInvariant();
-
-        var files = dirInfo.GetFiles();
-        var directories = dirInfo.GetDirectories();
-
-        Console.WriteLine($"Files: {files.Length}");
-        Console.WriteLine($"Directories: {directories.Length}");
-
-        foreach (var directoryInfo in directories.Where(d => d.Name.ToLower().Contains(userFilter)))
+        foreach (var dir in dirInfo.GetDirectories())
         {
-            Console.WriteLine($"<DIR> {directoryInfo.Name}");
-            dirSuggestions.Add(directoryInfo.Name);
+            entries.Add(new DirEntry
+            {
+                Name = dir.Name,
+                Type = "<DIR>",
+                Size = dir.GetDirectorySize().GetDisplayFormattedFileSize(),
+                Updated = dir.LastWriteTime.GetDisplayTimeSinceLastUpdate()
+            });
         }
 
-        foreach (var fileInfo in files.Where(f => f.Name.ToLower().Contains(userFilter)))
+        foreach (var file in dirInfo.GetFiles())
         {
-            Console.WriteLine($"      {fileInfo.Name}");
-            fileSuggestions.Add(fileInfo.Name);
+            entries.Add(new DirEntry
+            {
+                Name = file.Name,
+                Type = file.GetFileTypeDescription(),
+                Size = file.Length.GetDisplayFormattedFileSize(),
+                Updated = file.LastWriteTime.GetDisplayTimeSinceLastUpdate()
+            });
         }
-        SuggestionProviderManager.AppendContextBoundSuggestions(Identifier, dirSuggestions.Concat(fileSuggestions).ToArray());
+
+        SuggestionProviderManager.AppendContextBoundSuggestions(Identifier, entries.Select(e => e.Name).ToArray());
+
+        var table = new Table()
+            .Expand()
+            .RoundedBorder()
+            .AddColumn(new TableColumn("[grey]Name[/]").LeftAligned())
+            .AddColumn(new TableColumn("[grey]Type[/]").Centered())
+            .AddColumn(new TableColumn("[grey]Size[/]").RightAligned())
+            .AddColumn(new TableColumn("[grey]Updated[/]").RightAligned());
+
+        foreach (var entry in entries)
+        {
+            var color = entry.Type == "<DIR>" ? "yellow" : "white";
+            table.AddRow(
+                new Markup($"[{color}]{Markup.Escape(entry.Name)}[/]"),
+                new Markup($"[blue]{Markup.Escape(entry.Type)}[/]"),
+                new Markup(Markup.Escape(entry.Size)),
+                new Markup(Markup.Escape(entry.Updated))
+            );
+        }
+
+        AnsiConsole.Write(table);
+    }
+
+    private class DirEntry
+    {
+        public string Name { get; init; } = "";
+        public string Type { get; init; } = "";
+        public string Size { get; init; } = "";
+        public string Updated { get; init; } = "";
     }
 }
