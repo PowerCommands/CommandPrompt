@@ -16,6 +16,7 @@ public class TestCommand(string identifier) : ConsoleCommandBase<CommandPromptCo
         Writer.WriteCritical("Critical");
         Writer.WriteError("Error");
         Writer.WriteWarning("Warning");
+        Writer.WriteDescription("Config",Configuration.RoamingDirectoryName);
         return Ok();
     }
 }

@@ -2,6 +2,7 @@
 
 public interface ICoreConfiguration
 {
+    public string Name { get; set; }
     public string Prompt { get; set; }
     public string DefaultCommand { get; set; }
 }

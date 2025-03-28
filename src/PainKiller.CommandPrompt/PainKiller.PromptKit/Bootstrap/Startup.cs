@@ -1,4 +1,5 @@
-﻿using PainKiller.CommandPrompt.CoreLib.Configuration.DomainObjects;
+﻿using Microsoft.Extensions.Logging;
+using PainKiller.CommandPrompt.CoreLib.Configuration.DomainObjects;
 using PainKiller.CommandPrompt.CoreLib.Configuration.Services;
 using PainKiller.CommandPrompt.CoreLib.Core.Events;
 using PainKiller.CommandPrompt.CoreLib.Core.Runtime;
@@ -16,13 +17,16 @@ public static class Startup
     public static CommandLoop Build()
     {
         var config = ReadConfiguration();
+        ILogger<Program> logger = LoggerProvider.CreateLogger<Program>();
+        logger.LogInformation($"{config.Name} started, configuration read and logging initialized.");
         var commands = CommandDiscoveryService.DiscoverCommands(config);
         var suggestions = new List<string>();
         suggestions.AddRange(commands.Select(c => c.Identifier).ToArray());
         suggestions.AddRange(config.Suggestions);
         ReadLineService.InitializeAutoComplete([], suggestions.ToArray());
-
+        logger.LogDebug($"Suggestions: {string.Join(',', suggestions)}");
         EventBusService.Service.Publish(new WorkingDirectoryChangedEventArgs(Environment.CurrentDirectory));
+        logger.LogDebug($"{nameof(EventBusService)} publish: {nameof(WorkingDirectoryChangedEventArgs)} {Environment.CurrentDirectory}");
 
         return new CommandLoop(new CommandRuntime(commands), new ReadLineInputReader(), config);
     }

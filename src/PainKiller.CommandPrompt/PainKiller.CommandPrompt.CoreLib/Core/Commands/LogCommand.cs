@@ -15,6 +15,7 @@ public class LogCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
     public override RunResult Run(ICommandLineInput input)
     {
         var logDir = Configuration.Log.FilePath;
+        if (!Directory.Exists(logDir)) logDir = Path.Combine(AppContext.BaseDirectory, Configuration.Log.FilePath);
         var logFilePrefix = Path.GetFileNameWithoutExtension(Configuration.Log.FileName);
 
         if (!Directory.Exists(logDir))
@@ -30,8 +31,8 @@ public class LogCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
         var logEntries = lines
             .Select(ParseLogLine)
             .Select(parsed => new LogEntry { Timestamp = parsed.Timestamp, Level = parsed.Level, Message = parsed.Message }).ToList();
-
-        System.Console.Clear();
+        logEntries.Reverse();
+        Console.Clear();
         bool LogEntryFilter(LogEntry entry, string filter) => entry.Timestamp.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0 || entry.Level.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0 || entry.Message.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0;
         InteractiveFilter<LogEntry>.Run(logEntries, LogEntryFilter, DisplayTable);
         return Ok();
@@ -74,6 +75,7 @@ public class LogCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
                 "INF" => "green",
                 "WRN" => "yellow",
                 "ERR" => "red",
+                "FTL" => "red",
                 "DBG" => "grey",
                 _ => "white"
             };

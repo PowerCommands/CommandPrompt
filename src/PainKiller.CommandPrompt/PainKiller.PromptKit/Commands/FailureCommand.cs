@@ -7,11 +7,11 @@ using PainKiller.PromptKit.Bootstrap;
 namespace PainKiller.PromptKit.Commands;
 
 [CommandDesign("Displays Hello", options: ["Word","Banan"])]
-public class HelloCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
+public class FailureCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
     public override RunResult Run(ICommandLineInput input)
     {
-        Writer.WriteLine($"Hello {string.Join(",", input.Arguments)} {string.Join(",", input.Quotes)} {string.Join(",", input.Options.Values)}");
+        File.ReadAllBytes("lkjasdflajfd");
         return Ok();
     }
 }

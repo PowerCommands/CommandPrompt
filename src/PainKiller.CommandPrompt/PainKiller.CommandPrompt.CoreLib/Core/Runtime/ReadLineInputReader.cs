@@ -5,8 +5,5 @@ namespace PainKiller.CommandPrompt.CoreLib.Core.Runtime;
 
 public class ReadLineInputReader : IUserInputReader
 {
-    public string ReadLine(string prompt = "")
-    {
-        return ReadLineService.Service.Read(prompt);
-    }
+    public string ReadLine(string prompt = "") => ReadLineService.Service.Read(prompt);
 }

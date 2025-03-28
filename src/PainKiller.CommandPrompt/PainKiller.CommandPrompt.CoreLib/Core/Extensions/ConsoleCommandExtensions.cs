@@ -1,6 +1,8 @@
-﻿using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
+﻿using Microsoft.Extensions.Logging;
+using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
 using PainKiller.CommandPrompt.CoreLib.Core.DomainObjects;
 using PainKiller.CommandPrompt.CoreLib.Core.Runtime;
+using PainKiller.CommandPrompt.CoreLib.Logging.Services;
 
 namespace PainKiller.CommandPrompt.CoreLib.Core.Extensions;
 
@@ -17,12 +19,10 @@ public static class ConsoleCommandExtensions
     /// For flag-style options, leave the value empty or null.
     /// </param>
     /// <returns>The result of executing the command.</returns>
-    public static RunResult Execute(
-        this IConsoleCommand command,
-        string[]? arguments = null,
-        string[]? quotes = null,
-        Dictionary<string, string>? options = null)
+    public static RunResult Execute(this IConsoleCommand command, string[]? arguments = null, string[]? quotes = null, Dictionary<string, string>? options = null)
     {
+        ILogger<CommandRuntime> logger = LoggerProvider.CreateLogger<CommandRuntime>();
+        logger.LogDebug($"{nameof(ConsoleCommandExtensions)}.{nameof(Execute)} {command.Identifier}");
         var input = new CommandLineInput(
             BuildRaw(command, arguments, quotes, options),
             command.Identifier,
