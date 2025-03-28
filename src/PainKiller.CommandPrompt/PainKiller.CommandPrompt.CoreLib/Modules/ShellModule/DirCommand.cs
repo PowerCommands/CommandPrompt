@@ -11,14 +11,13 @@ namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule;
 
 [CommandDesign(
     description: "List the content of the current directory or a target directory, optionally open with File Explorer or show drive info.",
-    options: ["filter", "browse", "drive-info"],
+    options: ["browse", "drive-info"],
     arguments: ["Path to directory (optional)"],
     examples:
     [
         "//List content of current directory", "dir",
         "//List and open current directory", "dir --browse",
-        "//Show drive info", "dir --drive-info",
-        "//List contents of AppData folder", "dir --filter AppData"
+        "//Show drive info", "dir --drive-info"
     ]
 )]
 public class DirCommand(string identifier) : ConsoleCommandBase<ApplicationConfiguration>(identifier)
@@ -38,9 +37,8 @@ public class DirCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
             new ShellService().OpenDirectory(path);
 
         Environment.CurrentDirectory = path;
-        var filter = input.Options.TryGetValue("filter", out var f) ? f : string.Empty;
 
-        var entries = GetDirectoryEntries(filter);
+        var entries = GetDirectoryEntries();
         SuggestionProviderManager.AppendContextBoundSuggestions(Identifier, entries.Select(e => e.Name).ToArray());
 
         Console.Clear();
@@ -48,12 +46,11 @@ public class DirCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
         return Ok();
     }
 
-    private List<DirEntry> GetDirectoryEntries(string filter)
+    private List<DirEntry> GetDirectoryEntries()
     {
         var dirInfo = new DirectoryInfo(Environment.CurrentDirectory);
         var entries = new List<DirEntry>();
-
-        foreach (var dir in dirInfo.GetDirectories().Where(d => d.Name.Contains(filter, StringComparison.OrdinalIgnoreCase)))
+        foreach (var dir in dirInfo.GetDirectories())
         {
             entries.Add(new DirEntry
             {
@@ -63,8 +60,7 @@ public class DirCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
                 Updated = dir.LastWriteTime.GetDisplayTimeSinceLastUpdate()
             });
         }
-
-        foreach (var file in dirInfo.GetFiles().Where(f => f.Name.Contains(filter, StringComparison.OrdinalIgnoreCase)))
+        foreach (var file in dirInfo.GetFiles())
         {
             entries.Add(new DirEntry
             {
@@ -87,9 +83,9 @@ public class DirCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
     private void DisplayTable(IEnumerable<DirEntry> entries)
     {
         var table = new Table()
-            .Expand() // <--- gör att tabellen fyller hela konsolfönstret
+            .Expand()
             .RoundedBorder()
-            .AddColumn(new TableColumn("[grey]Name[/]").NoWrap().Width(40))
+            .AddColumn(new TableColumn("[grey]Name[/]").LeftAligned())
             .AddColumn(new TableColumn("[grey]Type[/]").Centered())
             .AddColumn(new TableColumn("[grey]Size[/]").RightAligned())
             .AddColumn(new TableColumn("[grey]Updated[/]").RightAligned());
@@ -107,8 +103,6 @@ public class DirCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
 
         AnsiConsole.Write(table);
     }
-
-
     private RunResult ShowDriveInfo()
     {
         foreach (var drive in DriveInfo.GetDrives())
@@ -125,7 +119,6 @@ public class DirCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
         }
         return Ok();
     }
-
     private class DirEntry
     {
         public string Name { get; init; } = "";
