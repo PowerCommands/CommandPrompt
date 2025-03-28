@@ -6,7 +6,7 @@ using PainKiller.PromptKit.Bootstrap;
 
 namespace PainKiller.PromptKit.Commands;
 
-[CommandDesign("Displays Hello", options: ["Word","Banan"])]
+[CommandDesign("Test what happends when a command throws an Exception.", options: ["name","foo"])]
 public class FailureCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
     public override RunResult Run(ICommandLineInput input)

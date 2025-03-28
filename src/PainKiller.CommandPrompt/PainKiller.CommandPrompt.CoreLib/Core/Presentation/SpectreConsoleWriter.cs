@@ -125,7 +125,7 @@ public class SpectreConsoleWriter : IConsoleWriter
         ConsoleColor.DarkYellow => "brightyellow",
         ConsoleColor.DarkBlue => "brightblue",
         ConsoleColor.DarkCyan => "brightcyan",
-        ConsoleColor.DarkMagenta => "brightmagenta",
+        ConsoleColor.DarkMagenta => "magenta",
         ConsoleColor.DarkGray => "brightwhite",
         ConsoleColor.Black => "black",
         _ => string.Empty
