@@ -79,12 +79,15 @@ public class CdCommand(string identifier) : ConsoleCommandBase<ApplicationConfig
 
         foreach (var dir in dirInfo.GetDirectories())
         {
+            var size = dir.GetDirectorySize();
             entries.Add(new DirEntry
             {
                 Name = dir.Name,
                 Type = "<DIR>",
-                Size = dir.GetDirectorySize().GetDisplayFormattedFileSize(),
-                Updated = dir.LastWriteTime.GetDisplayTimeSinceLastUpdate()
+                SizeInBytes = size,
+                Size = size.GetDisplayFormattedFileSize(),
+                Updated = dir.LastWriteTime.GetDisplayTimeSinceLastUpdate(),
+                UpdatedTime = dir.LastWriteTime
             });
         }
 
@@ -94,12 +97,26 @@ public class CdCommand(string identifier) : ConsoleCommandBase<ApplicationConfig
             {
                 Name = file.Name,
                 Type = file.GetFileTypeDescription(),
+                SizeInBytes = file.Length,
                 Size = file.Length.GetDisplayFormattedFileSize(),
-                Updated = file.LastWriteTime.GetDisplayTimeSinceLastUpdate()
+                Updated = file.LastWriteTime.GetDisplayTimeSinceLastUpdate(),
+                UpdatedTime = file.LastWriteTime
             });
         }
 
         SuggestionProviderManager.AppendContextBoundSuggestions(Identifier, entries.Select(e => e.Name).ToArray());
+
+        var list = entries.ToList();
+        if (list.Count == 0)
+        {
+            AnsiConsole.MarkupLine("[bold yellow]This directory is empty.[/]");
+            return;
+        }
+
+        var totalSize = list.Sum(e => e.SizeInBytes);
+        var formattedSize = totalSize.GetDisplayFormattedFileSize();
+        var fileCount = list.Count(e => e.Type != "<DIR>");
+        var dirCount = list.Count(e => e.Type == "<DIR>");
 
         var table = new Table()
             .Expand()
@@ -109,7 +126,7 @@ public class CdCommand(string identifier) : ConsoleCommandBase<ApplicationConfig
             .AddColumn(new TableColumn("[grey]Size[/]").RightAligned())
             .AddColumn(new TableColumn("[grey]Updated[/]").RightAligned());
 
-        foreach (var entry in entries)
+        foreach (var entry in list)
         {
             var color = entry.Type == "<DIR>" ? "yellow" : "white";
             table.AddRow(
@@ -120,14 +137,14 @@ public class CdCommand(string identifier) : ConsoleCommandBase<ApplicationConfig
             );
         }
 
-        AnsiConsole.Write(table);
-    }
+        table.AddEmptyRow();
+        table.AddRow(
+            new Markup("[bold]Total[/]"),
+            new Markup($"{dirCount} folders / {fileCount} files"),
+            new Markup($"[bold]{formattedSize}[/]"),
+            new Markup($"{list.Count} entries")
+        );
 
-    private class DirEntry
-    {
-        public string Name { get; init; } = "";
-        public string Type { get; init; } = "";
-        public string Size { get; init; } = "";
-        public string Updated { get; init; } = "";
+        AnsiConsole.Write(table);
     }
 }

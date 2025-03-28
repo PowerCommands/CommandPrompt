@@ -50,9 +50,21 @@ public class DirCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
         SuggestionProviderManager.AppendContextBoundSuggestions(Identifier, entries.Select(e => e.Name).ToArray());
 
         Console.Clear();
-        InteractiveFilter<DirEntry>.Run(entries, EntryFilter, DisplayTable);
+
+        string currentFilter = "";
+        InteractiveFilter<DirEntry>.Run(
+            entries,
+            (entry, filter) =>
+            {
+                currentFilter = filter;
+                return EntryFilter(entry, filter);
+            },
+            filteredEntries => DisplayTable(filteredEntries, currentFilter)
+        );
+
         return Ok();
     }
+
 
     private List<DirEntry> GetDirectoryEntries()
     {
@@ -149,8 +161,29 @@ public class DirCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
             || entry.Type.Contains(filter, StringComparison.OrdinalIgnoreCase);
     }
     private bool IsCategory(string type, string[] extensions) => extensions.Any(ext => type.Contains(ext, StringComparison.OrdinalIgnoreCase));
-    private void DisplayTable(IEnumerable<DirEntry> entries)
+    private void DisplayTable(IEnumerable<DirEntry> entries, string? activeFilter = null)
     {
+        var list = entries.ToList();
+
+        // Visa filter överst om det används
+        if (!string.IsNullOrWhiteSpace(activeFilter))
+        {
+            AnsiConsole.MarkupLine($"[grey]Active filter:[/] [italic]{Markup.Escape(activeFilter)}[/]");
+            Console.WriteLine();
+        }
+
+        // Om inga träffar – visa enkel summering
+        if (list.Count == 0)
+        {
+            AnsiConsole.MarkupLine("[bold yellow]No entries found.[/]");
+            return;
+        }
+
+        var totalSize = list.Sum(e => e.SizeInBytes);
+        var formattedSize = totalSize.GetDisplayFormattedFileSize();
+        var fileCount = list.Count(e => e.Type != "<DIR>");
+        var dirCount = list.Count(e => e.Type == "<DIR>");
+
         var table = new Table()
             .Expand()
             .RoundedBorder()
@@ -159,7 +192,7 @@ public class DirCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
             .AddColumn(new TableColumn("[grey]Size[/]").RightAligned())
             .AddColumn(new TableColumn("[grey]Updated[/]").RightAligned());
 
-        foreach (var entry in entries)
+        foreach (var entry in list)
         {
             var color = entry.Type == "<DIR>" ? "yellow" : "white";
             table.AddRow(
@@ -170,8 +203,18 @@ public class DirCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
             );
         }
 
+        // Summeringsrad
+        table.AddEmptyRow();
+        table.AddRow(
+            new Markup("[bold]Total[/]"),
+            new Markup($"{dirCount} folders / {fileCount} files"),
+            new Markup($"[bold]{formattedSize}[/]"),
+            new Markup($"{list.Count} entries")
+        );
+
         AnsiConsole.Write(table);
     }
+
     private RunResult ShowDriveInfo()
     {
         foreach (var drive in DriveInfo.GetDrives())
@@ -187,14 +230,5 @@ public class DirCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
             Console.WriteLine();
         }
         return Ok();
-    }
-    private class DirEntry
-    {
-        public string Name { get; init; } = "";
-        public string Type { get; init; } = "";
-        public string Size { get; init; } = "";
-        public long SizeInBytes { get; init; }
-        public string Updated { get; init; } = "";
-        public DateTime UpdatedTime { get; init; }
     }
 }
