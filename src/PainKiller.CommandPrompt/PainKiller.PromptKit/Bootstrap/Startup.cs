@@ -16,8 +16,9 @@ public static class Startup
     {
         var config = ReadConfiguration();
         var commands = CommandDiscoveryService.DiscoverCommands(config);
-        var suggestions = config.Suggestions;
+        var suggestions = new List<string>();
         suggestions.AddRange(commands.Select(c => c.Identifier).ToArray());
+        suggestions.AddRange(config.Suggestions);
         ReadLineService.InitializeAutoComplete([], suggestions.ToArray());
         return new CommandLoop(new CommandRuntime(commands), new ReadLineInputReader(), config);
     }
