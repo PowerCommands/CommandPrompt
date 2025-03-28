@@ -2,30 +2,20 @@
 namespace PainKiller.CommandPrompt.CoreLib.Core.Presentation;
 public static class InteractiveFilterMultiSelect<T>
 {
-    public static List<T> Run(
-        IEnumerable<T> items,
-        Func<T, string, bool> filter,
-        Action<IEnumerable<T>, int> display)
+    public static List<T> Run(IEnumerable<T> items, Func<T, string, bool> filter, Action<IEnumerable<T>, int> display)
     {
         var list = items.ToList();
         var filtered = list;
         var filterString = "";
-        int selectedIndex = 0;
+        var selectedIndex = 0;
 
         while (true)
         {
             Console.Clear();
+            display(filtered, selectedIndex);
 
-            var visible = filtered.Skip(Math.Max(0, selectedIndex - 10)).Take(20).ToList();
-            display(visible, selectedIndex);
-
-            if (!string.IsNullOrWhiteSpace(filterString))
-            {
-                AnsiConsole.MarkupLine($"\n[grey]Filter:[/] [italic]{Markup.Escape(filterString)}[/]");
-            }
-
+            if (!string.IsNullOrWhiteSpace(filterString)) AnsiConsole.MarkupLine($"\n[grey]Filter:[/] [italic]{Markup.Escape(filterString)}[/]");
             var key = Console.ReadKey(intercept: true);
-
             switch (key.Key)
             {
                 case ConsoleKey.Enter:

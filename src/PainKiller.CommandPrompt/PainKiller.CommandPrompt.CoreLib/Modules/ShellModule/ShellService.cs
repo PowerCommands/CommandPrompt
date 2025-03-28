@@ -3,6 +3,9 @@
 namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule;
 public class ShellService : IShellService
 {
+    private static readonly Lazy<IShellService> Instance = new(() => new ShellService());
+    private ShellService() { }
+    internal static IShellService Default => Instance.Value;
     public void OpenDirectory(string path)
     {
         var actualPath = ReplacePlaceholders(path);
@@ -49,7 +52,6 @@ public class ShellService : IShellService
             Console.WriteLine(output);
         }
     }
-
     private static string ReplacePlaceholders(string input)
     {
         return input

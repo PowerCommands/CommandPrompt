@@ -53,11 +53,18 @@ public class LogCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
     }
     private void DisplayTable(IEnumerable<LogEntry> entries, int selectedIndex)
     {
-        var table = new Table().RoundedBorder().AddColumn("[grey]Timestamp[/]").AddColumn("[grey]Level[/]").AddColumn("[grey]Message[/]");
-
         var list = entries.ToList();
+        var table = new Table()
+            .RoundedBorder()
+            .AddColumn("[grey]Timestamp[/]")
+            .AddColumn("[grey]Level[/]")
+            .AddColumn("[grey]Message[/]");
 
-        for (int i = 0; i < list.Count; i++)
+        int maxRows = System.Console.WindowHeight - 5; // lite marginal
+        int startRow = Math.Max(0, Math.Min(selectedIndex - maxRows / 2, list.Count - maxRows));
+        int endRow = Math.Min(list.Count, startRow + maxRows);
+
+        for (int i = startRow; i < endRow; i++)
         {
             var entry = list[i];
             var isSelected = i == selectedIndex;
@@ -81,11 +88,7 @@ public class LogCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
                 ? $"[italic]{Markup.Escape(entry.Message)}[/]"
                 : Markup.Escape(entry.Message);
 
-            table.AddRow(
-                new Markup(prefix + timestamp),
-                new Markup(level),
-                new Markup(message)
-            );
+            table.AddRow(new Markup(prefix + timestamp), new Markup(level), new Markup(message));
         }
         AnsiConsole.Write(table);
     }

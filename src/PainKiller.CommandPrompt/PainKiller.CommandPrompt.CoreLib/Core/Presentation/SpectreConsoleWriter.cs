@@ -4,11 +4,13 @@ using System.Runtime.CompilerServices;
 using static Serilog.Log;
 
 namespace PainKiller.CommandPrompt.CoreLib.Core.Presentation;
-
-
-
 public class SpectreConsoleWriter : IConsoleWriter
 {
+    public void WriteDescription(string label, string text, ConsoleColor consoleColor = ConsoleColor.Gray, string scope = "")
+    {
+        WriteLine(label, writeLog: true, color: ConsoleColor.Blue);
+        WriteLine(text, writeLog: true, color: consoleColor);
+    }
     public void Write(string text, bool writeLog = true, ConsoleColor color = ConsoleColor.Black, [CallerMemberName] string scope = "")
     {
         var escaped = Markup.Escape(text);
@@ -72,14 +74,42 @@ public class SpectreConsoleWriter : IConsoleWriter
     }
 
     public void Clear() => AnsiConsole.Clear();
+    public void WriteTable<T>(IEnumerable<T> items, string[]? columnNames = null, ConsoleColor columnColor = ConsoleColor.Cyan)
+    {
+        var table = new Table().Expand().Border(TableBorder.Rounded);
+        var properties = typeof(T).GetProperties();
+        if (columnNames != null && columnNames.Length == properties.Length)
+        {
+            foreach (var columnName in columnNames)
+            {
+                table.AddColumn(new TableColumn($"[bold {columnColor}]{columnName}[/]").Centered());
+            }
+        }
+        else
+        {
+            foreach (var property in properties)
+            {
+                table.AddColumn(new TableColumn($"[bold {columnColor}]{property.Name}[/]").Centered());
+            }
+        }
+        foreach (var item in items)
+        {
+            var row = new List<Markup>();
 
+            foreach (var property in properties)
+            {
+                row.Add(new Markup(Markup.Escape(property.GetValue(item)?.ToString() ?? string.Empty)));
+            }
+            table.AddRow(row.ToArray());
+        }
+        AnsiConsole.Write(table);
+    }
     private string WrapColor(string text, ConsoleColor color)
     {
         if (color == ConsoleColor.Black) return text;
         var markup = ToMarkup(color);
         return string.IsNullOrEmpty(markup) ? text : $"[{markup}]{text}[/]";
     }
-
     private string ToMarkup(ConsoleColor color) => color switch
     {
         ConsoleColor.Red => "red",

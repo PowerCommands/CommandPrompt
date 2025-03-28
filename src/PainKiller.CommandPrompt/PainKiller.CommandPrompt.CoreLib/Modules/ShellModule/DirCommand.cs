@@ -41,9 +41,7 @@ public class DirCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
         path = Path.GetFullPath(path);
         if (!Directory.Exists(path)) return Nok($"Directory not found: {path}");
 
-        if (input.Options.ContainsKey("browse"))
-            new ShellService().OpenDirectory(path);
-
+        if (input.Options.ContainsKey("browse")) ShellService.Default.OpenDirectory(path);
         Environment.CurrentDirectory = path;
 
         var entries = GetDirectoryEntries();
@@ -63,7 +61,8 @@ public class DirCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
             (filteredEntries, selectedIndex) =>
             {
                 DisplayTable(filteredEntries, selectedIndex, currentFilter);
-            }
+            }, 
+            OnSelected
         );
         return Ok();
     }
@@ -156,24 +155,17 @@ public class DirCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
                 _ => false
             };
         }
-
-        // fallback: text match
-        return entry.Name.Contains(filter, StringComparison.OrdinalIgnoreCase)
-            || entry.Type.Contains(filter, StringComparison.OrdinalIgnoreCase);
+        return entry.Name.Contains(filter, StringComparison.OrdinalIgnoreCase) || entry.Type.Contains(filter, StringComparison.OrdinalIgnoreCase);
     }
     private bool IsCategory(string type, string[] extensions) => extensions.Any(ext => type.Contains(ext, StringComparison.OrdinalIgnoreCase));
     private void DisplayTable(IEnumerable<DirEntry> entries, int selectedIndex, string? activeFilter)
     {
         var list = entries.ToList();
-
-        // Visa filter överst om det används
         if (!string.IsNullOrWhiteSpace(activeFilter))
         {
             AnsiConsole.MarkupLine($"[grey]Active filter:[/] [italic]{Markup.Escape(activeFilter)}[/]");
             Console.WriteLine();
         }
-
-        // Om inga träffar – visa enkel summering
         if (list.Count == 0)
         {
             AnsiConsole.MarkupLine("[bold yellow]No entries found.[/]");
@@ -240,5 +232,11 @@ public class DirCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
             Console.WriteLine();
         }
         return Ok();
+    }
+
+    private void OnSelected(DirEntry entry)
+    {
+        Console.Clear();
+        Console.WriteTable([entry]);
     }
 }

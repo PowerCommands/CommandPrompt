@@ -4,24 +4,17 @@ namespace PainKiller.CommandPrompt.CoreLib.Core.Presentation;
 
 public static class InteractiveFilter<T>
 {
-    public static void Run(
-        IEnumerable<T> items,
-        Func<T, string, bool> filter,
-        Action<IEnumerable<T>, int> display,
-        Action<T>? onSelected = null)
+    public static void Run(IEnumerable<T> items, Func<T, string, bool> filter, Action<IEnumerable<T>, int> display, Action<T>? onSelected = null)
     {
         var list = items.ToList();
         var filtered = list;
         var filterString = "";
-
-        int selectedIndex = 0;
+        var selectedIndex = 0;
 
         while (true)
         {
-            Console.Clear();
-
-            var visible = filtered.Skip(Math.Max(0, selectedIndex - 10)).Take(20).ToList();
-            display(visible, selectedIndex);
+            AnsiConsole.Clear();
+            display(filtered, selectedIndex);
 
             if (!string.IsNullOrWhiteSpace(filterString))
             {
