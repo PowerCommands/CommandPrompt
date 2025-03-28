@@ -12,10 +12,10 @@ public class TestCommand(string identifier) : ConsoleCommandBase<CommandPromptCo
 {
     public override RunResult Run(ICommandLineInput input)
     {
-        Console.WriteHeaderLine("Test command");
-        Console.WriteCritical("Critical");
-        Console.WriteError("Error");
-        Console.WriteWarning("Warning");
+        Writer.WriteHeaderLine("Test command");
+        Writer.WriteCritical("Critical");
+        Writer.WriteError("Error");
+        Writer.WriteWarning("Warning");
         return Ok();
     }
 }

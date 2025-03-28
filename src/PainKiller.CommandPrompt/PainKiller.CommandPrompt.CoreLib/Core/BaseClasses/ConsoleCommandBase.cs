@@ -6,7 +6,7 @@ namespace PainKiller.CommandPrompt.CoreLib.Core.BaseClasses;
 
 public abstract class ConsoleCommandBase<TConfig>(string identifier) : IConsoleCommand
 {
-    protected IConsoleWriter Console { get; } = new SpectreConsoleWriter();
+    protected IConsoleWriter Writer { get; } = new SpectreConsoleWriter();
     public string Identifier { get; } = identifier;
     public TConfig Configuration { get; private set; } = default!;
     private void SetConfiguration(TConfig config) => Configuration = config;

@@ -2,6 +2,8 @@
 using PainKiller.CommandPrompt.CoreLib.Core.BaseClasses;
 using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
 using PainKiller.CommandPrompt.CoreLib.Core.DomainObjects;
+using PainKiller.CommandPrompt.CoreLib.Core.Events;
+using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Metadata.Attributes;
 using PainKiller.ReadLine.Managers;
 using Spectre.Console;
@@ -21,8 +23,11 @@ namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule;
         "cd --documents"
     ]
 )]
-public class CdCommand(string identifier) : ConsoleCommandBase<ApplicationConfiguration>(identifier)
+public class CdCommand : ConsoleCommandBase<ApplicationConfiguration>
 {
+    private void OnWorkingDirectoryChanged(WorkingDirectoryChangedEventArgs e) => UpdateSuggestions(e.NewWorkingDirectory);
+    public CdCommand(string identifier) : base(identifier) => EventBusService.Service.Subscribe<WorkingDirectoryChangedEventArgs>(OnWorkingDirectoryChanged);
+
     public override RunResult Run(ICommandLineInput input)
     {
         var path = Environment.CurrentDirectory;
@@ -61,6 +66,7 @@ public class CdCommand(string identifier) : ConsoleCommandBase<ApplicationConfig
         if (Directory.Exists(path))
         {
             Environment.CurrentDirectory = Path.GetFullPath(path);
+            EventBusService.Service.Publish(new WorkingDirectoryChangedEventArgs(Environment.CurrentDirectory));
         }
         else
         {
@@ -71,7 +77,16 @@ public class CdCommand(string identifier) : ConsoleCommandBase<ApplicationConfig
         ShowCurrentDirectoryContent();
         return Ok();
     }
-
+    private void UpdateSuggestions(string newWorkingDirectory)
+    {
+        if (Directory.Exists(newWorkingDirectory))
+        {
+            var directories = Directory.GetDirectories(newWorkingDirectory)
+                .Select(d => new DirectoryInfo(d).Name)
+                .ToArray();
+            SuggestionProviderManager.AppendContextBoundSuggestions(Identifier, directories.Select(e => e).ToArray());
+        }
+    }
     private void ShowCurrentDirectoryContent()
     {
         var dirInfo = new DirectoryInfo(Environment.CurrentDirectory);
@@ -90,29 +105,13 @@ public class CdCommand(string identifier) : ConsoleCommandBase<ApplicationConfig
                 UpdatedTime = dir.LastWriteTime
             });
         }
-
-        foreach (var file in dirInfo.GetFiles())
-        {
-            entries.Add(new DirEntry
-            {
-                Name = file.Name,
-                Type = file.GetFileTypeDescription(),
-                SizeInBytes = file.Length,
-                Size = file.Length.GetDisplayFormattedFileSize(),
-                Updated = file.LastWriteTime.GetDisplayTimeSinceLastUpdate(),
-                UpdatedTime = file.LastWriteTime
-            });
-        }
-
-        SuggestionProviderManager.AppendContextBoundSuggestions(Identifier, entries.Select(e => e.Name).ToArray());
-
+        
         var list = entries.ToList();
         if (list.Count == 0)
         {
-            AnsiConsole.MarkupLine("[bold yellow]This directory is empty.[/]");
+            AnsiConsole.MarkupLine("[bold yellow]No directories so show...[/]");
             return;
         }
-
         var totalSize = list.Sum(e => e.SizeInBytes);
         var formattedSize = totalSize.GetDisplayFormattedFileSize();
         var fileCount = list.Count(e => e.Type != "<DIR>");
@@ -144,7 +143,6 @@ public class CdCommand(string identifier) : ConsoleCommandBase<ApplicationConfig
             new Markup($"[bold]{formattedSize}[/]"),
             new Markup($"{list.Count} entries")
         );
-
         AnsiConsole.Write(table);
     }
 }

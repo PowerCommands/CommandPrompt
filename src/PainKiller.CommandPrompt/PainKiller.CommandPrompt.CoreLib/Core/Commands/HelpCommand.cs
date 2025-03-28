@@ -84,7 +84,7 @@ public class HelpCommand(string identity) : ConsoleCommandBase<ApplicationConfig
     }
     private void OnSelected(HelpEntry entry)
     {
-        Console.Clear();
+        Writer.Clear();
         if (!CommandDiscoveryService.TryGetCommand("describe", out var describeCommand) || describeCommand == null)
         {
             AnsiConsole.MarkupLine($"[red]Could not find 'describe' command.[/]");

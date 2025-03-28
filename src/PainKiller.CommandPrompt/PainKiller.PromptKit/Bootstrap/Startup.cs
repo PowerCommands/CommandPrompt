@@ -1,5 +1,6 @@
 ﻿using PainKiller.CommandPrompt.CoreLib.Configuration.DomainObjects;
 using PainKiller.CommandPrompt.CoreLib.Configuration.Services;
+using PainKiller.CommandPrompt.CoreLib.Core.Events;
 using PainKiller.CommandPrompt.CoreLib.Core.Runtime;
 using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Logging.Services;
@@ -20,6 +21,9 @@ public static class Startup
         suggestions.AddRange(commands.Select(c => c.Identifier).ToArray());
         suggestions.AddRange(config.Suggestions);
         ReadLineService.InitializeAutoComplete([], suggestions.ToArray());
+
+        EventBusService.Service.Publish(new WorkingDirectoryChangedEventArgs(Environment.CurrentDirectory));
+
         return new CommandLoop(new CommandRuntime(commands), new ReadLineInputReader(), config);
     }
     private static CommandPromptConfiguration ReadConfiguration()

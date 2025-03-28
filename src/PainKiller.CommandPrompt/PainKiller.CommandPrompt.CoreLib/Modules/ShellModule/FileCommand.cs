@@ -1,7 +1,12 @@
-﻿using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
+﻿using PainKiller.CommandPrompt.CoreLib.Configuration.DomainObjects;
+using PainKiller.CommandPrompt.CoreLib.Core.BaseClasses;
+using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
 using PainKiller.CommandPrompt.CoreLib.Core.DomainObjects;
+using PainKiller.CommandPrompt.CoreLib.Core.Events;
 using PainKiller.CommandPrompt.CoreLib.Core.Presentation;
+using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Metadata.Attributes;
+using PainKiller.ReadLine.Managers;
 
 namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule;
 
@@ -12,9 +17,13 @@ namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule;
     options: ["read", "write", "delete", "open", "properties", "copy", "move", "confirm", "overwrite"],
     arguments: ["fileName"],
     examples: ["//Read a file in current working directory (use dir command to see current directory, cd command to change directory)","file filename.txt --read"])]
-public class FileCommand(string identifier) : CdCommand(identifier)
+public class FileCommand : ConsoleCommandBase<ApplicationConfiguration>
 {
+    private void OnWorkingDirectoryChanged(WorkingDirectoryChangedEventArgs e) => UpdateSuggestions(e.NewWorkingDirectory);
     private ICommandLineInput _input;
+
+    public FileCommand(string identifier) : base(identifier) => EventBusService.Service.Subscribe<WorkingDirectoryChangedEventArgs>(OnWorkingDirectoryChanged);
+
     public override RunResult Run(ICommandLineInput input)
     {
         _input = input;
@@ -34,11 +43,22 @@ public class FileCommand(string identifier) : CdCommand(identifier)
         return ShowFileInfo(path);
     }
 
+    private void UpdateSuggestions(string newWorkingDirectory)
+    {
+        if (Directory.Exists(newWorkingDirectory))
+        {
+            var files = Directory.GetFiles(newWorkingDirectory)
+                .Select(f => new FileInfo(f).Name)
+                .ToArray();
+            SuggestionProviderManager.AppendContextBoundSuggestions(Identifier, files.Select(e => e).ToArray());
+        }
+    }
+
     private RunResult ReadFile(string path)
     {
         if (!File.Exists(path)) return Nok($"{path} does not exist!");
         var content = File.ReadAllText(path);
-        Console.WriteLine(content);  // Normal output, no color
+        Writer.WriteLine(content);  // Normal output, no color
         return Ok();
     }
 
@@ -46,7 +66,8 @@ public class FileCommand(string identifier) : CdCommand(identifier)
     {
         var content = GetOptionValue(_input, "text");  // Simple text input to write to file
         File.WriteAllText(path, content);
-        Console.WriteSuccessLine($"File [{path}] successfully written.");  // Green for success
+        Writer.WriteSuccessLine($"File [{path}] successfully written.");  // Green for success
+        EventBusService.Service.Publish(new WorkingDirectoryChangedEventArgs(Environment.CurrentDirectory));
         return Ok();
     }
 
@@ -62,7 +83,7 @@ public class FileCommand(string identifier) : CdCommand(identifier)
         }
 
         File.Delete(path);
-        Console.WriteSuccessLine($"The file [{path}] has successfully been deleted.");  // Green for success
+        Writer.WriteSuccessLine($"The file [{path}] has successfully been deleted.");  // Green for success
         return Ok();
     }
 
@@ -71,7 +92,7 @@ public class FileCommand(string identifier) : CdCommand(identifier)
         var targetPath = GetOptionValue(_input, "copy");
         if (!File.Exists(path)) return Nok($"{path} does not exist!");
         File.Copy(path, targetPath, overwrite: true);
-        Console.WriteSuccessLine($"File [{path}] successfully copied to [{targetPath}].");  // Green for success
+        Writer.WriteSuccessLine($"File [{path}] successfully copied to [{targetPath}].");  // Green for success
         return Ok();
     }
 
@@ -80,7 +101,7 @@ public class FileCommand(string identifier) : CdCommand(identifier)
         var targetPath = GetOptionValue(_input, "move");
         if (!File.Exists(path)) return Nok($"{path} does not exist!");
         File.Move(path, targetPath);
-        Console.WriteSuccessLine($"File [{path}] successfully moved to [{targetPath}].");  // Green for success
+        Writer.WriteSuccessLine($"File [{path}] successfully moved to [{targetPath}].");  // Green for success
         return Ok();
     }
 
@@ -95,7 +116,7 @@ public class FileCommand(string identifier) : CdCommand(identifier)
         if (!File.Exists(path)) return Nok($"{path} does not exist!");
 
         var fileInfo = new FileInfo(path);
-        Console.WriteTable([new {Name = fileInfo.Name, Path = fileInfo.FullName, Size = fileInfo.Length.GetDisplayFormattedFileSize(), Created = fileInfo.CreationTime.GetDisplayTimeSinceLastUpdate(), Modified = fileInfo.LastAccessTime.GetDisplayTimeSinceLastUpdate()}]);
+        Writer.WriteTable([new {Name = fileInfo.Name, Path = fileInfo.FullName, Size = fileInfo.Length.GetDisplayFormattedFileSize(), Created = fileInfo.CreationTime.GetDisplayTimeSinceLastUpdate(), Modified = fileInfo.LastAccessTime.GetDisplayTimeSinceLastUpdate()}]);
         return Ok();
     }
     private bool HasOption(ICommandLineInput input, string option)

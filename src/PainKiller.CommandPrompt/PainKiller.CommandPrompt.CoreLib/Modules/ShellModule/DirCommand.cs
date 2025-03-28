@@ -47,7 +47,7 @@ public class DirCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
         var entries = GetDirectoryEntries();
         SuggestionProviderManager.AppendContextBoundSuggestions(Identifier, entries.Select(e => e.Name).ToArray());
 
-        Console.Clear();
+        Writer.Clear();
 
         string currentFilter = "";
 
@@ -164,7 +164,7 @@ public class DirCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
         if (!string.IsNullOrWhiteSpace(activeFilter))
         {
             AnsiConsole.MarkupLine($"[grey]Active filter:[/] [italic]{Markup.Escape(activeFilter)}[/]");
-            Console.WriteLine();
+            Writer.WriteLine();
         }
         if (list.Count == 0)
         {
@@ -229,14 +229,14 @@ public class DirCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
             AnsiConsole.MarkupLine($"  Format     : {drive.DriveFormat}");
             AnsiConsole.MarkupLine($"  Total size : {drive.TotalSize.GetDisplayFormattedFileSize()}");
             AnsiConsole.MarkupLine($"  Free space : {drive.TotalFreeSpace.GetDisplayFormattedFileSize()}");
-            Console.WriteLine();
+            Writer.WriteLine();
         }
         return Ok();
     }
 
     private void OnSelected(DirEntry entry)
     {
-        Console.Clear();
-        Console.WriteTable([entry]);
+        Writer.Clear();
+        Writer.WriteTable([entry]);
     }
 }
