@@ -42,4 +42,20 @@ public static class CommandDiscoveryService
         }
         return _cache;
     }
+
+    /// <summary>
+    /// Attempts to retrieve an instantiated command by its identifier.
+    /// Returns false if the command is not found or if the discovery cache is uninitialized.
+    /// </summary>
+
+    public static bool TryGetCommand(string identifier, out IConsoleCommand? command)
+    {
+        if (_cache == null)
+        {
+            command = null;
+            return false;
+        }
+        command = _cache.FirstOrDefault(c => c.Identifier.Equals(identifier, StringComparison.OrdinalIgnoreCase));
+        return command != null;
+    }
 }
