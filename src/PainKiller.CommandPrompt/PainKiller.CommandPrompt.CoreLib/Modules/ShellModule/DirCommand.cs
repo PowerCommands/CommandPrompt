@@ -58,128 +58,97 @@ public class DirCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
     {
         var dirInfo = new DirectoryInfo(Environment.CurrentDirectory);
         var entries = new List<DirEntry>();
+
         foreach (var dir in dirInfo.GetDirectories())
         {
+            var size = dir.GetDirectorySize();
             entries.Add(new DirEntry
             {
                 Name = dir.Name,
                 Type = "<DIR>",
-                Size = dir.GetDirectorySize().GetDisplayFormattedFileSize(),
-                Updated = dir.LastWriteTime.GetDisplayTimeSinceLastUpdate()
+                SizeInBytes = size,
+                Size = size.GetDisplayFormattedFileSize(),
+                Updated = dir.LastWriteTime.GetDisplayTimeSinceLastUpdate(),
+                UpdatedTime = dir.LastWriteTime
             });
         }
+
         foreach (var file in dirInfo.GetFiles())
         {
             entries.Add(new DirEntry
             {
                 Name = file.Name,
                 Type = file.GetFileTypeDescription(),
+                SizeInBytes = file.Length,
                 Size = file.Length.GetDisplayFormattedFileSize(),
-                Updated = file.LastWriteTime.GetDisplayTimeSinceLastUpdate()
+                Updated = file.LastWriteTime.GetDisplayTimeSinceLastUpdate(),
+                UpdatedTime = file.LastWriteTime
             });
         }
 
         return entries;
     }
-
     private bool EntryFilter(DirEntry entry, string filter)
-{
-    if (string.IsNullOrWhiteSpace(filter)) return true;
-
-    filter = filter.Trim();
-
-    // size > N
-    var sizeMatch = Regex.Match(filter, @"^size\s*(>|<|=)\s*(\d+(\.\d+)?)$", RegexOptions.IgnoreCase);
-    if (sizeMatch.Success)
     {
-        var op = sizeMatch.Groups[1].Value;
-        var thresholdMb = double.Parse(sizeMatch.Groups[2].Value);
-        var bytesMatch = Regex.Match(entry.Size, @"\((\d[\d ]*) bytes\)");
-        if (!bytesMatch.Success || !long.TryParse(bytesMatch.Groups[1].Value.Replace(" ", ""), out var bytes))
-            return false;
-        var sizeInMb = bytes / 1048576.0;
-
-        return op switch
+        if (string.IsNullOrWhiteSpace(filter)) return true;
+        filter = filter.Trim();
+        var sizeMatch = Regex.Match(filter, @"^size\s*(>|<|=)\s*(\d+(\.\d+)?)$", RegexOptions.IgnoreCase);
+        if (sizeMatch.Success)
         {
-            ">" => sizeInMb > thresholdMb,
-            "<" => sizeInMb < thresholdMb,
-            "=" => Math.Abs(sizeInMb - thresholdMb) < 0.01,
-            _ => false
-        };
+            var op = sizeMatch.Groups[1].Value;
+            var thresholdMb = double.Parse(sizeMatch.Groups[2].Value);
+            var sizeInMb = entry.SizeInBytes / 1048576.0;
+
+            return op switch
+            {
+                ">" => sizeInMb > thresholdMb,
+                "<" => sizeInMb < thresholdMb,
+                "=" => Math.Abs(sizeInMb - thresholdMb) < 0.01,
+                _ => false
+            };
+        }
+        var typeMatch = Regex.Match(filter, @"^type\s*=\s*(\w+)$", RegexOptions.IgnoreCase);
+        if (typeMatch.Success)
+        {
+            var category = typeMatch.Groups[1].Value.ToLowerInvariant();
+            return category switch
+            {
+                "image" => IsCategory(entry.Type, ["jpeg", "png", "gif", "bmp", "tiff", "svg", "webp"]),
+                "video" => IsCategory(entry.Type, ["mp4", "mkv", "avi", "mov", "wmv", "flv", "webm"]),
+                "audio" => IsCategory(entry.Type, ["mp3", "wav", "flac", "aac", "ogg", "m4a"]),
+                "code"  => IsCategory(entry.Type, ["c#", "python", "javascript", "html", "css", "java", "php", "cpp", "typescript"]),
+                _ => entry.Type.ToLowerInvariant().Contains(category)
+            };
+        }
+        var updatedMatch = Regex.Match(filter, @"^updated\s*(>|<|=)\s*(\d+)([dmy])$", RegexOptions.IgnoreCase);
+        if (updatedMatch.Success)
+        {
+            var op = updatedMatch.Groups[1].Value;
+            var value = int.Parse(updatedMatch.Groups[2].Value);
+            var unit = updatedMatch.Groups[3].Value.ToLower();
+
+            var threshold = unit switch
+            {
+                "d" => DateTime.Now.AddDays(-value),
+                "m" => DateTime.Now.AddMonths(-value),
+                "y" => DateTime.Now.AddYears(-value),
+                _ => DateTime.MinValue
+            };
+
+            return op switch
+            {
+                ">" => entry.UpdatedTime < threshold,
+                "<" => entry.UpdatedTime > threshold,
+                "=" => Math.Abs((entry.UpdatedTime - threshold).TotalDays) < 1,
+                _ => false
+            };
+        }
+
+        // fallback: text match
+        return entry.Name.Contains(filter, StringComparison.OrdinalIgnoreCase)
+            || entry.Type.Contains(filter, StringComparison.OrdinalIgnoreCase);
     }
-
-    // type = category
-    var typeMatch = Regex.Match(filter, @"^type\s*=\s*(\w+)$", RegexOptions.IgnoreCase);
-    if (typeMatch.Success)
-    {
-        var category = typeMatch.Groups[1].Value.ToLowerInvariant();
-        return category switch
-        {
-            "image" => IsCategory(entry.Type, ["jpeg", "png", "gif", "bmp", "tiff", "svg", "webp"]),
-            "video" => IsCategory(entry.Type, ["mp4", "mkv", "avi", "mov", "wmv", "flv", "webm"]),
-            "audio" => IsCategory(entry.Type, ["mp3", "wav", "flac", "aac", "ogg", "m4a"]),
-            "code"  => IsCategory(entry.Type, ["c#", "python", "javascript", "html", "css", "java", "php", "cpp", "typescript"]),
-            _ => entry.Type.ToLowerInvariant().Contains(category)
-        };
-    }
-
-    // updated > 3d / updated < 2y
-    var updatedMatch = Regex.Match(filter, @"^updated\s*(>|<|=)\s*(\d+)([dmy])$", RegexOptions.IgnoreCase);
-    if (updatedMatch.Success)
-    {
-        var op = updatedMatch.Groups[1].Value;
-        var value = int.Parse(updatedMatch.Groups[2].Value);
-        var unit = updatedMatch.Groups[3].Value.ToLower();
-
-        var threshold = unit switch
-        {
-            "d" => DateTime.Now.AddDays(-value),
-            "m" => DateTime.Now.AddMonths(-value),
-            "y" => DateTime.Now.AddYears(-value),
-            _ => DateTime.MinValue
-        };
-
-        var entryTime = ParseRelativeTime(entry.Updated);
-
-        return op switch
-        {
-            ">" => entryTime < threshold,
-            "<" => entryTime > threshold,
-            "=" => Math.Abs((entryTime - threshold).TotalDays) < 1,
-            _ => false
-        };
-    }
-
-    // fallback: text match
-    return entry.Name.Contains(filter, StringComparison.OrdinalIgnoreCase)
-        || entry.Type.Contains(filter, StringComparison.OrdinalIgnoreCase);
-}
-
-private bool IsCategory(string type, string[] extensions)
-{
-    return extensions.Any(ext => type.Contains(ext, StringComparison.OrdinalIgnoreCase));
-}
-
-private DateTime ParseRelativeTime(string input)
-{
-    // Exempel: "3 days ago", "2 months ago"
-    var match = Regex.Match(input, @"(\d+)\s+(seconds|minutes|hours|days|months|years)", RegexOptions.IgnoreCase);
-    if (!match.Success) return DateTime.Now;
-
-    var value = int.Parse(match.Groups[1].Value);
-    return match.Groups[2].Value.ToLower() switch
-    {
-        "seconds" => DateTime.Now.AddSeconds(-value),
-        "minutes" => DateTime.Now.AddMinutes(-value),
-        "hours" => DateTime.Now.AddHours(-value),
-        "days" => DateTime.Now.AddDays(-value),
-        "months" => DateTime.Now.AddMonths(-value),
-        "years" => DateTime.Now.AddYears(-value),
-        _ => DateTime.Now
-    };
-}
-
-
+    private bool IsCategory(string type, string[] extensions) => extensions.Any(ext => type.Contains(ext, StringComparison.OrdinalIgnoreCase));
     private void DisplayTable(IEnumerable<DirEntry> entries)
     {
         var table = new Table()
@@ -224,6 +193,8 @@ private DateTime ParseRelativeTime(string input)
         public string Name { get; init; } = "";
         public string Type { get; init; } = "";
         public string Size { get; init; } = "";
+        public long SizeInBytes { get; init; }
         public string Updated { get; init; } = "";
+        public DateTime UpdatedTime { get; init; }
     }
 }
