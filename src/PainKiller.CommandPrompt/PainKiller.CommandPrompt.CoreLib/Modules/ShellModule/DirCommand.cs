@@ -65,12 +65,8 @@ public class DirCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
                 DisplayTable(filteredEntries, selectedIndex, currentFilter);
             }
         );
-
         return Ok();
     }
-
-
-
     private List<DirEntry> GetDirectoryEntries()
     {
         var dirInfo = new DirectoryInfo(Environment.CurrentDirectory);

@@ -10,7 +10,7 @@ namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule;
 
 [CommandDesign(
     description: "Change or view the current working directory",
-    options: ["bookmark", "roaming", "startup", "recent", "documents", "programs", "windows", "profile", "templates", "videos", "pictures", "music"],
+    options: ["roaming", "startup", "recent", "documents", "programs", "windows", "profile", "templates", "videos", "pictures", "music"],
     arguments: ["Path or navigation command such as .. or \\"],
     examples:
     [

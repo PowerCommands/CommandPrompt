@@ -23,7 +23,7 @@ public class HelpCommand(string identity) : ConsoleCommandBase<ApplicationConfig
             })
             .ToList();
 
-        InteractiveFilter<HelpEntry>.Run(entries, EntryFilter, DisplayTable);
+        InteractiveFilter<HelpEntry>.Run(entries, EntryFilter, DisplayTable, OnSelected);
         return Ok();
     }
     private bool EntryFilter(HelpEntry entry, string filter)
@@ -79,6 +79,10 @@ public class HelpCommand(string identity) : ConsoleCommandBase<ApplicationConfig
     {
         public string Identifier { get; init; } = "";
         public string Description { get; init; } = "";
+    }
+    private void OnSelected(HelpEntry entry)
+    {
+        AnsiConsole.MarkupLine($"[grey]You selected:[/] [bold green]{Markup.Escape(entry.Identifier)}[/]");
     }
 }
 
