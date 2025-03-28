@@ -17,22 +17,17 @@ public class MetadataRegistryService : IMetadataRegistry
     public void Register(IConsoleCommand command)
     {
         var metadata = command.GetMetadata();
-        if (metadata != null)
-        {
-            _map[command.Identifier] = metadata;
+        if (metadata == null) return;
+        _map[command.Identifier] = metadata;
 
-            var suggestions = new List<string>();
+        var suggestions = new List<string>();
 
-            if (metadata.Options?.Length > 0)
-                suggestions.AddRange(metadata.Options.Select(opt => $"--{opt}"));
+        if (metadata.Options?.Length > 0)
+            suggestions.AddRange(metadata.Options.Select(opt => $"--{opt}"));
 
-            if (metadata.Suggestions?.Length > 0)
-                suggestions.AddRange(metadata.Suggestions);
-
-            suggestions.Add("--help");
-
-            SuggestionProviderManager.AppendContextBoundSuggestions(command.Identifier, suggestions.ToArray());
-        }
+        if (metadata.Suggestions?.Length > 0)
+            suggestions.AddRange(metadata.Suggestions);
+        SuggestionProviderManager.AppendContextBoundSuggestions(command.Identifier, suggestions.ToArray());
     }
     public CommandMetadata? Get(string identifier) => _map.GetValueOrDefault(identifier);
     public IReadOnlyDictionary<string, CommandMetadata> All => _map;

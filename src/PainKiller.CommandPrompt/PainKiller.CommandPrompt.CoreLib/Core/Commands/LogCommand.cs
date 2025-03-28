@@ -1,16 +1,16 @@
 ﻿using System.Text.RegularExpressions;
+using PainKiller.CommandPrompt.CoreLib.Configuration.DomainObjects;
 using PainKiller.CommandPrompt.CoreLib.Core.BaseClasses;
 using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
 using PainKiller.CommandPrompt.CoreLib.Core.DomainObjects;
 using PainKiller.CommandPrompt.CoreLib.Core.Presentation;
 using PainKiller.CommandPrompt.CoreLib.Metadata.Attributes;
-using PainKiller.PromptKit.Bootstrap;
 using Spectre.Console;
 
-namespace PainKiller.PromptKit.Commands;
+namespace PainKiller.CommandPrompt.CoreLib.Core.Commands;
 
 [CommandDesign("Shows the latest log entries", options: ["hejsan","hoppsan"])]
-public class LogCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
+public class LogCommand(string identifier) : ConsoleCommandBase<ApplicationConfiguration>(identifier)
 {
     public override RunResult Run(ICommandLineInput input)
     {

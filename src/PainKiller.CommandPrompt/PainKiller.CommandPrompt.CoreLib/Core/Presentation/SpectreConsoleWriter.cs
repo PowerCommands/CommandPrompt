@@ -16,7 +16,7 @@ public class SpectreConsoleWriter : IConsoleWriter
         if (writeLog) Information("{Scope}: {Text}", scope, text);
     }
 
-    public void WriteLine(string text, bool writeLog = true, ConsoleColor color = ConsoleColor.Black, [CallerMemberName] string scope = "")
+    public void WriteLine(string text = "", bool writeLog = true, ConsoleColor color = ConsoleColor.Black, [CallerMemberName] string scope = "")
     {
         var escaped = Markup.Escape(text);
         AnsiConsole.MarkupLine($"{WrapColor(escaped, color)}");
