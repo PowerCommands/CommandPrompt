@@ -2,8 +2,8 @@
 using PainKiller.CommandPrompt.CoreLib.Core.BaseClasses;
 using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
 using PainKiller.CommandPrompt.CoreLib.Core.DomainObjects;
+using PainKiller.CommandPrompt.CoreLib.Core.Extensions;
 using PainKiller.CommandPrompt.CoreLib.Core.Presentation;
-using PainKiller.CommandPrompt.CoreLib.Core.Runtime;
 using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Metadata;
 using PainKiller.CommandPrompt.CoreLib.Metadata.Attributes;
@@ -85,15 +85,11 @@ public class HelpCommand(string identity) : ConsoleCommandBase<ApplicationConfig
     private void OnSelected(HelpEntry entry)
     {
         Console.Clear();
-        if (!CommandDiscoveryService.TryGetCommand("describe", out var describeCommand))
+        if (!CommandDiscoveryService.TryGetCommand("describe", out var describeCommand) || describeCommand == null)
         {
             AnsiConsole.MarkupLine($"[red]Could not find 'describe' command.[/]");
             return;
         }
-        var input = new CommandLineInput($"describe {entry.Identifier}", "describe", [entry.Identifier], [], new Dictionary<string, string>());
-        var executor = new CommandExecutor();
-        executor.Execute(describeCommand, input);
+        describeCommand.Execute(arguments: [entry.Identifier]);
     }
-
 }
-
