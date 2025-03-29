@@ -2,7 +2,7 @@
 using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.DomainObjects;
 using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Extensions;
 
-namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
+namespace PainKiller.CommandPrompt.CoreLib.Core.Services;
 public class ZipService : IZipService
 {
     private ZipService() { }

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Contracts;
 
 namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 public class ShellService : IShellService

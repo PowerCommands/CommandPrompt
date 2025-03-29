@@ -3,7 +3,6 @@ using System.Text.RegularExpressions;
 using Spectre.Console;
 
 namespace PainKiller.CommandPrompt.CoreLib.Core.Utils;
-
 public static class MarkdownToSpectreConverter
 {
     public static string Convert(string markdown)
@@ -29,11 +28,11 @@ public static class MarkdownToSpectreConverter
             }
 
             if (line.StartsWith("# "))
-                builder.AppendLine($"[bold underline]{line[2..]}[/]");
+                builder.AppendLine($"[bold underline]{Markup.Escape(line[2..])}[/]");
             else if (line.StartsWith("## "))
-                builder.AppendLine($"[bold]{line[3..]}[/]");
+                builder.AppendLine($"[bold]{Markup.Escape(line[3..])}[/]");
             else if (line.StartsWith("- "))
-                builder.AppendLine($"  • {line[2..]}");
+                builder.AppendLine($"  • {Markup.Escape(line[2..])}");
             else
                 builder.AppendLine(ConvertInline(line));
         }
@@ -43,6 +42,7 @@ public static class MarkdownToSpectreConverter
 
     private static string ConvertInline(string line)
     {
+        line = Markup.Escape(line); // För att undvika oönskade markup-problem
         line = Regex.Replace(line, @"\*\*(.+?)\*\*", "[bold]$1[/]");
         line = Regex.Replace(line, @"\*(.+?)\*", "[italic]$1[/]");
         line = Regex.Replace(line, @"`(.+?)`", "[grey]$1[/]");

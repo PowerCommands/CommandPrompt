@@ -1,4 +1,4 @@
-﻿namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
+﻿namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Contracts;
 public interface IShellService
 {
     void OpenDirectory(string path);

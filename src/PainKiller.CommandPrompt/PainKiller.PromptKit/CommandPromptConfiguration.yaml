@@ -12,6 +12,7 @@ configuration:
     rollingIntervall: Day
     restrictedToMinimumLevel: Debug
   suggestions:
+  - cd ..\..\..\..\PainKiller.CommandPrompt.CoreLib\modules
   - exit
   security:
     secrets:

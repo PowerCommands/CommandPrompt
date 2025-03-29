@@ -3,20 +3,19 @@ using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
 using PainKiller.CommandPrompt.CoreLib.Core.DomainObjects;
 using PainKiller.CommandPrompt.CoreLib.Metadata.Attributes;
 using PainKiller.PromptKit.Bootstrap;
+using PainKiller.PromptKit.Managers;
 
 namespace PainKiller.PromptKit.Commands;
 
 
 [CommandDesign("Just a dumie test Commando", suggestions: ["förlag1","förslag2"])]
-public class TestCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
+public class NewCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
+    
     public override RunResult Run(ICommandLineInput input)
     {
-        Writer.WriteHeaderLine("Test command");
-        Writer.WriteCritical("Critical");
-        Writer.WriteError("Error");
-        Writer.WriteWarning("Warning");
-        Writer.WriteDescription("Config",Configuration.RoamingDirectoryName);
+        var publisherManager = new PublisherManager(Environment.CurrentDirectory);
+        publisherManager.Run();
         return Ok();
     }
 }

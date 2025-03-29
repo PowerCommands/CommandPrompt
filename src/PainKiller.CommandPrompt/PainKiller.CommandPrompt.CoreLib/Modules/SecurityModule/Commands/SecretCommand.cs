@@ -21,14 +21,12 @@ public class SecretCommand(string identifier) : ConsoleCommandBase<ApplicationCo
         if (CheckEncryptConfiguration()) return;
         var setupManager = new SetupSecretManager(Configuration);
         EventBusService.Service.Publish(new SetupRequiredEventArgs("Encryption key needs to be initialized", setupManager.InitSecret));
-
     }
     public override RunResult Run(ICommandLineInput input)
     {
         if (input.HasOption("initialize")) return Init();
         if (input.HasOption("salt")) return Salt();
         if (input.HasOption("create")) return Create($"{input.Quotes.FirstOrDefault()}");
-
         return List();
     }
     private bool CheckEncryptConfiguration()
@@ -51,14 +49,12 @@ public class SecretCommand(string identifier) : ConsoleCommandBase<ApplicationCo
         Console.WriteLine(AESEncryptionManager.GetStrongRandomString());
         return Ok();
     }
-
     private RunResult Init()
     {
         var setup = new SetupSecretManager(Configuration);
         setup.InitSecret();
         return Ok();
     }
-
     private RunResult List()
     {
         foreach (var secret in Configuration.Security.Secrets) ConsoleService.Writer.WriteDescription(secret.Name, $"{string.Join(',', secret.Options.Keys)}");
