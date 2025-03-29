@@ -5,9 +5,10 @@ using static Serilog.Log;
 namespace PainKiller.CommandPrompt.CoreLib.Core.Presentation;
 public class SpectreConsoleWriter : IConsoleWriter
 {
-    public void WriteDescription(string label, string text, bool writeToLog = true, ConsoleColor consoleColor = ConsoleColor.Gray, string scope = "")
+    public void WriteDescription(string label, string text, bool writeToLog = true, Color? consoleColor = null, string scope = "")
     {
-        var panel = new Panel(new Markup($"[blue]{label}[/] : [grey]{text}[/]"))
+        var color = consoleColor ?? Color.Blue;
+        var panel = new Panel(new Markup($"[{color}]{label}[/] : [grey]{text}[/]"))
         {
             Border = BoxBorder.Rounded,
             Padding = new Padding(1, 1),
@@ -19,17 +20,19 @@ public class SpectreConsoleWriter : IConsoleWriter
         if (writeToLog)
             Information($"{label} : {text}", scope);
     }
-    public void Write(string text, bool writeLog = true, ConsoleColor color = ConsoleColor.Black, [CallerMemberName] string scope = "")
+    public void Write(string text, bool writeLog = true, Color? consoleColor = null, [CallerMemberName] string scope = "")
     {
+        var color = consoleColor ?? Color.Black;
         var escaped = Markup.Escape(text);
-        AnsiConsole.Markup($"{WrapColor(escaped, color)}");
+        AnsiConsole.Markup($"{ToDefaultColorIfBlack(escaped, color)}");
         if (writeLog) Information("{Scope}: {Text}", scope, text);
     }
 
-    public void WriteLine(string text = "", bool writeLog = true, ConsoleColor color = ConsoleColor.Black, [CallerMemberName] string scope = "")
+    public void WriteLine(string text = "", bool writeLog = true, Color? consoleColor = null, [CallerMemberName] string scope = "")
     {
+        var color = consoleColor ?? Color.Black;
         var escaped = Markup.Escape(text);
-        AnsiConsole.MarkupLine($"{WrapColor(escaped, color)}");
+        AnsiConsole.MarkupLine($"{ToDefaultColorIfBlack(escaped, color)}");
         if (writeLog) Information("{Scope}: {Text}", scope, text);
     }
 
@@ -82,22 +85,23 @@ public class SpectreConsoleWriter : IConsoleWriter
     }
 
     public void Clear() => AnsiConsole.Clear();
-    public void WriteTable<T>(IEnumerable<T> items, string[]? columnNames = null, ConsoleColor columnColor = ConsoleColor.DarkMagenta)
+    public void WriteTable<T>(IEnumerable<T> items, string[]? columnNames = null, Color? consoleColor = null)
     {
+        var color = consoleColor ?? Color.DarkSlateGray1;
         var table = new Table().Expand().Border(TableBorder.Rounded).BorderColor(Color.DarkSlateGray3);
         var properties = typeof(T).GetProperties();
         if (columnNames != null && columnNames.Length == properties.Length)
         {
             foreach (var columnName in columnNames)
             {
-                table.AddColumn(new TableColumn($"[bold {columnColor}]{columnName}[/]").Centered());
+                table.AddColumn(new TableColumn($"[bold {color}]{columnName}[/]").Centered());
             }
         }
         else
         {
             foreach (var property in properties)
             {
-                table.AddColumn(new TableColumn($"[bold {columnColor}]{property.Name}[/]").Centered());
+                table.AddColumn(new TableColumn($"[bold {color}]{property.Name}[/]").Centered());
             }
         }
         foreach (var item in items)
@@ -112,30 +116,6 @@ public class SpectreConsoleWriter : IConsoleWriter
         }
         AnsiConsole.Write(table);
     }
-    private string WrapColor(string text, ConsoleColor color)
-    {
-        if (color == ConsoleColor.Black) return text;
-        var markup = ToMarkup(color);
-        return string.IsNullOrEmpty(markup) ? text : $"[{markup}]{text}[/]";
-    } private string ToMarkup(ConsoleColor color) => color switch
-    {
-        ConsoleColor.Red => "red",
-        ConsoleColor.Green => "green",
-        ConsoleColor.Yellow => "yellow",
-        ConsoleColor.Blue => "blue",
-        ConsoleColor.Cyan => "cyan",
-        ConsoleColor.Magenta => "magenta",
-        ConsoleColor.White => "white",
-        ConsoleColor.Gray => "grey",
-        ConsoleColor.DarkRed => "brightred",
-        ConsoleColor.DarkGreen => "brightgreen",
-        ConsoleColor.DarkYellow => "brightyellow",
-        ConsoleColor.DarkBlue => "brightblue",
-        ConsoleColor.DarkCyan => "brightcyan",
-        ConsoleColor.DarkMagenta => "magenta",
-        ConsoleColor.DarkGray => "brightwhite",
-        ConsoleColor.Black => "black",
-        _ => string.Empty
-    };
+    private string ToDefaultColorIfBlack(string text, Color color) => color == Color.Black ? text : $"[{color}]{text}[/]";
 }
 
