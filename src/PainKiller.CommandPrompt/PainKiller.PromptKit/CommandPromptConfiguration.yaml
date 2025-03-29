@@ -1,8 +1,11 @@
 version: 1.0
 configuration:
-  name: Prompt Kit
-  prompt: cp>
-  defaultCommand: 'hello'
+  core:
+    name: Prompt Kit
+    version: "1.0"
+    prompt: cp>
+    defaultCommand: 'hello'
+    showLogo: true
   log:
     fileName: commandprompt.log
     filePath: logs

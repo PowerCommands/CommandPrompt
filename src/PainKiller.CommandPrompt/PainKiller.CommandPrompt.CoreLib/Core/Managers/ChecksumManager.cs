@@ -2,7 +2,7 @@
 using System.Text;
 using System.Text.Json;
 
-namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule;
+namespace PainKiller.CommandPrompt.CoreLib.Core.Managers;
 public static class ChecksumManager
 {
     public static string CalculateMd5ForFile(string filename)

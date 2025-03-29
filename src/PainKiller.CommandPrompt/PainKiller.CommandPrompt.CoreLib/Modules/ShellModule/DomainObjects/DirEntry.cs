@@ -1,4 +1,4 @@
-﻿namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule;
+﻿namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.DomainObjects;
 public class DirEntry
 {
     public string Name { get; init; } = "";

@@ -6,10 +6,10 @@ using static Serilog.Log;
 namespace PainKiller.CommandPrompt.CoreLib.Core.Presentation;
 public class SpectreConsoleWriter : IConsoleWriter
 {
-    public void WriteDescription(string label, string text, ConsoleColor consoleColor = ConsoleColor.Gray, string scope = "")
+    public void WriteDescription(string label, string text, bool writeToLog = true, ConsoleColor consoleColor = ConsoleColor.Gray, string scope = "")
     {
-        WriteLine(label, writeLog: true, color: ConsoleColor.Blue);
-        WriteLine(text, writeLog: true, color: consoleColor);
+        WriteLine(label, writeLog: writeToLog, color: ConsoleColor.Blue);
+        WriteLine(text, writeLog: writeToLog, color: consoleColor);
     }
     public void Write(string text, bool writeLog = true, ConsoleColor color = ConsoleColor.Black, [CallerMemberName] string scope = "")
     {

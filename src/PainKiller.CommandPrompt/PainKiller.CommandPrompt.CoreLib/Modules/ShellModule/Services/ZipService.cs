@@ -1,6 +1,9 @@
 ﻿using System.IO.Compression;
+using PainKiller.CommandPrompt.CoreLib.Core.DomainObjects;
+using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.DomainObjects;
+using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Extensions;
 
-namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule;
+namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 public class ZipService : IZipService
 {
     private ZipService() { }

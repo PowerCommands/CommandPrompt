@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using static System.DateTime;
 
-namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule;
+namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Extensions;
 public static class ShellModuleExtensions
 {
     public static string FormatFileTimestamp(this string prefix) => $"{prefix}{Now.Year}{Now.Month}{Now.Day}{Now.Hour}{Now.Minute}";
@@ -66,7 +66,7 @@ public static class ShellModuleExtensions
     }
     public static string GetDisplayTimeSinceLastUpdate(this DateTime lastUpdated)
     {
-        var timeDifference = DateTime.Now - lastUpdated;
+        var timeDifference = Now - lastUpdated;
 
         if (timeDifference.TotalSeconds < 60) return $"{(int)timeDifference.TotalSeconds} seconds ago";
         if (timeDifference.TotalMinutes < 60) return $"{(int)timeDifference.TotalMinutes} minutes ago";

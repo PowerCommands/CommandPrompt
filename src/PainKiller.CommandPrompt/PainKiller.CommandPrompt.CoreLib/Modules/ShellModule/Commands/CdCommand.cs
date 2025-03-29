@@ -5,10 +5,12 @@ using PainKiller.CommandPrompt.CoreLib.Core.DomainObjects;
 using PainKiller.CommandPrompt.CoreLib.Core.Events;
 using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Metadata.Attributes;
+using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.DomainObjects;
+using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Extensions;
 using PainKiller.ReadLine.Managers;
 using Spectre.Console;
 
-namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule;
+namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Commands;
 
 [CommandDesign(
     description: "Change or view the current working directory",

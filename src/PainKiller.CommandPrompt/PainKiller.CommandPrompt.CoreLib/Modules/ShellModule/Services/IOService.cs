@@ -1,4 +1,4 @@
-﻿namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule;
+﻿namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 public static class IOService
 {
     public static void CopyFolder(string sourceFolder, string destFolder)

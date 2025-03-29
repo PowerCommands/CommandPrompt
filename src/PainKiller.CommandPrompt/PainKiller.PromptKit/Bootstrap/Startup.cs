@@ -18,7 +18,8 @@ public static class Startup
     {
         var config = ReadConfiguration();
         ILogger<Program> logger = LoggerProvider.CreateLogger<Program>();
-        logger.LogInformation($"{config.Name} started, configuration read and logging initialized.");
+        logger.LogInformation($"{config.Core.Name} started, configuration read and logging initialized.");
+        ShowLogo(config.Core);
         var commands = CommandDiscoveryService.DiscoverCommands(config);
         var suggestions = new List<string>();
         suggestions.AddRange(commands.Select(c => c.Identifier).ToArray());
@@ -28,7 +29,7 @@ public static class Startup
         EventBusService.Service.Publish(new WorkingDirectoryChangedEventArgs(Environment.CurrentDirectory));
         logger.LogDebug($"{nameof(EventBusService)} publish: {nameof(WorkingDirectoryChangedEventArgs)} {Environment.CurrentDirectory}");
 
-        return new CommandLoop(new CommandRuntime(commands), new ReadLineInputReader(), config);
+        return new CommandLoop(new CommandRuntime(commands), new ReadLineInputReader(), config.Core);
     }
     private static CommandPromptConfiguration ReadConfiguration()
     {
@@ -52,5 +53,12 @@ public static class Startup
         var serilogLogger = loggerConfig.CreateLogger();
         var loggerFactory = new SerilogLoggerFactory(serilogLogger);
         LoggerProvider.Configure(loggerFactory);
+    }
+    private static void ShowLogo(CoreConfiguration config)
+    {
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
+        if(!config.ShowLogo) return;
+        ConsoleService.WriteCenteredText($"***** {config.Name} {config.Version} *****");
+        Console.WriteLine();
     }
 }

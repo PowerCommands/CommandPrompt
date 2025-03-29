@@ -32,7 +32,7 @@ public class LogCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
             .Select(ParseLogLine)
             .Select(parsed => new LogEntry { Timestamp = parsed.Timestamp, Level = parsed.Level, Message = parsed.Message }).ToList();
         logEntries.Reverse();
-        Console.Clear();
+        Writer.Clear();
         bool LogEntryFilter(LogEntry entry, string filter) => entry.Timestamp.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0 || entry.Level.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0 || entry.Message.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0;
         InteractiveFilter<LogEntry>.Run(logEntries, LogEntryFilter, DisplayTable);
         return Ok();

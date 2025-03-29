@@ -1,7 +1,7 @@
 ﻿namespace PainKiller.CommandPrompt.CoreLib.Core.Contracts;
 public interface IConsoleWriter
 {
-    void WriteDescription(string label, string text, ConsoleColor consoleColor = ConsoleColor.Black, string scope = "");
+    void WriteDescription(string label, string text, bool writeToLog = true, ConsoleColor consoleColor = ConsoleColor.Black, string scope = "");
     void Write(string text, bool writeLog = true, ConsoleColor consoleColor = ConsoleColor.Black ,string scope = "");
     void WriteLine(string text = "", bool writeLog = true, ConsoleColor consoleColor = ConsoleColor.Black, string scope = "");
     void WriteSuccessLine(string text, bool writeLog = true, string scope = "");

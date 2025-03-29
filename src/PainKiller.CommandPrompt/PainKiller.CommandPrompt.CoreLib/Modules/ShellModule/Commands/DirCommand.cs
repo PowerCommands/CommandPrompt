@@ -5,10 +5,13 @@ using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
 using PainKiller.CommandPrompt.CoreLib.Core.DomainObjects;
 using PainKiller.CommandPrompt.CoreLib.Core.Presentation;
 using PainKiller.CommandPrompt.CoreLib.Metadata.Attributes;
+using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.DomainObjects;
+using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Extensions;
+using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 using PainKiller.ReadLine.Managers;
 using Spectre.Console;
 
-namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule;
+namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Commands;
 
 [CommandDesign(
     description: "List the content of the current directory or a target directory, optionally open with File Explorer or show drive info.\n" +

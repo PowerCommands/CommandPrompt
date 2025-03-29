@@ -6,9 +6,11 @@ using PainKiller.CommandPrompt.CoreLib.Core.Events;
 using PainKiller.CommandPrompt.CoreLib.Core.Presentation;
 using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Metadata.Attributes;
+using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Extensions;
+using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 using PainKiller.ReadLine.Managers;
 
-namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule;
+namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Commands;
 
 [CommandDesign(
     description: "Handle basic file actions such as read, write, delete, copy, move\n" +
@@ -116,7 +118,7 @@ public class FileCommand : ConsoleCommandBase<ApplicationConfiguration>
         if (!File.Exists(path)) return Nok($"{path} does not exist!");
 
         var fileInfo = new FileInfo(path);
-        Writer.WriteTable([new {Name = fileInfo.Name, Path = fileInfo.FullName, Size = fileInfo.Length.GetDisplayFormattedFileSize(), Created = fileInfo.CreationTime.GetDisplayTimeSinceLastUpdate(), Modified = fileInfo.LastAccessTime.GetDisplayTimeSinceLastUpdate()}]);
+        Writer.WriteTable([new {fileInfo.Name, Path = fileInfo.FullName, Size = fileInfo.Length.GetDisplayFormattedFileSize(), Created = fileInfo.CreationTime.GetDisplayTimeSinceLastUpdate(), Modified = fileInfo.LastAccessTime.GetDisplayTimeSinceLastUpdate()}]);
         return Ok();
     }
     private bool HasOption(ICommandLineInput input, string option)

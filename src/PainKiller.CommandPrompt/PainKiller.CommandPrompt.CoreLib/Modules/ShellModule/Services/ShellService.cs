@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule;
+namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 public class ShellService : IShellService
 {
     private static readonly Lazy<IShellService> Instance = new(() => new ShellService());

@@ -1,4 +1,4 @@
-﻿namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule;
+﻿namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.DomainObjects;
 public class ZipResult
 {
     public int FileCount { get; set; }

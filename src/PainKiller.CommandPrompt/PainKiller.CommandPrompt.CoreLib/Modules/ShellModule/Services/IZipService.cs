@@ -1,4 +1,6 @@
-﻿namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule;
+﻿using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.DomainObjects;
+
+namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 public interface IZipService
 {
     ZipResult ArchiveFilesInDirectory(string directoryPath, string archiveName, bool useTimestampSuffix = false, string filter = "*", string outputDirectory = "");

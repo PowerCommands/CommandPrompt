@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
-using PainKiller.CommandPrompt.CoreLib.Configuration.Contracts;
+using PainKiller.CommandPrompt.CoreLib.Configuration.DomainObjects;
 using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Logging.Services;
 using PainKiller.ReadLine.Contracts;
 
 namespace PainKiller.CommandPrompt.CoreLib.Core.Runtime;
 
-public class CommandLoop(CommandRuntime runtime, IUserInputReader inputReader, ICoreConfiguration config)
+public class CommandLoop(CommandRuntime runtime, IUserInputReader inputReader, CoreConfiguration config)
 {
     private readonly ILogger<CommandLoop> _logger = LoggerProvider.CreateLogger<CommandLoop>();
     public void Start()
