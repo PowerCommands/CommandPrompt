@@ -1,4 +1,5 @@
-﻿using PainKiller.CommandPrompt.CoreLib.Core.Utils;
+﻿using PainKiller.CommandPrompt.CoreLib.Core.Services;
+using PainKiller.CommandPrompt.CoreLib.Core.Utils;
 using Spectre.Console;
 
 namespace PainKiller.PromptKit.Managers;
@@ -29,7 +30,6 @@ public class PublisherManager(string modulesDirectory)
                 }
             }
         }
-
         return modules;
     }
     private void DisplayModuleSelection(List<(string Name, string Description)> modules)
@@ -43,7 +43,8 @@ public class PublisherManager(string modulesDirectory)
                 .InstructionsText("[grey](Press [blue]<space>[/] to toggle a module, [green]<enter>[/] to accept)[/]")
                 .AddChoices(choices)
                 .NotRequired());
-        AnsiConsole.MarkupLine($"[green]Selected modules:[/] {string.Join(", ", selectedModules)}");
+
+        ConsoleService.Writer.WriteDescription("Selected modules", $"{string.Join(", ", selectedModules.Select(s => s.Split(' ').First()))}");
     }
 }
     

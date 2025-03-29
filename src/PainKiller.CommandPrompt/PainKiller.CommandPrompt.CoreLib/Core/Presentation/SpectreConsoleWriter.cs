@@ -7,8 +7,17 @@ public class SpectreConsoleWriter : IConsoleWriter
 {
     public void WriteDescription(string label, string text, bool writeToLog = true, ConsoleColor consoleColor = ConsoleColor.Gray, string scope = "")
     {
-        WriteLine(label, writeLog: writeToLog, color: ConsoleColor.Blue);
-        WriteLine(text, writeLog: writeToLog, color: consoleColor);
+        var panel = new Panel(new Markup($"[blue]{label}[/] : [grey]{text}[/]"))
+        {
+            Border = BoxBorder.Rounded,
+            Padding = new Padding(1, 1),
+            Header = new PanelHeader("[green]Description[/]", Justify.Center)
+        };
+
+        AnsiConsole.Write(panel);
+
+        if (writeToLog)
+            Information($"{label} : {text}", scope);
     }
     public void Write(string text, bool writeLog = true, ConsoleColor color = ConsoleColor.Black, [CallerMemberName] string scope = "")
     {
@@ -73,9 +82,9 @@ public class SpectreConsoleWriter : IConsoleWriter
     }
 
     public void Clear() => AnsiConsole.Clear();
-    public void WriteTable<T>(IEnumerable<T> items, string[]? columnNames = null, ConsoleColor columnColor = ConsoleColor.Cyan)
+    public void WriteTable<T>(IEnumerable<T> items, string[]? columnNames = null, ConsoleColor columnColor = ConsoleColor.DarkMagenta)
     {
-        var table = new Table().Expand().Border(TableBorder.Rounded);
+        var table = new Table().Expand().Border(TableBorder.Rounded).BorderColor(Color.DarkSlateGray3);
         var properties = typeof(T).GetProperties();
         if (columnNames != null && columnNames.Length == properties.Length)
         {
@@ -108,8 +117,7 @@ public class SpectreConsoleWriter : IConsoleWriter
         if (color == ConsoleColor.Black) return text;
         var markup = ToMarkup(color);
         return string.IsNullOrEmpty(markup) ? text : $"[{markup}]{text}[/]";
-    }
-    private string ToMarkup(ConsoleColor color) => color switch
+    } private string ToMarkup(ConsoleColor color) => color switch
     {
         ConsoleColor.Red => "red",
         ConsoleColor.Green => "green",

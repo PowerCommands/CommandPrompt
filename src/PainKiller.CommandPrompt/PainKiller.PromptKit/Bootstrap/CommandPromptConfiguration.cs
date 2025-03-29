@@ -2,5 +2,5 @@
 namespace PainKiller.PromptKit.Bootstrap;
 public class CommandPromptConfiguration : ApplicationConfiguration
 {
-    //Custom configuration here
+    public PromptKitConfiguration PromptKit { get; set; } = new();
 }

@@ -20,7 +20,7 @@ public class DescribeCommand(string identifier) : ConsoleCommandBase<Application
         var attr = meta;
 
         AnsiConsole.WriteLine();
-        AnsiConsole.MarkupLine($"[bold underline]Command:[/] [green]{meta.Identifier}[/]");
+        AnsiConsole.MarkupLine($"[bold underline]Command:[/] [blue]{meta.Identifier}[/]");
         AnsiConsole.MarkupLine($"[grey]{attr.Description}[/]");
 
         var table = new Table()

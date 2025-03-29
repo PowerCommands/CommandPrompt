@@ -188,7 +188,7 @@ public class DirCommand(string identifier) : ConsoleCommandBase<ApplicationConfi
             var entry = list[i];
             var isSelected = i == selectedIndex;
 
-            var baseColor = entry.Type == "<DIR>" ? "yellow" : "white";
+            var baseColor = entry.Type == "<DIR>" ? "Blue" : "DarkMagenta";
             var prefix = isSelected ? "[bold cyan]>[/] " : "  ";
             var name = isSelected
                 ? $"[bold cyan]{Markup.Escape(entry.Name)}[/]"

@@ -10,7 +10,7 @@ public interface IConsoleWriter
     void WriteCritical(string text, string scope = "");
     void WriteHeaderLine(string text, bool writeLog = true, string scope = "");
     void WriteUrl(string text, bool writeLog = true, string scope = "");
-    void WriteTable<T>(IEnumerable<T> items, string[]? columnNames = null, ConsoleColor columnColor = ConsoleColor.Cyan);
+    void WriteTable<T>(IEnumerable<T> items, string[]? columnNames = null, ConsoleColor columnColor = ConsoleColor.Magenta);
     void WritePrompt(string prompt);
     void Clear();
 }

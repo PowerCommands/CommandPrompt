@@ -41,7 +41,7 @@ public class HelpCommand(string identity) : ConsoleCommandBase<ApplicationConfig
         var table = new Table()
             .Expand()
             .RoundedBorder()
-            .AddColumn(new TableColumn("[bold yellow]Command[/]").LeftAligned())
+            .AddColumn(new TableColumn("[bold magenta]Command[/]").LeftAligned())
             .AddColumn(new TableColumn("[bold]Description[/]").LeftAligned());
 
         for (int i = 0; i < list.Count; i++)
@@ -52,7 +52,7 @@ public class HelpCommand(string identity) : ConsoleCommandBase<ApplicationConfig
             var prefix = isSelected ? "[bold cyan]>[/] " : "  ";
             var command = isSelected
                 ? $"[bold cyan]{Markup.Escape(entry.Identifier)}[/]"
-                : $"[green]{Markup.Escape(entry.Identifier)}[/]";
+                : $"[darkmagenta]{Markup.Escape(entry.Identifier)}[/]";
 
             var description = isSelected
                 ? $"[italic]{Markup.Escape(entry.Description)}[/]"

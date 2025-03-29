@@ -19,3 +19,5 @@ configuration:
     - name: CommandPrompt_encryptionManager
       options:
         target: User
+  promptKit:
+    outputPath: output

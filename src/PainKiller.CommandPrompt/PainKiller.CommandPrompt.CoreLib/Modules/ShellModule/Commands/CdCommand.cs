@@ -125,7 +125,7 @@ public class CdCommand : ConsoleCommandBase<ApplicationConfiguration>
 
         foreach (var entry in list)
         {
-            var color = entry.Type == "<DIR>" ? "yellow" : "white";
+            var color = entry.Type == "<DIR>" ? "darkmagenta" : "white";
             table.AddRow(
                 new Markup($"[{color}]{Markup.Escape(entry.Name)}[/]"),
                 new Markup($"[blue]{Markup.Escape(entry.Type)}[/]"),
