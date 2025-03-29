@@ -1,6 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
-using PainKiller.CommandPrompt.CoreLib.Core.DomainObjects;
 using PainKiller.CommandPrompt.CoreLib.Logging.Services;
 
 namespace PainKiller.CommandPrompt.CoreLib.Core.Runtime;

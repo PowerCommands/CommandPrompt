@@ -1,6 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
-using PainKiller.CommandPrompt.CoreLib.Core.DomainObjects;
 using PainKiller.CommandPrompt.CoreLib.Core.Runtime;
 using PainKiller.CommandPrompt.CoreLib.Logging.Services;
 
@@ -53,4 +51,6 @@ public static class ConsoleCommandExtensions
 
         return string.Join(" ", parts);
     }
+    public static bool HasOption(this ICommandLineInput input, string option) => input.Options.ContainsKey(option.ToLower());
+    public static string GetOptionValue(this ICommandLineInput input, string option) => input.Options.TryGetValue(option.ToLower(), out var value) ? value : string.Empty;
 }

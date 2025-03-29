@@ -13,3 +13,8 @@ configuration:
     restrictedToMinimumLevel: Debug
   suggestions:
   - exit
+  security:
+    secrets:
+    - name: CommandPrompt_encryptionManager
+      options:
+        target: User

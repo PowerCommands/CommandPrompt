@@ -1,5 +1,4 @@
-﻿using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
-using Spectre.Console;
+﻿using Spectre.Console;
 using System.Runtime.CompilerServices;
 using static Serilog.Log;
 

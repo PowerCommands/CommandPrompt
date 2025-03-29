@@ -1,5 +1,4 @@
 ﻿using PainKiller.CommandPrompt.CoreLib.Configuration.Contracts;
-using PainKiller.CommandPrompt.CoreLib.Configuration.DomainObjects;
 using PainKiller.CommandPrompt.CoreLib.Configuration.Extensions;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -44,5 +43,35 @@ public class ConfigurationService : IConfigurationService
             var yamlData = serializer.Serialize(yamlContainer);
             File.WriteAllText(fileName, yamlData);
             return fileName;
+        }
+
+        public void Create<T>(T configuration, string fullFileName) where T : new()
+        {
+            if (configuration is null) return;
+            var yamlContainer = new YamlContainer<T> { Configuration = configuration, Version = "1.0" };
+            var serializer = new SerializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .Build();
+            var yamlData = serializer.Serialize(yamlContainer);
+            File.WriteAllText(fullFileName, yamlData);
+        }
+
+        /// <summary>
+        /// Return a configuration file stored in the AppData/Roaming/PowerCommands directory, if the file does not exist it will be created.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="defaultIfMissing"></param>
+        /// <param name="inputFileName"></param>
+        /// <returns></returns>
+        public YamlContainer<T> GetAppDataConfiguration<T>(string inputFileName = "") where T : new()
+        {
+            var directory = $"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\\{nameof(CommandPrompt)}";
+            var fileName = Path.Combine(directory, inputFileName);
+            if (!File.Exists(fileName)) return new YamlContainer<T>();
+            var yamlContent = File.ReadAllText(fileName);
+            var deserializer = new DeserializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .Build();
+            return deserializer.Deserialize<YamlContainer<T>>(yamlContent);
         }
     }

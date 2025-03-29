@@ -1,10 +1,5 @@
-﻿using PainKiller.CommandPrompt.CoreLib.Configuration.DomainObjects;
-using PainKiller.CommandPrompt.CoreLib.Core.BaseClasses;
-using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
-using PainKiller.CommandPrompt.CoreLib.Core.DomainObjects;
+﻿using PainKiller.CommandPrompt.CoreLib.Core.BaseClasses;
 using PainKiller.CommandPrompt.CoreLib.Core.Extensions;
-using PainKiller.CommandPrompt.CoreLib.Core.Presentation;
-using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Metadata;
 using PainKiller.CommandPrompt.CoreLib.Metadata.Attributes;
 using Spectre.Console;

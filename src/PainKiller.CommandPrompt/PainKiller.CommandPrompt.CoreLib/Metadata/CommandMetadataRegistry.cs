@@ -1,5 +1,4 @@
-﻿using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
-using PainKiller.CommandPrompt.CoreLib.Metadata.Contracts;
+﻿using PainKiller.CommandPrompt.CoreLib.Metadata.Contracts;
 using PainKiller.CommandPrompt.CoreLib.Metadata.DomainObjects;
 using PainKiller.CommandPrompt.CoreLib.Metadata.Extensions;
 using PainKiller.ReadLine.Managers;

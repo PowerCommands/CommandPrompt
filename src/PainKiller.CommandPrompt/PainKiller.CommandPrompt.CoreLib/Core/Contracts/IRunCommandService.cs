@@ -1,6 +1,4 @@
-﻿using PainKiller.CommandPrompt.CoreLib.Core.DomainObjects;
-
-namespace PainKiller.CommandPrompt.CoreLib.Core.Contracts;
+﻿namespace PainKiller.CommandPrompt.CoreLib.Core.Contracts;
 
 public interface IRunCommandService
 {

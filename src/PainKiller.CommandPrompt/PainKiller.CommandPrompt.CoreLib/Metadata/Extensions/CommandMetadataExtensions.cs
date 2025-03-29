@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
 using PainKiller.CommandPrompt.CoreLib.Metadata.Attributes;
 using PainKiller.CommandPrompt.CoreLib.Metadata.DomainObjects;
 

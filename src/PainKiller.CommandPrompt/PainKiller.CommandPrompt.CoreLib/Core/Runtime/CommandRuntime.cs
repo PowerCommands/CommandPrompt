@@ -1,7 +1,4 @@
-﻿using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
-using PainKiller.CommandPrompt.CoreLib.Core.DomainObjects;
-
-namespace PainKiller.CommandPrompt.CoreLib.Core.Runtime;
+﻿namespace PainKiller.CommandPrompt.CoreLib.Core.Runtime;
 
 public class CommandRuntime
 {

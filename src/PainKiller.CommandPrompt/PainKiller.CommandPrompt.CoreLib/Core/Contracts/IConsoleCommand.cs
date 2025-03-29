@@ -6,4 +6,5 @@ public interface IConsoleCommand
 {
     string Identifier { get; }
     RunResult Run(ICommandLineInput input);
+    void OnInitialized();
 }

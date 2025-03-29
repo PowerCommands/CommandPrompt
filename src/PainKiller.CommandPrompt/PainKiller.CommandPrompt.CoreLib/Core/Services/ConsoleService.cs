@@ -1,7 +1,4 @@
-﻿using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
-using PainKiller.CommandPrompt.CoreLib.Core.Presentation;
-
-namespace PainKiller.CommandPrompt.CoreLib.Core.Services;
+﻿namespace PainKiller.CommandPrompt.CoreLib.Core.Services;
 
 public static class ConsoleService
 {

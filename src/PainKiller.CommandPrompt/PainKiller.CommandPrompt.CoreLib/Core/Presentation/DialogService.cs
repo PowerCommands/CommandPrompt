@@ -22,4 +22,28 @@ public static class DialogService
         var result = AnsiConsole.Prompt(prompt);
         return result == "Yes";
     }
+    public static string GetSecret(string artifact = "password")
+    {
+        string password;
+        while (true)
+        {
+            password = AnsiConsole.Prompt(
+                new TextPrompt<string>($"Enter your {artifact}:")
+                    .PromptStyle("yellow")
+                    .Secret());
+
+            var confirmPassword = AnsiConsole.Prompt(
+                new TextPrompt<string>($"Confirm your {artifact}:")
+                    .PromptStyle("yellow")
+                    .Secret());
+
+            if (password == confirmPassword)
+            {
+                AnsiConsole.MarkupLine($"[green]{artifact} confirmed![/]");
+                break;
+            }
+            AnsiConsole.MarkupLine($"[red]{artifact} do not match. Please try again.[/]");
+        }
+        return password;
+    }
 }

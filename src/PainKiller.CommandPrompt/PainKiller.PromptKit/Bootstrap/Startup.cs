@@ -17,15 +17,28 @@ public static class Startup
     public static CommandLoop Build()
     {
         var config = ReadConfiguration();
-        ILogger<Program> logger = LoggerProvider.CreateLogger<Program>();
+        
+        var logger = LoggerProvider.CreateLogger<Program>();
         logger.LogInformation($"{config.Core.Name} started, configuration read and logging initialized.");
+        
         ShowLogo(config.Core);
+
+        EventBusService.Service.Subscribe<SetupRequiredEventArgs>(args =>
+        {
+            logger.LogInformation($"Setup required: {args.Description}");
+            args.SetupAction?.Invoke();
+        });
+
         var commands = CommandDiscoveryService.DiscoverCommands(config);
+        foreach (var consoleCommand in commands) consoleCommand.OnInitialized();
+        
         var suggestions = new List<string>();
         suggestions.AddRange(commands.Select(c => c.Identifier).ToArray());
         suggestions.AddRange(config.Suggestions);
         ReadLineService.InitializeAutoComplete([], suggestions.ToArray());
+        
         logger.LogDebug($"Suggestions: {string.Join(',', suggestions)}");
+        
         EventBusService.Service.Publish(new WorkingDirectoryChangedEventArgs(Environment.CurrentDirectory));
         logger.LogDebug($"{nameof(EventBusService)} publish: {nameof(WorkingDirectoryChangedEventArgs)} {Environment.CurrentDirectory}");
 

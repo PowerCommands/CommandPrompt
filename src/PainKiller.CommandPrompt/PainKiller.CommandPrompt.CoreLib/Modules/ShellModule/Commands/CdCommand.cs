@@ -1,9 +1,5 @@
-﻿using PainKiller.CommandPrompt.CoreLib.Configuration.DomainObjects;
-using PainKiller.CommandPrompt.CoreLib.Core.BaseClasses;
-using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
-using PainKiller.CommandPrompt.CoreLib.Core.DomainObjects;
+﻿using PainKiller.CommandPrompt.CoreLib.Core.BaseClasses;
 using PainKiller.CommandPrompt.CoreLib.Core.Events;
-using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Metadata.Attributes;
 using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.DomainObjects;
 using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Extensions;
