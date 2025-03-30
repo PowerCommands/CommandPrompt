@@ -10,7 +10,7 @@ namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Commands;
 
 [CommandDesign(
     description: "Change or view the current working directory",
-    options: ["roaming", "startup", "recent", "documents", "programs", "windows", "profile", "templates", "videos", "pictures", "music"],
+    options: ["roaming", "startup", "recent", "documents", "programs", "windows", "profile", "templates", "videos", "pictures", "music","modules","no-output"],
     arguments: ["Path or navigation command such as .. or \\"],
     examples:
     [
@@ -58,20 +58,24 @@ public class CdCommand : ConsoleCommandBase<ApplicationConfiguration>
             path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         else if (lowerArgs.Contains("programs"))
             path = Environment.GetFolderPath(Environment.SpecialFolder.Programs);
-
+        else if (lowerArgs.Contains("modules"))
+        {
+            Environment.CurrentDirectory = AppContext.BaseDirectory;
+            Environment.CurrentDirectory = "..\\..\\..\\..\\PainKiller.CommandPrompt.CoreLib\\modules";
+            path = Environment.CurrentDirectory;
+        }
         path = path.Trim();
-
-        if (Directory.Exists(path))
+        if (Directory.Exists(Environment.CurrentDirectory))
         {
             Environment.CurrentDirectory = Path.GetFullPath(path);
             EventBusService.Service.Publish(new WorkingDirectoryChangedEventArgs(Environment.CurrentDirectory));
         }
         else
         {
-            AnsiConsole.MarkupLine($"[red][cd][/]: Path not found: {Markup.Escape(path)}");
+            AnsiConsole.MarkupLine($"[red][/]: Path not found: {Markup.Escape(path)}");
             return Nok($"Path not found: {path}");
         }
-
+        if (lowerArgs.Contains("no-output")) return Ok("no output");
         ShowCurrentDirectoryContent();
         return Ok();
     }

@@ -1,20 +1,28 @@
-﻿using PainKiller.CommandPrompt.CoreLib.Core.Services;
+﻿using Microsoft.Extensions.Logging;
+using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Core.Utils;
+using PainKiller.CommandPrompt.CoreLib.Logging.Services;
 using Spectre.Console;
 
 namespace PainKiller.PromptKit.Managers;
 
-public class PublisherManager(string modulesDirectory)
+public class TemplateManager(string projectName, string modulesDirectory, string outputDirectory)
 {
+    private readonly ILogger<TemplateManager> _logger = LoggerProvider.CreateLogger<TemplateManager>();
     public void Run()
     {
         var modules = DiscoverModules();
+        _logger.LogDebug($"Modules found: {string.Join(',', modules)}");
         DisplayModuleSelection(modules);
+        var copyManager = new CopyManager();
+        var projectOutputDirectory = Path.Combine(outputDirectory, projectName);
+        if(Directory.Exists(projectOutputDirectory)) Directory.Delete(projectOutputDirectory, recursive: true);
+        Directory.CreateDirectory(projectOutputDirectory);
+        copyManager.CopyCoreProject(modulesDirectory, projectOutputDirectory, modules.Select(m => m.Name).ToList());
     }
     private List<(string Name, string Description)> DiscoverModules()
     {
         var modules = new List<(string Name, string Description)>();
-
         foreach (var dir in Directory.GetDirectories(modulesDirectory))
         {
             var moduleName = Path.GetFileName(dir);

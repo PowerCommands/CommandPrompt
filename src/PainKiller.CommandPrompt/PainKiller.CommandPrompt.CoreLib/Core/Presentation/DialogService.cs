@@ -29,12 +29,12 @@ public static class DialogService
         {
             password = AnsiConsole.Prompt(
                 new TextPrompt<string>($"Enter your {artifact}:")
-                    .PromptStyle("yellow")
+                    .PromptStyle("Magenta")
                     .Secret());
 
             var confirmPassword = AnsiConsole.Prompt(
                 new TextPrompt<string>($"Confirm your {artifact}:")
-                    .PromptStyle("yellow")
+                    .PromptStyle("Magenta")
                     .Secret());
 
             if (password == confirmPassword)
@@ -45,5 +45,46 @@ public static class DialogService
             AnsiConsole.MarkupLine($"[red]{artifact} do not match. Please try again.[/]");
         }
         return password;
+    }
+    public static string QuestionAnswerDialog(string question)
+    {
+        return AnsiConsole.Prompt(
+            new TextPrompt<string>(question)
+                .PromptStyle("Magenta")
+                .ValidationErrorMessage("[red]Invalid input[/]")
+                .Validate(answer => 
+                    !string.IsNullOrWhiteSpace(answer) ? ValidationResult.Success() : ValidationResult.Error("[red]Input cannot be empty[/]")));
+    }
+    public static string PathDialog(string prompt = "Enter output path:")
+    {
+        while (true)
+        {
+            AnsiConsole.MarkupLine($"[blue]Current working directory: [magenta]{Environment.CurrentDirectory}[/][/]");
+        
+            var input = AnsiConsole.Prompt(
+                new TextPrompt<string>(prompt)
+                    .PromptStyle("Magenta")
+                    .ValidationErrorMessage("[red]Invalid path[/]")
+                    .Validate(input =>
+                    {
+                        try
+                        {
+                            var fullPath = Path.GetFullPath(input, Environment.CurrentDirectory);
+                            return Directory.Exists(Path.GetDirectoryName(fullPath))
+                                ? ValidationResult.Success()
+                                : ValidationResult.Error("[red]Directory does not exist[/]");
+                        }
+                        catch
+                        {
+                            return ValidationResult.Error("[red]Invalid path format[/]");
+                        }
+                    }));
+
+            // Om relativ sökväg, omvandla till absolut baserat på den aktuella arbetskatalogen
+            var resolvedPath = Path.GetFullPath(input, Environment.CurrentDirectory);
+
+            if (AnsiConsole.Confirm($"You entered: [magenta]{resolvedPath}[/]. Is this correct?"))
+                return resolvedPath;
+        }
     }
 }
