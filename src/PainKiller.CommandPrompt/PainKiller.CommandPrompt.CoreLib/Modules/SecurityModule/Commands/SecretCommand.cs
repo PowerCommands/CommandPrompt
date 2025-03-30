@@ -57,13 +57,13 @@ public class SecretCommand(string identifier) : ConsoleCommandBase<ApplicationCo
     }
     private RunResult List()
     {
-        foreach (var secret in Configuration.Security.Secrets) ConsoleService.Writer.WriteDescription(secret.Name, $"{string.Join(',', secret.Options.Keys)}");
+        foreach (var secret in Configuration.Core.Modules.Security.Secrets) ConsoleService.Writer.WriteDescription(secret.Name, $"{string.Join(',', secret.Options.Keys)}");
         return Ok();
     }
     private RunResult Create(string name)
     {
         if (string.IsNullOrEmpty(name)) return Nok("No name provided, secret can´t be created");
-        Configuration.Security.CreateSecret(name);
+        Configuration.Core.Modules.Security.CreateSecret(name);
         return Ok();
     }
 }

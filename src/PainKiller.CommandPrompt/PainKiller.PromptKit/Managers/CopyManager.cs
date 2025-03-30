@@ -7,13 +7,14 @@ namespace PainKiller.PromptKit.Managers;
 public class CopyManager
 {
     private readonly ILogger<CopyManager> _logger = LoggerProvider.CreateLogger<CopyManager>();
-    public void CopyCoreProject(string modulesDirectory, string outputDirectory, List<string> selectedModules)
+    public void CopyCoreProject(string modulesDirectory, string outputDirectory, List<string> selectedModules, List<string> ignores)
     {
         var coreProjectDirectory = Directory.GetParent(modulesDirectory)?.FullName;
 
         _logger.LogDebug($"Copy files from root directory {coreProjectDirectory}");
         foreach (var file in Directory.GetFiles(coreProjectDirectory!))
         {
+            if (ignores.Contains(file, StringComparer.OrdinalIgnoreCase)) continue;
             var destFile = Path.Combine(outputDirectory, Path.GetFileName(file));
             File.Copy(file, destFile, overwrite: true);
             _logger.LogDebug($"File {file} copied to {destFile}");
@@ -22,8 +23,7 @@ public class CopyManager
         foreach (var directory in Directory.GetDirectories(coreProjectDirectory))
         {
             var dirName = Path.GetFileName(directory);
-            if (dirName.Equals("bin", StringComparison.OrdinalIgnoreCase) || dirName.Equals("obj", StringComparison.OrdinalIgnoreCase)) continue;
-
+            if (ignores.Contains(dirName, StringComparer.OrdinalIgnoreCase)) continue;
             _logger.LogDebug("Handle Modules directory");
             if (dirName.Equals("Modules", StringComparison.OrdinalIgnoreCase))
             {

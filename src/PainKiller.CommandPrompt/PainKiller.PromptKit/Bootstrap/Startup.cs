@@ -33,7 +33,7 @@ public static class Startup
         foreach (var consoleCommand in commands) consoleCommand.OnInitialized();
         
         var suggestions = new List<string>();
-        suggestions.AddRange(config.Suggestions);
+        suggestions.AddRange(config.Core.Suggestions);
         suggestions.AddRange(commands.Select(c => c.Identifier).ToArray());
         ReadLineService.InitializeAutoComplete([], suggestions.ToArray());
         

@@ -20,7 +20,7 @@ public class SetupSecretManager(ApplicationConfiguration applicationConfiguratio
             var encryptionConfiguration = new EncryptionConfiguration { SharedSecretEnvironmentKey = environmentKeyNameDefaultName, SharedSecretSalt = salt };
             var fileName = Path.Combine(ApplicationConfiguration.CoreApplicationDataPath, EncryptionConfiguration.SecurityFileName);
             
-            applicationConfiguration.Security ??= new SecurityConfiguration();
+            applicationConfiguration.Core.Modules.Security ??= new SecurityConfiguration();
             applicationConfiguration.AddSecretToConfig(environmentKeyNameDefaultName);
             ConfigurationService.Service.Create(encryptionConfiguration, fileName);
             ConsoleService.Writer.WriteSuccessLine("Encryption has been successfully setup!");

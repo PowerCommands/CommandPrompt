@@ -7,4 +7,7 @@ public class CoreConfiguration
     public string Prompt { get; set; } = "pcm>";
     public string DefaultCommand { get; set; } = "";
     public bool ShowLogo { get; set; } = true;
+    public List<string> Suggestions { get; set; } = [];
+    public string RoamingDirectoryName { get; set; } = $"{nameof(CommandPrompt)}";
+    public ModulesConfiguration Modules { get; set; } = new();
 }

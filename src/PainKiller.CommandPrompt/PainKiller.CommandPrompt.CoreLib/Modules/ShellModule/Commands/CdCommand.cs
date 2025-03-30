@@ -37,7 +37,7 @@ public class CdCommand : ConsoleCommandBase<ApplicationConfiguration>
         else if (!string.IsNullOrWhiteSpace(arg)) path = Path.Combine(path, arg);
 
         if (lowerArgs.Contains("roaming"))
-            path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Configuration.RoamingDirectoryName);
+            path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Configuration.Core.RoamingDirectoryName);
         else if (lowerArgs.Contains("startup"))
             path = Path.GetDirectoryName(Environment.ProcessPath) ?? path;
         else if (lowerArgs.Contains("documents"))

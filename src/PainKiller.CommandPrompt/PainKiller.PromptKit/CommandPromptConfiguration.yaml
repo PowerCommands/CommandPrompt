@@ -1,23 +1,26 @@
 version: 1.0
 configuration:
+  promptKit:
+    outputPath: output
+    ignores: []
   core:
-    name: Prompt Kit
-    version: "1.0"
-    prompt: cp>
-    defaultCommand: 'hello'
+    name: PromptKit
+    version: 1.0
+    prompt: pcm>
+    defaultCommand: ''
     showLogo: true
+    suggestions:
+    - cd ..\..\..\..\PainKiller.CommandPrompt.CoreLib\modules
+    - exit
+    roamingDirectoryName: CommandPrompt
+    modules:
+      security:
+        secrets:
+        - name: CommandPrompt_encryptionManager
+          options:
+            target: User
   log:
     fileName: commandprompt.log
     filePath: logs
     rollingIntervall: Day
-    restrictedToMinimumLevel: Debug
-  suggestions:
-  - cd ..\..\..\..\PainKiller.CommandPrompt.CoreLib\modules
-  - exit
-  security:
-    secrets:
-    - name: CommandPrompt_encryptionManager
-      options:
-        target: User
-  promptKit:
-    outputPath: output
+    restrictedToMinimumLevel: Debug 

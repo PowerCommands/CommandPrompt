@@ -6,7 +6,7 @@ using Spectre.Console;
 
 namespace PainKiller.PromptKit.Managers;
 
-public class TemplateManager(string projectName, string modulesDirectory, string outputDirectory)
+public class TemplateManager(string projectName, string modulesDirectory, string outputDirectory, List<string> ignores)
 {
     private readonly ILogger<TemplateManager> _logger = LoggerProvider.CreateLogger<TemplateManager>();
     public void Run()
@@ -18,7 +18,7 @@ public class TemplateManager(string projectName, string modulesDirectory, string
         var projectOutputDirectory = Path.Combine(outputDirectory, projectName);
         if(Directory.Exists(projectOutputDirectory)) Directory.Delete(projectOutputDirectory, recursive: true);
         Directory.CreateDirectory(projectOutputDirectory);
-        copyManager.CopyCoreProject(modulesDirectory, projectOutputDirectory, modules.Select(m => m.Name).ToList());
+        copyManager.CopyCoreProject(modulesDirectory, projectOutputDirectory, modules.Select(m => m.Name).ToList(), ignores);
     }
     private List<(string Name, string Description)> DiscoverModules()
     {

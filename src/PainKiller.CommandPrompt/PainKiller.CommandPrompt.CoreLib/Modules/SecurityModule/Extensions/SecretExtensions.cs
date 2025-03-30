@@ -22,8 +22,8 @@ public static class SecretExtensions
     public static void AddSecretToConfig(this ApplicationConfiguration configuration, string secretName)
     {
         var secret = new SecretItemConfiguration { Name = secretName };
-        configuration.Security.Secrets ??= new();
-        configuration.Security.Secrets.Add(secret);
+        configuration.Core.Modules.Security.Secrets ??= new();
+        configuration.Core.Modules.Security.Secrets.Add(secret);
         ConfigurationService.Service.SaveChanges(configuration);
     }
 }
