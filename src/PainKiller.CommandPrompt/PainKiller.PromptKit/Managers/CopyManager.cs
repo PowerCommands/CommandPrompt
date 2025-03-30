@@ -1,33 +1,32 @@
 ﻿using Microsoft.Extensions.Logging;
 using PainKiller.CommandPrompt.CoreLib.Logging.Services;
 using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
+using PainKiller.PromptKit.DomainObjects;
 
 namespace PainKiller.PromptKit.Managers;
 
-public class CopyManager
+public class CopyManager(TemplatePaths paths)
 {
     private readonly ILogger<CopyManager> _logger = LoggerProvider.CreateLogger<CopyManager>();
-    public void CopyCoreProject(string modulesDirectory, string outputDirectory, List<string> selectedModules, List<string> ignores)
+    public void CopyCoreProject(List<string> selectedModules, List<string> ignores)
     {
-        var coreProjectDirectory = Directory.GetParent(modulesDirectory)?.FullName;
-
-        _logger.LogDebug($"Copy files from root directory {coreProjectDirectory}");
-        foreach (var file in Directory.GetFiles(coreProjectDirectory!))
+        _logger.LogDebug($"Copy files from root directory {paths.CoreLibRoot.Source}");
+        foreach (var file in Directory.GetFiles(paths.CoreLibRoot.Source))
         {
             if (ignores.Contains(file, StringComparer.OrdinalIgnoreCase)) continue;
-            var destFile = Path.Combine(outputDirectory, Path.GetFileName(file));
+            var destFile = Path.Combine(paths.CoreLibRoot.Target, Path.GetFileName(file));
             File.Copy(file, destFile, overwrite: true);
             _logger.LogDebug($"File {file} copied to {destFile}");
         }
         _logger.LogDebug($"Copy directories, ignore bin and obj directory");
-        foreach (var directory in Directory.GetDirectories(coreProjectDirectory))
+        foreach (var directory in Directory.GetDirectories(paths.CoreLibRoot.Source))
         {
             var dirName = Path.GetFileName(directory);
             if (ignores.Contains(dirName, StringComparer.OrdinalIgnoreCase)) continue;
             _logger.LogDebug("Handle Modules directory");
             if (dirName.Equals("Modules", StringComparison.OrdinalIgnoreCase))
             {
-                var destModulesDir = Path.Combine(outputDirectory, "Modules");
+                var destModulesDir = Path.Combine(paths.CoreLibRoot.Target, "Modules");
                 Directory.CreateDirectory(destModulesDir);
 
                 foreach (var moduleDir in Directory.GetDirectories(directory))
@@ -44,8 +43,7 @@ public class CopyManager
             }
             else
             {
-                
-                var destDir = Path.Combine(outputDirectory, dirName);
+                var destDir = Path.Combine(paths.CoreLibRoot.Target, dirName);
                 IOService.CopyFolder(directory, destDir);
                 _logger.LogDebug($"{directory} copied to {destDir}.");
             }

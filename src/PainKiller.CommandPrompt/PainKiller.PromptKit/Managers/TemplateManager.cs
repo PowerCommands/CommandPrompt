@@ -2,6 +2,8 @@
 using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Core.Utils;
 using PainKiller.CommandPrompt.CoreLib.Logging.Services;
+using PainKiller.PromptKit.Bootstrap;
+using PainKiller.PromptKit.DomainObjects;
 using Spectre.Console;
 
 namespace PainKiller.PromptKit.Managers;
@@ -11,16 +13,21 @@ public class TemplateManager(string projectName, string modulesDirectory, string
     private readonly ILogger<TemplateManager> _logger = LoggerProvider.CreateLogger<TemplateManager>();
     public void Run()
     {
-        var modules = DiscoverModules();
+        var paths = new TemplatePaths(modulesDirectory, outputDirectory, projectName);
+        var modules = ModulesDiscovery();
         _logger.LogDebug($"Modules found: {string.Join(',', modules)}");
         DisplayModuleSelection(modules);
-        var copyManager = new CopyManager();
-        var projectOutputDirectory = Path.Combine(outputDirectory, projectName);
-        if(Directory.Exists(projectOutputDirectory)) Directory.Delete(projectOutputDirectory, recursive: true);
-        Directory.CreateDirectory(projectOutputDirectory);
-        copyManager.CopyCoreProject(modulesDirectory, projectOutputDirectory, modules.Select(m => m.Name).ToList(), ignores);
+        
+        var copyManager = new CopyManager(paths);
+        if(Directory.Exists(paths.SolutionRoot.Target)) Directory.Delete(outputDirectory, recursive: true);
+        
+        Directory.CreateDirectory(paths.SolutionRoot.Target);
+        copyManager.CopyCoreProject(modules.Select(m => m.Name).ToList(), ignores);
+        
+        var configurationFileCreator = new ConfigurationTemplateManager(paths);
+        configurationFileCreator.CreateYamlConfigurationFile($"{nameof(CommandPromptConfiguration)}.yaml", modules.Select(m => m.Name).ToList());
     }
-    private List<(string Name, string Description)> DiscoverModules()
+    private List<(string Name, string Description)> ModulesDiscovery()
     {
         var modules = new List<(string Name, string Description)>();
         foreach (var dir in Directory.GetDirectories(modulesDirectory))

@@ -2,7 +2,12 @@ version: 1.0
 configuration:
   promptKit:
     outputPath: output
-    ignores: []
+    ignores:
+    - bin
+    - obj
+    - CommandPromptConfiguration.yaml
+    - CodeMap_Runtime.dgml
+    - ModulesConfiguration.cs
   core:
     name: PromptKit
     version: 1.0
