@@ -63,7 +63,7 @@ public class ConfigurationTemplateManager(TemplatePaths paths)
                         }
 
                         // Om modulen är vald, lägg med den
-                        if (selectedModules.Any(m => m.Equals(moduleName, StringComparison.OrdinalIgnoreCase)))
+                        if (selectedModules.Any(m => m.Replace("Module","").ToLower().Equals(moduleName, StringComparison.OrdinalIgnoreCase)))
                         {
                             outputLines.AddRange(moduleBlock);
                         }

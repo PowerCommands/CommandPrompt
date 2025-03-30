@@ -13,6 +13,7 @@ public class TemplateManager(string projectName, string modulesDirectory, string
     public void Run()
     {
         var paths = new TemplatePaths(modulesDirectory, outputDirectory, projectName, configurationTemplateName);
+        Environment.CurrentDirectory = AppContext.BaseDirectory;    //Secures that you don´t write to directory in your PromptKit project.
         var modules = ModulesDiscovery();
         _logger.LogDebug($"Modules found: {string.Join(',', modules)}");
         var selectedModules = DisplayModuleSelection(modules);
