@@ -21,7 +21,7 @@ public class NewCommand(string identifier) : ConsoleCommandBase<CommandPromptCon
         var outputDirectory = DialogService.PathDialog("Where do you want to output your new project? \n(a directory with the project name will be created in output folder)");
         CommandDiscoveryService.TryGetCommand("cd", out var cdCommand);
         cdCommand!.Execute(options: new Dictionary<string, string> { { "modules", "" },{ "no-output", "" } });
-        var publisherManager = new TemplateManager(projectName, Environment.CurrentDirectory, outputDirectory, Configuration.PromptKit.Ignores);
+        var publisherManager = new TemplateManager(projectName, Environment.CurrentDirectory, outputDirectory, Configuration.PromptKit.ConfigurationTemplate, Configuration.PromptKit.Ignores);
         publisherManager.Run();
         return Ok();
     }

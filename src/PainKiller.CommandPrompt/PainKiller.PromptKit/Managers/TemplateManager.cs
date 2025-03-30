@@ -2,27 +2,27 @@
 using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Core.Utils;
 using PainKiller.CommandPrompt.CoreLib.Logging.Services;
-using PainKiller.PromptKit.Bootstrap;
 using PainKiller.PromptKit.DomainObjects;
 using Spectre.Console;
 
 namespace PainKiller.PromptKit.Managers;
 
-public class TemplateManager(string projectName, string modulesDirectory, string outputDirectory, List<string> ignores)
+public class TemplateManager(string projectName, string modulesDirectory, string outputDirectory, string configurationTemplateName, List<string> ignores)
 {
     private readonly ILogger<TemplateManager> _logger = LoggerProvider.CreateLogger<TemplateManager>();
     public void Run()
     {
-        var paths = new TemplatePaths(modulesDirectory, outputDirectory, projectName);
+        var paths = new TemplatePaths(modulesDirectory, outputDirectory, projectName, configurationTemplateName);
         var modules = ModulesDiscovery();
         _logger.LogDebug($"Modules found: {string.Join(',', modules)}");
         var selectedModules = DisplayModuleSelection(modules);
         if(Directory.Exists(paths.SolutionRoot.Target)) Directory.Delete(outputDirectory, recursive: true);
         var copyManager = new CopyManager(paths);
         copyManager.CopyCoreProject(selectedModules, ignores);
+        ConsoleService.Writer.WriteSuccessLine("✅ Copy Core project");
         
-        //var configurationFileCreator = new ConfigurationTemplateManager(paths);
-        //configurationFileCreator.CreateYamlConfigurationFile($"{nameof(CommandPromptConfiguration)}.yaml", modules.Select(m => m.Name).ToList());
+        var configurationFileCreator = new ConfigurationTemplateManager(paths);
+        configurationFileCreator.CreateYamlConfigurationFile(modules.Select(m => m.Name).ToList());
     }
     private List<(string Name, string Description)> ModulesDiscovery()
     {
@@ -52,7 +52,7 @@ public class TemplateManager(string projectName, string modulesDirectory, string
                 .Title("Select the modules to include:")
                 .PageSize(10)
                 .MoreChoicesText("[grey](Move up and down to reveal more)[/]")
-                .InstructionsText("[grey](Press [blue]<space>[/] to toggle a module, [green]<enter>[/] to accept)[/]")
+                .InstructionsText("[grey](Press [blue]<space>[/] to toggle a module, [magenta]<enter>[/] to accept)[/]")
                 .AddChoices(choices)
                 .NotRequired());
 

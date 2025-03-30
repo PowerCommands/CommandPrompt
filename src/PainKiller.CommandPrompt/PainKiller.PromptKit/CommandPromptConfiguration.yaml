@@ -2,6 +2,7 @@ version: 1.0
 configuration:
   promptKit:
     outputPath: output
+    configurationTemplate: default_CommandPromptConfiguration.yaml
     ignores:
     - bin
     - obj

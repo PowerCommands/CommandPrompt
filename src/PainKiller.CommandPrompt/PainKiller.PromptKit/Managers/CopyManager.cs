@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Logging.Services;
 using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 using PainKiller.PromptKit.DomainObjects;
@@ -41,6 +42,7 @@ public class CopyManager(TemplatePaths paths)
                         var destModuleDir = Path.Combine(destModulesDir, moduleName);
                         IOService.CopyFolder(moduleDir, destModuleDir);
                         _logger.LogDebug($"{moduleDir} copied to {destModuleDir}.");
+                        ConsoleService.Writer.WriteSuccessLine($"✅ Copy module {moduleName}");
                     }
                 }
             }

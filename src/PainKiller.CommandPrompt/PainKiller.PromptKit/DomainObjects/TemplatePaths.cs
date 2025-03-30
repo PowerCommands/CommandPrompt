@@ -3,15 +3,16 @@ using System.IO;
 
 public class TemplatePaths
 {
-    public TemplatePaths(string sourceModulePath, string outputPath, string projectName)
+    public TemplatePaths(string sourceModulePath, string outputPath, string projectName, string configurationTemplate)
     {
         var coreLibRoot = Directory.GetParent(sourceModulePath)!.FullName;
         var solutionRoot = Directory.GetParent(coreLibRoot)!.FullName;
         var promptKitRoot = Path.Combine(solutionRoot, "PainKiller.PromptKit");
+        var targetApplicationRoot = Path.Combine(outputPath, projectName, $"{projectName}Client");
         CoreLibRoot = new TemplatePath(Source: coreLibRoot, Target: Path.Combine(outputPath, projectName,"PainKiller.CommandPrompt.CoreLib"));
-        ApplicationRoot = new TemplatePath(Source: promptKitRoot, Target: Path.Combine(outputPath, projectName, projectName));
+        ApplicationRoot = new TemplatePath(Source: promptKitRoot, Target: targetApplicationRoot);
         ModulesRoot = new TemplatePath(Source: sourceModulePath, Target: Path.Combine(outputPath, "PainKiller.CommandPrompt.CoreLib", "Modules"));
-        ConfigurationYamlPath = new TemplatePath(Source: Path.Combine(promptKitRoot, "CommandPromptConfiguration.yaml"), Target: Path.Combine(outputPath, projectName, "CommandPromptConfiguration.yaml"));
+        ConfigurationYamlPath = new TemplatePath(Source: Path.Combine(promptKitRoot,"Templates", configurationTemplate), Target: Path.Combine(targetApplicationRoot, "CommandPromptConfiguration.yaml"));
         ModulesConfigurationPath = new TemplatePath(Source: Path.Combine(coreLibRoot, "Configuration", "DomainObjects", "ModulesConfiguration.cs"), Target: Path.Combine(outputPath, "PainKiller.CommandPrompt.CoreLib", "Configuration", "DomainObjects", "ModulesConfiguration.cs"));
         SolutionRoot = new TemplatePath(solutionRoot, outputPath);
     }

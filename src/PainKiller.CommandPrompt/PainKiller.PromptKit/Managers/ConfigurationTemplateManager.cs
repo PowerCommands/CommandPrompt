@@ -1,13 +1,10 @@
 ﻿using PainKiller.PromptKit.DomainObjects;
-
 namespace PainKiller.PromptKit.Managers;
-//public class ConfigurationTemplateManager(string rootDirectory, string outputProjectDirectory)
 public class ConfigurationTemplateManager(TemplatePaths paths)
 {
-    public void CreateYamlConfigurationFile(string sourceFileName1, List<string> selectedModules)
+    public void CreateYamlConfigurationFile(List<string> selectedModules)
     {
-        var sourceFilePath = Path.Combine(paths.ApplicationRoot.Source, sourceFileName1);
-        var lines = File.ReadAllLines(sourceFilePath).ToList();
+        var lines = File.ReadAllLines(paths.ConfigurationYamlPath.Source).ToList();
         var outputLines = new List<string>();
 
         var i = 0;
@@ -85,16 +82,11 @@ public class ConfigurationTemplateManager(TemplatePaths paths)
             outputLines.Add(line);
             i++;
         }
-        var outputFilePath = Path.Combine(paths.ApplicationRoot.Target, sourceFileName1);
+        var outputFilePath = Path.Combine(paths.ApplicationRoot.Target, paths.ConfigurationYamlPath.Target);
+        Directory.CreateDirectory(paths.ApplicationRoot.Target);
         File.WriteAllLines(outputFilePath, outputLines);
     }
-
-
-    /// <summary>
-    /// Exempelmetod för att göra samma operation på den C#-baserade konfigurationen.
-    /// Här kan du läsa in en klassfil eller ett objekt, filtrera bort ovällda moduler och sedan skriva ut resultatet.
-    /// Implementation beror på hur du har tänkt hantera dina C#-konfigurationsobjekt.
-    /// </summary>
+    
     public void ProcessCsConfiguration(string sourceCsFilePath, string targetCsFilePath, List<string> selectedModules)
     {
         // Exempelsteg:

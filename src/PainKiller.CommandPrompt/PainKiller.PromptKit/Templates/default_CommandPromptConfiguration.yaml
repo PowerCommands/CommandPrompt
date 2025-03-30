@@ -1,0 +1,22 @@
+version: 1.0
+configuration:
+  custom:    
+  core:
+    name: $APPLICATION_NAME$
+    version: 1.0
+    prompt: cp>
+    defaultCommand: ''
+    showLogo: true
+    suggestions: []
+    roamingDirectoryName: CommandPrompt
+    modules:
+      security:
+        secrets:
+        - name: Babar
+          options:
+            target: User
+  log:
+    fileName: commandprompt.log
+    filePath: logs
+    rollingIntervall: Day
+    restrictedToMinimumLevel: Debug
