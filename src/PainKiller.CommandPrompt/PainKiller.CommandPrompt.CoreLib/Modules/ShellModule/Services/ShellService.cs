@@ -6,7 +6,7 @@ public class ShellService : IShellService
 {
     private static readonly Lazy<IShellService> Instance = new(() => new ShellService());
     private ShellService() { }
-    internal static IShellService Default => Instance.Value;
+    public static IShellService Default => Instance.Value;
     public void OpenDirectory(string path)
     {
         var actualPath = ReplacePlaceholders(path);

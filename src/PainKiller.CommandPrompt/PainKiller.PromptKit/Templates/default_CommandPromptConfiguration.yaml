@@ -12,7 +12,7 @@ configuration:
     modules:
       security:
         secrets:
-        - name: Babar
+        - name: CommandPrompt_encryptionManager
           options:
             target: User
   log:

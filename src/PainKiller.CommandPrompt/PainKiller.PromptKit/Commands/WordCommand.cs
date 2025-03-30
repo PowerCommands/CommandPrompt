@@ -6,12 +6,19 @@ using PainKiller.PromptKit.Bootstrap;
 
 namespace PainKiller.PromptKit.Commands;
 
-[CommandDesign("Displays Hello", options: ["Word","Banan"])]
-public class WordCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
+[CommandDesign(     description: "Demo command", 
+                        options: ["Apple","Pear"],
+                       examples: ["//Demo of Command Prompts","demo"])]
+public class DemoCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {
     public override RunResult Run(ICommandLineInput input)
     {
-        Writer.WriteLine($"Hello {string.Join(",", input.Arguments)} {string.Join(",", input.Quotes)} {string.Join(",", input.Options.Values)}");
+        Writer.WriteHeaderLine($"Hello there {Environment.UserName}");
+        Writer.WriteLine();
+        Writer.WriteSuccessLine("Congrats to your first command");
+        Writer.WriteDescription("Did you input something?", $"{string.Join(",", input.Arguments)} {string.Join(",", input.Quotes)} {string.Join(",", input.Options.Keys)}");
+        Writer.WriteLine();
+        Writer.WriteUrl("https://github.com/PowerCommands/CommandPrompt");
         return Ok();
     }
 }

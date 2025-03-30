@@ -1,57 +1,45 @@
 ﻿using PainKiller.PromptKit.DomainObjects;
 namespace PainKiller.PromptKit.Managers;
-public class ConfigurationTemplateManager(TemplatePaths paths)
+public class ConfigurationTemplateManager(TemplatePaths paths, string projectName)
 {
     public void CreateYamlConfigurationFile(List<string> selectedModules)
     {
         var lines = File.ReadAllLines(paths.ConfigurationYamlPath.Source).ToList();
         var outputLines = new List<string>();
-
         var i = 0;
         var inModulesSection = false;
-        var modulesIndent = 0;
-
         while (i < lines.Count)
         {
-            string line = lines[i];
-
-            // Kolla om vi precis har nått "modules:"-nyckeln
+            var line = lines[i];
             if (!inModulesSection && line.TrimStart().StartsWith("modules:"))
             {
                 inModulesSection = true;
-                modulesIndent = line.TakeWhile(Char.IsWhiteSpace).Count();
+                var modulesIndent = line.TakeWhile(Char.IsWhiteSpace).Count();
                 outputLines.Add(line); // Lägg med själva nyckeln "modules:"
                 i++;
 
                 // Processa innehållet under modules:
                 while (i < lines.Count)
                 {
-                    string currentLine = lines[i];
-                    int currentIndent = currentLine.TakeWhile(Char.IsWhiteSpace).Count();
-
-                    // Om vi når en rad med lägre eller lika indentering som "modules:" så är vi ute ur modules-blocket.
+                    var currentLine = lines[i];
+                    var currentIndent = currentLine.TakeWhile(char.IsWhiteSpace).Count();
                     if (currentIndent <= modulesIndent)
                     {
                         inModulesSection = false;
                         break;
                     }
-
-                    // Om raden innehåller ett modulnamn (t.ex. "security:"), utan att börja med "-".
-                    string trimmed = currentLine.Trim();
-                    if (!trimmed.StartsWith("-") && trimmed.Contains(":"))
+                    var trimmed = currentLine.Trim();
+                    if (!trimmed.StartsWith($"-") && trimmed.Contains($":"))
                     {
-                        int colonIndex = trimmed.IndexOf(':');
-                        string moduleName = trimmed.Substring(0, colonIndex).Trim();
-
-                        // Läs in hela modulblocket
-                        int moduleIndent = currentIndent;
+                        var colonIndex = trimmed.IndexOf(':');
+                        var moduleName = trimmed[..colonIndex].Trim();
                         var moduleBlock = new List<string> { currentLine };
                         i++;
                         while (i < lines.Count)
                         {
-                            string nextLine = lines[i];
-                            int nextIndent = nextLine.TakeWhile(Char.IsWhiteSpace).Count();
-                            if (nextIndent > moduleIndent)
+                            var nextLine = lines[i];
+                            var nextIndent = nextLine.TakeWhile(char.IsWhiteSpace).Count();
+                            if (nextIndent > currentIndent)
                             {
                                 moduleBlock.Add(nextLine);
                                 i++;
@@ -61,39 +49,60 @@ public class ConfigurationTemplateManager(TemplatePaths paths)
                                 break;
                             }
                         }
-
-                        // Om modulen är vald, lägg med den
-                        if (selectedModules.Any(m => m.Replace("Module","").ToLower().Equals(moduleName, StringComparison.OrdinalIgnoreCase)))
-                        {
-                            outputLines.AddRange(moduleBlock);
-                        }
-                        // Annars så hoppar vi över detta block (dvs. vi lägger inte till det)
+                        if (selectedModules.Any(m => m.Replace("Module","").ToLower().Equals(moduleName, StringComparison.OrdinalIgnoreCase))) outputLines.AddRange(moduleBlock);
                     }
                     else
                     {
-                        // Om raden inte matchar ett moduldefinition, bara gå vidare.
                         i++;
                     }
                 }
-                continue; // Fortsätt med nästa rad (som nu utanför modules-blocket)
+                continue;
             }
-
-            // Utanför modules-sektionen – kopiera alla rader som de är.
             outputLines.Add(line);
             i++;
         }
+        var yamlContent = string.Join(Environment.NewLine, outputLines);
+        yamlContent = yamlContent.Replace("$APPLICATION_NAME$", projectName);
+
         var outputFilePath = Path.Combine(paths.ApplicationRoot.Target, paths.ConfigurationYamlPath.Target);
         Directory.CreateDirectory(paths.ApplicationRoot.Target);
-        File.WriteAllLines(outputFilePath, outputLines);
+        File.WriteAllText(outputFilePath, yamlContent);
     }
     
     public void ProcessCsConfiguration(string sourceCsFilePath, string targetCsFilePath, List<string> selectedModules)
     {
-        // Exempelsteg:
-        // 1. Läs in C#-konfigurationen (detta kan vara via reflektion eller genom att skapa instansen direkt)
-        // 2. Utför liknande filtrering: t.ex. sätt Modules.Security = null om "Security" inte finns i selectedModules.
-        // 3. Skriv ut (eller kompilera om) konfigurationsklassen till målfilen.
-        //
-        // Eftersom hanteringen av C#-klassfilen kan bli mer komplicerad, lämnas denna metod som ett exempel för vidare utveckling.
+        var lines = File.ReadAllLines(sourceCsFilePath).ToList();
+        var outputLines = new List<string>();
+
+        foreach (var line in lines)
+        {
+            // Kolla om raden innehåller "get; set;" vilket indikerar en property
+            if (line.Contains("get; set;"))
+            {
+                // Extrahera modulnamnet mellan "public" och "get; set;"
+                var trimmed = line.Trim();
+                var words = trimmed.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            
+                if (words.Length >= 4) 
+                {
+                    // Modulnamnet är tredje ordet (efter "public" och typ)
+                    var propertyName = words[2].Replace("{", "").Trim();
+                
+                    // Om modulen är vald, lägg till raden i output
+                    if (selectedModules.Any(m => m.Replace("Module", "").Equals(propertyName, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        outputLines.Add(line);
+                    }
+                }
+            }
+            else
+            {
+                // Lägg till rader som inte är properties direkt till output
+                outputLines.Add(line);
+            }
+        }
+        File.WriteAllLines(targetCsFilePath, outputLines);
     }
+
+
 }

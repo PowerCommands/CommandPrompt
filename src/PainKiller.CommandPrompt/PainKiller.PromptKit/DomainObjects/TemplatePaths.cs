@@ -13,7 +13,7 @@ public class TemplatePaths
         ApplicationRoot = new TemplatePath(Source: promptKitRoot, Target: targetApplicationRoot);
         ModulesRoot = new TemplatePath(Source: sourceModulePath, Target: Path.Combine(outputPath, "PainKiller.CommandPrompt.CoreLib", "Modules"));
         ConfigurationYamlPath = new TemplatePath(Source: Path.Combine(promptKitRoot,"Templates", configurationTemplate), Target: Path.Combine(targetApplicationRoot, "CommandPromptConfiguration.yaml"));
-        ModulesConfigurationPath = new TemplatePath(Source: Path.Combine(coreLibRoot, "Configuration", "DomainObjects", "ModulesConfiguration.cs"), Target: Path.Combine(outputPath, "PainKiller.CommandPrompt.CoreLib", "Configuration", "DomainObjects", "ModulesConfiguration.cs"));
+        ModulesConfigurationPath = new TemplatePath(Source: Path.Combine(coreLibRoot, "Configuration", "DomainObjects", "ModulesConfiguration.cs"), Target: Path.Combine(outputPath, projectName, "PainKiller.CommandPrompt.CoreLib", "Configuration", "DomainObjects", "ModulesConfiguration.cs"));
         SolutionRoot = new TemplatePath(solutionRoot, outputPath);
     }
     public TemplatePath SolutionRoot { get; init; }

@@ -1,7 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
+using PainKiller.CommandPrompt.CoreLib.Configuration.DomainObjects;
+using PainKiller.CommandPrompt.CoreLib.Core.Events;
 using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Core.Utils;
 using PainKiller.CommandPrompt.CoreLib.Logging.Services;
+using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
+using PainKiller.PromptKit.Bootstrap;
 using PainKiller.PromptKit.DomainObjects;
 using Spectre.Console;
 
@@ -22,8 +26,14 @@ public class TemplateManager(string projectName, string modulesDirectory, string
         copyManager.CopyCoreProject(selectedModules, ignores);
         ConsoleService.Writer.WriteSuccessLine("✅ Copy Core project");
         
-        var configurationFileCreator = new ConfigurationTemplateManager(paths);
+        var configurationFileCreator = new ConfigurationTemplateManager(paths, projectName);
         configurationFileCreator.CreateYamlConfigurationFile(modules.Select(m => m.Name).ToList());
+        ConsoleService.Writer.WriteSuccessLine($"✅ {nameof(CommandPromptConfiguration)}.yaml file created.");
+        configurationFileCreator.ProcessCsConfiguration(paths.ModulesConfigurationPath.Source, paths.ModulesConfigurationPath.Target, selectedModules);
+        ConsoleService.Writer.WriteSuccessLine($"✅ {nameof(ModulesConfiguration)}.cs file created.");
+        Environment.CurrentDirectory = outputDirectory;
+        EventBusService.Service.Publish(new WorkingDirectoryChangedEventArgs(Environment.CurrentDirectory));
+        ShellService.Default.OpenDirectory(Environment.CurrentDirectory);
     }
     private List<(string Name, string Description)> ModulesDiscovery()
     {
