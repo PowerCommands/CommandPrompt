@@ -21,7 +21,7 @@ public class TemplateManager(string projectName, string modulesDirectory, string
         var modules = ModulesDiscovery();
         _logger.LogDebug($"Modules found: {string.Join(',', modules)}");
         var selectedModules = DisplayModuleSelection(modules);
-        if(Directory.Exists(paths.SolutionRoot.Target)) Directory.Delete(outputDirectory, recursive: true);
+        if(Directory.Exists(paths.Root.Target)) Directory.Delete(outputDirectory, recursive: true);
         var copyManager = new CopyManager(paths);
         copyManager.CopyCoreProject(selectedModules, ignores);
         ConsoleService.Writer.WriteSuccessLine("✅ Copy Core project");
@@ -31,6 +31,19 @@ public class TemplateManager(string projectName, string modulesDirectory, string
         ConsoleService.Writer.WriteSuccessLine($"✅ {nameof(CommandPromptConfiguration)}.yaml file created.");
         configurationFileCreator.ProcessCsConfiguration(paths.ModulesConfigurationPath.Source, paths.ModulesConfigurationPath.Target, selectedModules);
         ConsoleService.Writer.WriteSuccessLine($"✅ {nameof(ModulesConfiguration)}.cs file created.");
+        
+        copyManager.CreateAppProject(projectName, ignores);
+        ConsoleService.Writer.WriteSuccessLine($"✅ {projectName} created.");
+        
+        IOService.CopyFolder(paths.ReadLineRoot.Source, paths.ReadLineRoot.Target);
+        ConsoleService.Writer.WriteSuccessLine($"✅ ReadLine project copied.");
+        
+        copyManager.CreateSolutionFile(projectName);
+        ConsoleService.Writer.WriteSuccessLine($"✅ VS Solution file created.");
+
+        ConsoleService.Writer.WriteLine();
+        ConsoleService.Writer.WriteHeaderLine("Everything is created!");
+
         Environment.CurrentDirectory = outputDirectory;
         EventBusService.Service.Publish(new WorkingDirectoryChangedEventArgs(Environment.CurrentDirectory));
         ShellService.Default.OpenDirectory(Environment.CurrentDirectory);
