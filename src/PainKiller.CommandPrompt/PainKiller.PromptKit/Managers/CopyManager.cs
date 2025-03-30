@@ -10,10 +10,13 @@ public class CopyManager(TemplatePaths paths)
     private readonly ILogger<CopyManager> _logger = LoggerProvider.CreateLogger<CopyManager>();
     public void CopyCoreProject(List<string> selectedModules, List<string> ignores)
     {
+        Directory.CreateDirectory(paths.SolutionRoot.Target);
+        Directory.CreateDirectory(paths.CoreLibRoot.Target);
+        _logger.LogDebug($"Directory {paths.SolutionRoot.Target} created.");
         _logger.LogDebug($"Copy files from root directory {paths.CoreLibRoot.Source}");
         foreach (var file in Directory.GetFiles(paths.CoreLibRoot.Source))
         {
-            if (ignores.Contains(file, StringComparer.OrdinalIgnoreCase)) continue;
+            if (ignores.Contains(Path.GetFileName(file), StringComparer.OrdinalIgnoreCase)) continue;
             var destFile = Path.Combine(paths.CoreLibRoot.Target, Path.GetFileName(file));
             File.Copy(file, destFile, overwrite: true);
             _logger.LogDebug($"File {file} copied to {destFile}");

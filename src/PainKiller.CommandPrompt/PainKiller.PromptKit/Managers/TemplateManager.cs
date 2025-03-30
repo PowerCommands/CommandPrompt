@@ -16,16 +16,13 @@ public class TemplateManager(string projectName, string modulesDirectory, string
         var paths = new TemplatePaths(modulesDirectory, outputDirectory, projectName);
         var modules = ModulesDiscovery();
         _logger.LogDebug($"Modules found: {string.Join(',', modules)}");
-        DisplayModuleSelection(modules);
-        
-        var copyManager = new CopyManager(paths);
+        var selectedModules = DisplayModuleSelection(modules);
         if(Directory.Exists(paths.SolutionRoot.Target)) Directory.Delete(outputDirectory, recursive: true);
+        var copyManager = new CopyManager(paths);
+        copyManager.CopyCoreProject(selectedModules, ignores);
         
-        Directory.CreateDirectory(paths.SolutionRoot.Target);
-        copyManager.CopyCoreProject(modules.Select(m => m.Name).ToList(), ignores);
-        
-        var configurationFileCreator = new ConfigurationTemplateManager(paths);
-        configurationFileCreator.CreateYamlConfigurationFile($"{nameof(CommandPromptConfiguration)}.yaml", modules.Select(m => m.Name).ToList());
+        //var configurationFileCreator = new ConfigurationTemplateManager(paths);
+        //configurationFileCreator.CreateYamlConfigurationFile($"{nameof(CommandPromptConfiguration)}.yaml", modules.Select(m => m.Name).ToList());
     }
     private List<(string Name, string Description)> ModulesDiscovery()
     {
@@ -47,7 +44,7 @@ public class TemplateManager(string projectName, string modulesDirectory, string
         }
         return modules;
     }
-    private void DisplayModuleSelection(List<(string Name, string Description)> modules)
+    private List<string> DisplayModuleSelection(List<(string Name, string Description)> modules)
     {
         var choices = modules.Select(m => $"{m.Name} - {m.Description}").ToList();
         var selectedModules = AnsiConsole.Prompt(
@@ -60,6 +57,7 @@ public class TemplateManager(string projectName, string modulesDirectory, string
                 .NotRequired());
 
         ConsoleService.Writer.WriteDescription("Selected modules", $"{string.Join(", ", selectedModules.Select(s => s.Split(' ').First()))}");
+        return selectedModules.Select(s => s.Split(' ').First()).ToList();
     }
 }
     
