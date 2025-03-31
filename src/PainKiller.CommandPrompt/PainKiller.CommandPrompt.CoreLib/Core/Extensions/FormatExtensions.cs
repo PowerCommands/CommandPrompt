@@ -1,8 +1,8 @@
 ﻿using System.Globalization;
 using static System.DateTime;
 
-namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Extensions;
-public static class ShellModuleExtensions
+namespace PainKiller.CommandPrompt.CoreLib.Core.Extensions;
+public static class FormatExtensions
 {
     public static string FormatFileTimestamp(this string prefix) => $"{prefix}{Now.Year}{Now.Month}{Now.Day}{Now.Hour}{Now.Minute}";
     public static string PrefixFileTimestamp(this string fileName) => $"{Now.Year}{Now.Month}{Now.Day}{Now.Hour}{Now.Minute}{fileName}";

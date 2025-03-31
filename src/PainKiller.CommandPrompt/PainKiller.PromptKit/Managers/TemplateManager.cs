@@ -44,7 +44,7 @@ public class TemplateManager(string projectName, string modulesDirectory, string
         ConsoleService.Writer.WriteSuccessLine($"✅ VS Solution file created.");
 
         ConsoleService.Writer.WriteLine();
-        ConsoleService.Writer.WriteHeaderLine("Everything is created!");
+        ConsoleService.Writer.WriteHeadLine("Everything is created!");
 
         Environment.CurrentDirectory = outputDirectory;
         EventBusService.Service.Publish(new WorkingDirectoryChangedEventArgs(Environment.CurrentDirectory));

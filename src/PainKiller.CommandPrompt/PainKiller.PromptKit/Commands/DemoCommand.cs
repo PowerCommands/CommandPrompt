@@ -13,7 +13,7 @@ public class DemoCommand(string identifier) : ConsoleCommandBase<CommandPromptCo
 {
     public override RunResult Run(ICommandLineInput input)
     {
-        Writer.WriteHeaderLine($"Hello there {Environment.UserName}");
+        Writer.WriteHeadLine($"Hello there {Environment.UserName}");
         Writer.WriteLine();
         Writer.WriteSuccessLine("Congrats to your first command");
         Writer.WriteDescription("Did you input something?", $"{string.Join(",", input.Arguments)} {string.Join(",", input.Quotes)} {string.Join(",", input.Options.Keys)}");

@@ -46,4 +46,8 @@ public class StorageService<T> : IStorageService<T> where T : new()
         File.WriteAllText(backupFilePath, content);
         return backupFilePath;
     }
+    public List<string> GetFiles() => Directory.GetFiles(_applicationDataPath, "*.data").ToList();
+    public DirectoryInfo GetRootDirectory() => new DirectoryInfo(_applicationDataPath);
+    public List<string> GetBackupFiles() => Directory.GetFiles(_backupPath, "*.data").ToList();
+    public DirectoryInfo GetBackupDirectory() => new DirectoryInfo(_backupPath);
 }

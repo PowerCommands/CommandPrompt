@@ -64,7 +64,7 @@ public class SpectreConsoleWriter : IConsoleWriter
         Fatal("{Scope}: {Text}", scope, text);
     }
 
-    public void WriteHeaderLine(string text, bool writeLog = true, [CallerMemberName] string scope = "")
+    public void WriteHeadLine(string text, bool writeLog = true, [CallerMemberName] string scope = "")
     {
         var escaped = Markup.Escape(text);
         AnsiConsole.MarkupLine($"[bold blue]{escaped}[/]");

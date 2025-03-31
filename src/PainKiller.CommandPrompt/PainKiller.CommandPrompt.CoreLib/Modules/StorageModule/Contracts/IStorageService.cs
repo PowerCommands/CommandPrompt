@@ -6,4 +6,8 @@ public interface IStorageService<T> where T : new()
     string DeleteObject(string fileName = "");
     T GetObject(string fileName = "");
     string Backup(string fileName = "");
+    List<string> GetFiles();
+    DirectoryInfo GetRootDirectory();
+    List<string> GetBackupFiles();
+    DirectoryInfo GetBackupDirectory();
 }

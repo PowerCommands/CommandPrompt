@@ -9,7 +9,7 @@ public interface IConsoleWriter
     void WriteWarning(string text, string scope = "");
     void WriteError(string text, string scope = "");
     void WriteCritical(string text, string scope = "");
-    void WriteHeaderLine(string text, bool writeLog = true, string scope = "");
+    void WriteHeadLine(string text, bool writeLog = true, string scope = "");
     void WriteUrl(string text, bool writeLog = true, string scope = "");
     void WriteTable<T>(IEnumerable<T> items, string[]? columnNames = null, Color? consoleColor = null);
     void WritePrompt(string prompt);

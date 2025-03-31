@@ -2,9 +2,7 @@
 using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
 using PainKiller.CommandPrompt.CoreLib.Core.DomainObjects;
 using PainKiller.CommandPrompt.CoreLib.Metadata.Attributes;
-using PainKiller.CommandPrompt.CoreLib.Metadata.DomainObjects;
 using PainKiller.CommandPrompt.CoreLib.Modules.SecurityModule.Extensions;
-using PainKiller.CommandPrompt.CoreLib.Modules.StorageModule.Services;
 using PainKiller.PromptKit.Bootstrap;
 
 namespace PainKiller.PromptKit.Commands;
@@ -16,10 +14,7 @@ public class FailureCommand(string identifier) : ConsoleCommandBase<CommandPromp
     {
         var secret = Configuration.Core.Modules.Security.DecryptSecret("babar");
         Writer.WriteSuccessLine(secret);
-
-        var metadata = new CommandMetadata{Identifier = "Babar"};
-        StorageService<CommandMetadata>.Service.StoreObject(metadata);
-
+        File.WriteAllText("ökafds", "lkjadfs");
         return Ok();
     }
 }

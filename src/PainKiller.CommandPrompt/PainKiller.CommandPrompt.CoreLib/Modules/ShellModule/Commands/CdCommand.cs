@@ -1,8 +1,8 @@
 ﻿using PainKiller.CommandPrompt.CoreLib.Core.BaseClasses;
 using PainKiller.CommandPrompt.CoreLib.Core.Events;
+using PainKiller.CommandPrompt.CoreLib.Core.Extensions;
 using PainKiller.CommandPrompt.CoreLib.Metadata.Attributes;
 using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.DomainObjects;
-using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Extensions;
 using PainKiller.ReadLine.Managers;
 using Spectre.Console;
 
