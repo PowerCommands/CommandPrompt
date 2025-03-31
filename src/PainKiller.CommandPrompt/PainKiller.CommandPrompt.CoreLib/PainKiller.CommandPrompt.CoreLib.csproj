@@ -18,6 +18,7 @@
 	<ItemGroup>
 	  <Folder Include="Core\Utils\" />
 	  <Folder Include="Logging\Extensions\" />
+	  <Folder Include="Modules\StorageModule\Contracts\" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\PainKiller.ReadLine\PainKiller.ReadLine.csproj" />

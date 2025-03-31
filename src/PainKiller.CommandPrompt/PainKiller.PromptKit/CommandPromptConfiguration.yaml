@@ -21,8 +21,8 @@ configuration:
     roamingDirectoryName: CommandPrompt
     modules:
       security:
-        secrets:
-        - name: CommandPrompt_encryptionManager
+        secrets:        
+        - name: babar
           options:
             target: User
   log:

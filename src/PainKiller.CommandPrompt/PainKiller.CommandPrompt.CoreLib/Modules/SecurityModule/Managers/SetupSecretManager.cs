@@ -1,6 +1,5 @@
 ﻿using PainKiller.CommandPrompt.CoreLib.Configuration.Services;
 using PainKiller.CommandPrompt.CoreLib.Modules.SecurityModule.Configuration;
-using PainKiller.CommandPrompt.CoreLib.Modules.SecurityModule.Extensions;
 
 namespace PainKiller.CommandPrompt.CoreLib.Modules.SecurityModule.Managers;
 public class SetupSecretManager(ApplicationConfiguration applicationConfiguration)
@@ -19,9 +18,6 @@ public class SetupSecretManager(ApplicationConfiguration applicationConfiguratio
             Environment.SetEnvironmentVariable(environmentKeyNameDefaultName, sharedSecret, EnvironmentVariableTarget.User);
             var encryptionConfiguration = new EncryptionConfiguration { SharedSecretEnvironmentKey = environmentKeyNameDefaultName, SharedSecretSalt = salt };
             var fileName = Path.Combine(ApplicationConfiguration.CoreApplicationDataPath, EncryptionConfiguration.SecurityFileName);
-            
-            applicationConfiguration.Core.Modules.Security ??= new SecurityConfiguration();
-            applicationConfiguration.AddSecretToConfig(environmentKeyNameDefaultName);
             ConfigurationService.Service.Create(encryptionConfiguration, fileName);
             ConsoleService.Writer.WriteSuccessLine("Encryption has been successfully setup!");
         }

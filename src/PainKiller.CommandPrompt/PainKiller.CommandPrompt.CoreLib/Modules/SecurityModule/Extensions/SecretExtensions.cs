@@ -1,4 +1,6 @@
-﻿using PainKiller.CommandPrompt.CoreLib.Configuration.Services;
+﻿using Microsoft.Extensions.Logging;
+using PainKiller.CommandPrompt.CoreLib.Configuration.Services;
+using PainKiller.CommandPrompt.CoreLib.Logging.Services;
 using PainKiller.CommandPrompt.CoreLib.Modules.SecurityModule.Configuration;
 using PainKiller.CommandPrompt.CoreLib.Modules.SecurityModule.Services;
 
@@ -6,24 +8,38 @@ namespace PainKiller.CommandPrompt.CoreLib.Modules.SecurityModule.Extensions;
 
 public static class SecretExtensions
 {
-    public static void CreateSecret(this SecurityConfiguration configuration, string secretName)
-    {
-        var secretToken = DialogService.GetSecret("secret");
-        var secret = new SecretItemConfiguration { Name = secretName };
-        var val = SecretService.Service.SetSecret(secretName, secretToken, secret.Options, EncryptionService.Service.EncryptString);
+    //public static void AddSecretToConfig(this ApplicationConfiguration configuration, string secretName)
+    //{
+    //    var secret = new SecretItemConfiguration { Name = secretName };
+    //    configuration.Core.Modules.Security.Secrets ??= new();
+    //    configuration.Core.Modules.Security.Secrets.Add(secret);
+    //    ConfigurationService.Service.SaveChanges(configuration);
+    //}
 
-        configuration.Secrets ??= new();
-        configuration.Secrets.Add(secret);
-        ConfigurationService.Service.SaveChanges(configuration);
-        Console.WriteLine();
-        ConsoleService.Writer.WriteHeaderLine("New secret created and stored in configuration file");
-        ConsoleService.Writer.WriteDescription( secretName, val);
-    }
-    public static void AddSecretToConfig(this ApplicationConfiguration configuration, string secretName)
+    public static string DecryptSecret(this SecurityConfiguration secretConfiguration, string secretName)
     {
-        var secret = new SecretItemConfiguration { Name = secretName };
-        configuration.Core.Modules.Security.Secrets ??= new();
-        configuration.Core.Modules.Security.Secrets.Add(secret);
+        var logger = LoggerProvider.CreateLogger<SecurityConfiguration>();
+        try
+        {
+            var secret = secretConfiguration.Secrets.FirstOrDefault(s => s.Name == secretName);
+            if (secret == null) return "";
+            var retVal = SecretService.Service.GetSecret(secret.Name, secret.Options, EncryptionService.Service.DecryptString);
+            return retVal;
+        }
+        catch(Exception ex)
+        {
+            logger.LogError($"{nameof(SecretExtensions)} {nameof(DecryptSecret)} {ex.Message}");
+            return "";
+        }
+    }
+    public static string EncryptSecret(this SecurityConfiguration configuration,  EnvironmentVariableTarget target, string secretName, string secret)
+    {
+        var existing = configuration.Secrets.FirstOrDefault(s => s.Name == secretName);
+        if (existing != null) configuration.Secrets.Remove(existing);
+        var secretConfiguration = new SecretItemConfiguration(target) { Name = secretName };
+        configuration.Secrets.Add(secretConfiguration);
+        var retVal = SecretService.Service.SetSecret(secretName, secret, secretConfiguration.Options,EncryptionService.Service.EncryptString);
         ConfigurationService.Service.SaveChanges(configuration);
+        return retVal;
     }
 }

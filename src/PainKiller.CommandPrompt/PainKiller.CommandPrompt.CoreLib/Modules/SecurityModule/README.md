@@ -1,4 +1,4 @@
-# SecurityModule Version 1.0
+# Security Module Version 1.0
 The SecurityModule provides basic encryption setup and management to ensure secure handling of sensitive data within the CommandPrompt environment.
 
 ## Features:

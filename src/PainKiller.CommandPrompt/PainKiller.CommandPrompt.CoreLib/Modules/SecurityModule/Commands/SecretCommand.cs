@@ -62,8 +62,9 @@ public class SecretCommand(string identifier) : ConsoleCommandBase<ApplicationCo
     }
     private RunResult Create(string name)
     {
+        var secret = DialogService.GetSecret("secret");
         if (string.IsNullOrEmpty(name)) return Nok("No name provided, secret can´t be created");
-        Configuration.Core.Modules.Security.CreateSecret(name);
+        Configuration.Core.Modules.Security.EncryptSecret(EnvironmentVariableTarget.User, name, secret);
         return Ok();
     }
 }

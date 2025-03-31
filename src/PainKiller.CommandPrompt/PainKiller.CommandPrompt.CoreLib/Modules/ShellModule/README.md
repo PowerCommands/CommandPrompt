@@ -1,4 +1,4 @@
-# ShellModule Version 1.0
+# Shell Module Version 1.0
 The ShellModule is designed to facilitate navigation and basic file operations within the CommandPrompt environment. It provides several commands to change directories, list content, manage files, and interact with the operating system.
 
 ## Commands:

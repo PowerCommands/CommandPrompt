@@ -2,6 +2,7 @@
 using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
 using PainKiller.CommandPrompt.CoreLib.Core.DomainObjects;
 using PainKiller.CommandPrompt.CoreLib.Metadata.Attributes;
+using PainKiller.CommandPrompt.CoreLib.Modules.SecurityModule.Extensions;
 using PainKiller.PromptKit.Bootstrap;
 
 namespace PainKiller.PromptKit.Commands;
@@ -11,7 +12,8 @@ public class FailureCommand(string identifier) : ConsoleCommandBase<CommandPromp
 {
     public override RunResult Run(ICommandLineInput input)
     {
-        File.ReadAllBytes("lkjasdflajfd");
+        var secret = Configuration.Core.Modules.Security.DecryptSecret("babar");
+        Writer.WriteSuccessLine(secret);
         return Ok();
     }
 }
