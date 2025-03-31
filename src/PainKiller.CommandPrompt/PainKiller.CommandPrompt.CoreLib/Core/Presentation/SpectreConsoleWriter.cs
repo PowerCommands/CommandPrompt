@@ -83,7 +83,39 @@ public class SpectreConsoleWriter : IConsoleWriter
         var escaped = Markup.Escape(prompt);
         AnsiConsole.Markup($"[bold]{escaped} [/]");
     }
+    public void WriteRowWithColor(int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, string rowContent)
+    {
+        int originalLeft = Console.CursorLeft;
+        int originalTop = Console.CursorTop;
 
+        ConsoleColor originalForeColor = Console.ForegroundColor;
+        ConsoleColor originalBackColor = Console.BackgroundColor;
+
+        Console.SetCursorPosition(0, top);
+
+        int consoleWidth = Console.WindowWidth;
+
+        // Clear the row
+        Console.SetCursorPosition(0, top);
+        Console.Write(new string(' ', consoleWidth));
+
+        // Set the cursor position back to the start of the row
+        Console.SetCursorPosition(0, top);
+
+        // Set the new text color for the row
+        Console.ForegroundColor = foregroundColor;
+        Console.BackgroundColor = backgroundColor;
+
+        // Write the original row content again with the new text color
+        Console.Write(rowContent);
+
+        // Restore the original text and background colors
+        Console.ForegroundColor = originalForeColor;
+        Console.BackgroundColor = originalBackColor;
+
+        // Restore the original cursor position
+        Console.SetCursorPosition(originalLeft, originalTop);
+    }
     public void Clear() => AnsiConsole.Clear();
     public void WriteTable<T>(IEnumerable<T> items, string[]? columnNames = null, Color? consoleColor = null)
     {
@@ -115,6 +147,17 @@ public class SpectreConsoleWriter : IConsoleWriter
             table.AddRow(row.ToArray());
         }
         AnsiConsole.Write(table);
+    }
+    public void ClearRow(int top)
+    {
+        var originalLeft = Console.CursorLeft;
+        var originalTop = Console.CursorTop;
+
+        Console.SetCursorPosition(0, top);
+        var blankRow = new string(' ', Console.WindowWidth);
+
+        Console.Write(blankRow);
+        Console.SetCursorPosition(originalLeft, originalTop);
     }
     private string ToDefaultColorIfBlack(string text, Color color) => color == Color.Black ? text : $"[{color}]{text}[/]";
 }

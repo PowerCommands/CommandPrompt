@@ -28,6 +28,12 @@ configuration:
       storage:
         applicationDataFolder: PromptKit
         backupPath: backup
+      ollama:
+        baseAddress: localhost
+        port: 11434
+        model: gemma3:latest
+      chatGpt:
+        searchUri: https://chatgpt.com/?q=$QUERY$&hints=search
   log:
     fileName: commandprompt.log
     filePath: logs

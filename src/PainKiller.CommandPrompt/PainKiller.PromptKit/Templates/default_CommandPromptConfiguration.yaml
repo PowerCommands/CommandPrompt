@@ -7,7 +7,8 @@ configuration:
     prompt: cp>
     defaultCommand: ''
     showLogo: true
-    suggestions: []
+    suggestions: 
+    - exit
     roamingDirectoryName: CommandPrompt
     modules:
       security:
@@ -18,6 +19,12 @@ configuration:
       storage:
         applicationDataFolder: $APPLICATION_NAME$
         backupPath: backup
+      ollama:
+        baseAddress: localhost
+        port: 11434
+        model: gemma3:latest
+      chatGpt:
+        searchUri: https://chatgpt.com/?q=$QUERY$&hints=search
   log:
     fileName: commandprompt.log
     filePath: logs

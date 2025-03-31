@@ -13,5 +13,7 @@ public interface IConsoleWriter
     void WriteUrl(string text, bool writeLog = true, string scope = "");
     void WriteTable<T>(IEnumerable<T> items, string[]? columnNames = null, Color? consoleColor = null);
     void WritePrompt(string prompt);
+    void WriteRowWithColor(int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, string rowContent);
     void Clear();
+    void ClearRow(int top);
 }

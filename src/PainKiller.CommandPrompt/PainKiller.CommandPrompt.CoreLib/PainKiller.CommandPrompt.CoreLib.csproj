@@ -18,6 +18,8 @@
 	<ItemGroup>
 	  <Folder Include="Core\Utils\" />
 	  <Folder Include="Logging\Extensions\" />
+	  <Folder Include="Modules\ChatGptModule\Commands\" />
+	  <Folder Include="Modules\ChatGptModule\Configuration\" />
 	  <Folder Include="Modules\StorageModule\Contracts\" />
 	</ItemGroup>
 	<ItemGroup>

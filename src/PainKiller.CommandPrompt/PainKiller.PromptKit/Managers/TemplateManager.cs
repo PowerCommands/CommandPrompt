@@ -62,7 +62,7 @@ public class TemplateManager(string projectName, string modulesDirectory, string
                 var lines = File.ReadLines(readmePath).Take(2).ToList();
                 if (lines.Count > 0)
                 {
-                    var rawDescription = lines.Last() ?? "No description available";
+                    var rawDescription = string.Join(' ', lines) ?? "No description available";
                     var description = MarkdownToSpectreConverter.Convert(rawDescription);
                     modules.Add((moduleName, description));
                 }

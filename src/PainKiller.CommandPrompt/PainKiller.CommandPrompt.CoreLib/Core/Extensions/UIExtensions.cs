@@ -12,4 +12,5 @@ public static class UIExtensions
         var attr = member[0].GetCustomAttribute<DescriptionAttribute>();
         return attr?.Description ?? symbol.ToString();
     }
+    public static string ToCheck(this bool val, string trueCheck = "✅", string falseCheck = "") => val ? trueCheck : falseCheck;
 }
