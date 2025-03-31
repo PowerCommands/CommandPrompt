@@ -26,7 +26,7 @@ public class StorageCommand(string identifier) : ConsoleCommandBase<ApplicationC
     public override RunResult Run(ICommandLineInput input)
     {
         var dir = StorageService<Dummie>.Service.GetRootDirectory();
-        Writer.WriteHeadLine($"{Emo.Directory.Icon()} App directory {dir.GetDirectorySize().GetDisplayFormattedFileSize()}");
+        Writer.WriteHeadLine($"{Emo.Directory.Icon()} App directory {dir.FullName} {dir.GetDirectorySize().GetDisplayFormattedFileSize()}");
         foreach (var file in dir.GetFiles()) Writer.WriteLine($"├──{Emo.File.Icon()} {file.Name}");
         return Ok();
     }

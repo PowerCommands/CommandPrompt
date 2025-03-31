@@ -15,6 +15,9 @@ configuration:
         - name: CommandPrompt_encryptionManager
           options:
             target: User
+      storage:
+        applicationDataFolder: $APPLICATION_NAME$
+        backupPath: backup
   log:
     fileName: commandprompt.log
     filePath: logs
