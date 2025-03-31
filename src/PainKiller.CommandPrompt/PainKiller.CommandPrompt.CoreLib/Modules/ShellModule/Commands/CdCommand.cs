@@ -58,6 +58,8 @@ public class CdCommand : ConsoleCommandBase<ApplicationConfiguration>
             path = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         else if (lowerArgs.Contains("programs"))
             path = Environment.GetFolderPath(Environment.SpecialFolder.Programs);
+        else if (lowerArgs.Contains("temp"))
+            path = Path.GetTempPath();
         else if (lowerArgs.Contains("modules"))
         {
             Environment.CurrentDirectory = AppContext.BaseDirectory;
