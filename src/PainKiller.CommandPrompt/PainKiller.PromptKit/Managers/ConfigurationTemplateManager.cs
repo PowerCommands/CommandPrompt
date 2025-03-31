@@ -76,19 +76,23 @@ public class ConfigurationTemplateManager(TemplatePaths paths, string projectNam
 
         foreach (var line in lines)
         {
-            // Kolla om raden innehåller "get; set;" vilket indikerar en property
-            if (line.Contains("get; set;"))
+            if (line.TrimStart().StartsWith("using "))
             {
-                // Extrahera modulnamnet mellan "public" och "get; set;"
+                var usingLine = line.Trim();
+                var moduleName = usingLine.Replace(";", "").Split('.')
+                    .FirstOrDefault(part => selectedModules.Any(m => part.Contains(m.Replace("Module", ""), StringComparison.OrdinalIgnoreCase)));
+
+                if (moduleName != null)
+                    outputLines.Add(line);
+            }
+            else if (line.Contains("get; set;"))
+            {
                 var trimmed = line.Trim();
                 var words = trimmed.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            
-                if (words.Length >= 4) 
+
+                if (words.Length >= 4)
                 {
-                    // Modulnamnet är tredje ordet (efter "public" och typ)
                     var propertyName = words[2].Replace("{", "").Trim();
-                
-                    // Om modulen är vald, lägg till raden i output
                     if (selectedModules.Any(m => m.Replace("Module", "").Equals(propertyName, StringComparison.OrdinalIgnoreCase)))
                     {
                         outputLines.Add(line);
@@ -97,12 +101,9 @@ public class ConfigurationTemplateManager(TemplatePaths paths, string projectNam
             }
             else
             {
-                // Lägg till rader som inte är properties direkt till output
                 outputLines.Add(line);
             }
         }
         File.WriteAllLines(targetCsFilePath, outputLines);
     }
-
-
 }

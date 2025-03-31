@@ -18,8 +18,9 @@ public class NewCommand(string identifier) : ConsoleCommandBase<CommandPromptCon
     public override RunResult Run(ICommandLineInput input)
     {
         var projectName = DialogService.QuestionAnswerDialog("Name your project, a prefix is recommended, like Company.MagicPrompts");
-        var outputDirectory = DialogService.PathDialog("Where do you want to output your new project? \n(a directory with the project name will be created in output folder)");
         CommandDiscoveryService.TryGetCommand("cd", out var cdCommand);
+        cdCommand!.ExecuteWithSimpleOptions(options: ["documents", "no-output"]);
+        var outputDirectory = DialogService.PathDialog("Where do you want to output your new project? \n(a directory with the project name will be created in output folder)", Path.Combine(Environment.CurrentDirectory, nameof(PromptKit), projectName));
         cdCommand!.Execute(options: new Dictionary<string, string> { { "modules", "" },{ "no-output", "" } });
         var publisherManager = new TemplateManager(projectName, Environment.CurrentDirectory, outputDirectory, Configuration.PromptKit.ConfigurationTemplate, Configuration.PromptKit.Ignores);
         publisherManager.Run();

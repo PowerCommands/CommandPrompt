@@ -27,18 +27,20 @@ public class TemplateManager(string projectName, string modulesDirectory, string
         ConsoleService.Writer.WriteSuccessLine("✅ Copy Core project");
         
         var configurationFileCreator = new ConfigurationTemplateManager(paths, projectName);
-        configurationFileCreator.CreateYamlConfigurationFile(modules.Select(m => m.Name).ToList());
+        configurationFileCreator.CreateYamlConfigurationFile(selectedModules.ToList());
         ConsoleService.Writer.WriteSuccessLine($"✅ {nameof(CommandPromptConfiguration)}.yaml file created.");
         configurationFileCreator.ProcessCsConfiguration(paths.ModulesConfigurationPath.Source, paths.ModulesConfigurationPath.Target, selectedModules);
         ConsoleService.Writer.WriteSuccessLine($"✅ {nameof(ModulesConfiguration)}.cs file created.");
-        
-        copyManager.CreateAppProject(projectName, ignores);
+
+
+        var appCreationMAnager = new AppProjectCreationManager(paths, projectName);
+        appCreationMAnager.CreateAppProject(ignores);
         ConsoleService.Writer.WriteSuccessLine($"✅ {projectName} created.");
         
         IOService.CopyFolder(paths.ReadLineRoot.Source, paths.ReadLineRoot.Target);
         ConsoleService.Writer.WriteSuccessLine($"✅ ReadLine project copied.");
         
-        copyManager.CreateSolutionFile(projectName);
+        appCreationMAnager.CreateSolutionFile();
         ConsoleService.Writer.WriteSuccessLine($"✅ VS Solution file created.");
 
         ConsoleService.Writer.WriteLine();
@@ -84,4 +86,3 @@ public class TemplateManager(string projectName, string modulesDirectory, string
         return selectedModules.Select(s => s.Split(' ').First()).ToList();
     }
 }
-    

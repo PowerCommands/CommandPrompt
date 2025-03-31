@@ -55,18 +55,23 @@ public static class DialogService
                 .Validate(answer => 
                     !string.IsNullOrWhiteSpace(answer) ? ValidationResult.Success() : ValidationResult.Error("[red]Input cannot be empty[/]")));
     }
-    public static string PathDialog(string prompt = "Enter output path:")
+    public static string PathDialog(string prompt = "Enter output path:", string defaultPath = "")
     {
         while (true)
         {
             AnsiConsole.MarkupLine($"[blue]Current working directory: [magenta]{Environment.CurrentDirectory}[/][/]");
-        
+            if(!string.IsNullOrEmpty(defaultPath)) AnsiConsole.MarkupLine($"[cyan]Default if left empty: [magenta]{defaultPath}[/][/]");
+
             var input = AnsiConsole.Prompt(
                 new TextPrompt<string>(prompt)
                     .PromptStyle("Magenta")
+                    .AllowEmpty()
                     .ValidationErrorMessage("[red]Invalid path[/]")
                     .Validate(input =>
                     {
+                        if (string.IsNullOrWhiteSpace(input) && !string.IsNullOrWhiteSpace(defaultPath))
+                            return ValidationResult.Success();
+
                         try
                         {
                             var fullPath = Path.GetFullPath(input, Environment.CurrentDirectory);
@@ -80,11 +85,16 @@ public static class DialogService
                         }
                     }));
 
-            // Om relativ sökväg, omvandla till absolut baserat på den aktuella arbetskatalogen
+            // Return the default path if input is empty and default path is provided
+            if (string.IsNullOrWhiteSpace(input) && !string.IsNullOrWhiteSpace(defaultPath))
+                return defaultPath;
+
+            // Resolve and confirm the path
             var resolvedPath = Path.GetFullPath(input, Environment.CurrentDirectory);
 
             if (AnsiConsole.Confirm($"You entered: [magenta]{resolvedPath}[/]. Is this correct?"))
                 return resolvedPath;
         }
     }
+
 }

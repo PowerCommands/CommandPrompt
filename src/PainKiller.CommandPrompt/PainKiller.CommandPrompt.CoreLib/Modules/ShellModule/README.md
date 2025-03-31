@@ -11,7 +11,7 @@ FileCommand
 
 ## Services:
 
-1. IOService
+### IOService
 
 Description: Provides file and folder management operations, including copying entire folders.
 
@@ -19,6 +19,8 @@ Methods:
 
 CopyFolder: Recursively copies files and subdirectories from a source folder to a destination folder.
 
-2. ShellService
-
+### ShellService
 Description: Executes shell operations such as opening directories, running programs, and opening files with the default system application.
+
+### ZipService
+Handles Zip archives, zip, unzip.

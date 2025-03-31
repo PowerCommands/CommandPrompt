@@ -31,7 +31,11 @@ public static class ConsoleCommandExtensions
         var executor = new CommandExecutor();
         return executor.Execute(command, input);
     }
-
+    public static RunResult ExecuteWithSimpleOptions(this IConsoleCommand command, string[]? arguments = null, string[]? quotes = null, params string[] options)
+    {
+        var optionsDict = options.ToDictionary(opt => opt, opt => string.Empty);
+        return command.Execute(arguments: arguments, quotes: quotes, options: optionsDict);
+    }
     private static string BuildRaw(
         IConsoleCommand command,
         string[]? arguments,
