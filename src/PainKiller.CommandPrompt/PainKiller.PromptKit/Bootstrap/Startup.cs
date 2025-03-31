@@ -22,13 +22,11 @@ public static class Startup
         logger.LogInformation($"{config.Core.Name} started, configuration read and logging initialized.");
         
         ShowLogo(config.Core);
-
         EventBusService.Service.Subscribe<SetupRequiredEventArgs>(args =>
         {
             logger.LogInformation($"Setup required: {args.Description}");
             args.SetupAction?.Invoke();
         });
-
         var commands = CommandDiscoveryService.DiscoverCommands(config);
         foreach (var consoleCommand in commands) consoleCommand.OnInitialized();
         

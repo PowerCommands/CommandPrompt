@@ -8,14 +8,6 @@ namespace PainKiller.CommandPrompt.CoreLib.Modules.SecurityModule.Extensions;
 
 public static class SecretExtensions
 {
-    //public static void AddSecretToConfig(this ApplicationConfiguration configuration, string secretName)
-    //{
-    //    var secret = new SecretItemConfiguration { Name = secretName };
-    //    configuration.Core.Modules.Security.Secrets ??= new();
-    //    configuration.Core.Modules.Security.Secrets.Add(secret);
-    //    ConfigurationService.Service.SaveChanges(configuration);
-    //}
-
     public static string DecryptSecret(this SecurityConfiguration secretConfiguration, string secretName)
     {
         var logger = LoggerProvider.CreateLogger<SecurityConfiguration>();

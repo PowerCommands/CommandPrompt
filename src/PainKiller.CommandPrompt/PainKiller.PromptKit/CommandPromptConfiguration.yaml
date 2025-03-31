@@ -25,6 +25,9 @@ configuration:
         - name: babar
           options:
             target: User
+      storage:
+        applicationDataFolder: PromptKit
+        backupPath: backup
   log:
     fileName: commandprompt.log
     filePath: logs

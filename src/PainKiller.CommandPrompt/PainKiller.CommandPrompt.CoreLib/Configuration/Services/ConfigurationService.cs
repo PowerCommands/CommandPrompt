@@ -31,6 +31,46 @@ public class ConfigurationService : IConfigurationService
                 return new YamlContainer<T>();
             }
         }
+
+        public YamlContainer<T> GetFlexible<T>(string inputFileName = "") where T : new()
+        {
+            var fileName = string.IsNullOrEmpty(inputFileName) ? $"{typeof(T).Name}.yaml".GetSafePathRegardlessHowApplicationStarted() : inputFileName.GetSafePathRegardlessHowApplicationStarted();
+            var yamlContent = File.ReadAllText(fileName);
+
+            var deserializer = new DeserializerBuilder()
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                .IgnoreUnmatchedProperties() // Viktigt: Ignorera okända fält
+                .Build();
+            try
+            {
+                // Försök att deserialisera direkt till den utökade klassen
+                var config = deserializer.Deserialize<YamlContainer<T>>(yamlContent);
+                return config;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Warning: Could not deserialize the full configuration. Attempting to load base configuration. Error: {ex.Message}");
+
+                try
+                {
+                    // Försök igen med basklassen och ignorera okända fält
+                    var baseDeserializer = new DeserializerBuilder()
+                        .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                        .IgnoreUnmatchedProperties()
+                        .Build();
+                    var baseConfig = baseDeserializer.Deserialize<T>(yamlContent);
+                    return new YamlContainer<T> { Configuration = baseConfig };
+                }
+                catch
+                {
+                    Console.WriteLine($"Could not deserialize the configuration file even after fallback, default configuration will be loaded instead.\nA template configuration file named default_{typeof(T).Name}.yaml will be created in application root.");
+                    var defaultConfig = new T();
+                    SaveChanges(defaultConfig, $"default_{typeof(T).Name}.yaml");
+                    return new YamlContainer<T>();
+                }
+            }
+        }
+
         public string SaveChanges<T>(T configuration, string inputFileName = "") where T : new()
         {
             if (configuration is null) return "";
