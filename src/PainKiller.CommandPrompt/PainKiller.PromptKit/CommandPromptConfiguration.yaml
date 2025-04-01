@@ -18,7 +18,7 @@ configuration:
     suggestions:
     - cd ..\..\..\..\PainKiller.CommandPrompt.CoreLib\modules
     - exit
-    roamingDirectoryName: CommandPrompt
+    roamingDirectory: PromptKit
     modules:
       security:
         secrets:        

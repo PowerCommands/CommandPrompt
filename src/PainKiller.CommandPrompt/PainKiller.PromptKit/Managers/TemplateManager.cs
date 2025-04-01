@@ -25,6 +25,9 @@ public class TemplateManager(string projectName, string modulesDirectory, string
         var copyManager = new CopyManager(paths);
         copyManager.CopyCoreProject(selectedModules, ignores);
         ConsoleService.Writer.WriteSuccessLine("✅ Copy Core project");
+
+        //CsprojCleaner.RemoveDeadReferencesAndRebuildProjectFile(paths.CoreLibRoot.Source);
+        //ConsoleService.Writer.WriteSuccessLine("✅ Dead references (modules not selected) removed from core project file.");
         
         var configurationFileCreator = new ConfigurationTemplateManager(paths, projectName);
         configurationFileCreator.CreateYamlConfigurationFile(selectedModules.ToList());

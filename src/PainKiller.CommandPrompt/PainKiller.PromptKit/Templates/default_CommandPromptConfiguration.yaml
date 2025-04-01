@@ -9,7 +9,7 @@ configuration:
     showLogo: true
     suggestions: 
     - exit
-    roamingDirectoryName: CommandPrompt
+    roamingDirectory: CommandPrompt
     modules:
       security:
         secrets:
