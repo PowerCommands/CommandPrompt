@@ -26,7 +26,7 @@ configuration:
           options:
             target: User
       storage:
-        applicationDataFolder: PromptKit
+        applicationDataFolder: $ROAMING$\PromptKit
         backupPath: backup
       ollama:
         baseAddress: localhost

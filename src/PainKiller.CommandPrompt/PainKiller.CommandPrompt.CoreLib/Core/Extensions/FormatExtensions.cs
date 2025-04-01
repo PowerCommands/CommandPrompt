@@ -174,6 +174,7 @@ public static class FormatExtensions
             // Database files
             { ".db", "Database file" },
             { ".sql", "SQL database file" },
+            { ".data", "Object storage file" },
             { ".sqlite", "SQLite database file" },
             { ".mdb", "Microsoft Access database" },
 
