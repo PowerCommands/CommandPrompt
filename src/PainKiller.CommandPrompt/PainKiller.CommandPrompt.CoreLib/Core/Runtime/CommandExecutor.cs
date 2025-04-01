@@ -3,7 +3,7 @@ using PainKiller.CommandPrompt.CoreLib.Logging.Services;
 
 namespace PainKiller.CommandPrompt.CoreLib.Core.Runtime;
 
-public class CommandExecutor
+public class CommandExecutor : ICommandExecutor
 { 
     private readonly ILogger<CommandExecutor> _logger = LoggerProvider.CreateLogger<CommandExecutor>();
     public RunResult Execute(IConsoleCommand? command, ICommandLineInput commandLineInput)
