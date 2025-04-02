@@ -2,7 +2,7 @@
 namespace PainKiller.CommandPrompt.CoreLib.Core.Services;
 public static class ConsoleService
 {
-    public static readonly IConsoleWriter Writer = new SpectreConsoleWriter();
+    public static readonly IConsoleWriter Writer = SpectreConsoleWriter.Instance;
     public static void WriteCenteredText(string headline, string text)
     {
         var centeredText = new FigletText(text)

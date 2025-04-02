@@ -5,6 +5,11 @@ using static Serilog.Log;
 namespace PainKiller.CommandPrompt.CoreLib.Core.Presentation;
 public class SpectreConsoleWriter : IConsoleWriter
 {
+    // ReSharper disable once InconsistentNaming
+    private static readonly Lazy<SpectreConsoleWriter> _instance = new(() => new SpectreConsoleWriter());
+    public static SpectreConsoleWriter Instance => _instance.Value;
+    private SpectreConsoleWriter(){}
+
     private int _reservedLines;
     public void WriteDescription(string label, string text, bool writeToLog = true, Color? consoleColor = null, string scope = "")
     {
