@@ -13,7 +13,8 @@ namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Commands;
                  "Remember that filename containing white spaces must be surrounded with quotation marks.",
     options: ["read", "write", "delete", "open", "properties", "copy", "move", "confirm", "overwrite"],
     arguments: ["fileName"],
-    examples: ["//Read a file in current working directory (use dir command to see current directory, cd command to change directory)","file filename.txt --read"])]
+    examples: ["//Read a file in current working directory (use dir command to see current directory, cd command to change directory)","file filename.txt --read",
+               "//View properties", "file filename.txt --properties"])]
 public class FileCommand : ConsoleCommandBase<ApplicationConfiguration>
 {
     private void OnWorkingDirectoryChanged(WorkingDirectoryChangedEventArgs e) => UpdateSuggestions(e.NewWorkingDirectory);
