@@ -22,6 +22,10 @@ public class TemplateManager(string projectName, string modulesDirectory, string
         var modules = ModulesDiscovery();
         _logger.LogDebug($"Modules found: {string.Join(',', modules)}");
         var selectedModules = DisplayModuleSelection(modules);
+
+        var confirm = ShowConfirmationDialog(projectName, selectedModules, outputDirectory);
+        if (!confirm) return;
+        
         if(Directory.Exists(paths.Root.Target)) Directory.Delete(outputDirectory, recursive: true);
         var copyManager = new CopyManager(paths);
         copyManager.CopyCoreProject(selectedModules, ignores);
@@ -76,17 +80,67 @@ public class TemplateManager(string projectName, string modulesDirectory, string
     }
     private List<string> DisplayModuleSelection(List<(string Name, string Description)> modules)
     {
-        var choices = modules.Select(m => $"{m.Name} - {m.Description}").ToList();
-        var selectedModules = AnsiConsole.Prompt(
-            new MultiSelectionPrompt<string>()
-                .Title("Select the modules to include:")
-                .PageSize(10)
-                .MoreChoicesText("[grey](Move up and down to reveal more)[/]")
-                .InstructionsText("[grey](Press [blue]<space>[/] to toggle a module, [magenta]<enter>[/] to accept)[/]")
-                .AddChoices(choices)
-                .NotRequired());
+        while (true)
+        {
+            var choices = modules.Select(m => $"{m.Name} - {m.Description}").ToList();
+            var selectedModules = AnsiConsole.Prompt(
+                new MultiSelectionPrompt<string>()
+                    .Title("Select the modules to include:")
+                    .PageSize(10)
+                    .MoreChoicesText("[grey](Move up and down to reveal more)[/]")
+                    .InstructionsText("[grey](Press [blue]<space>[/] to toggle a module, [magenta]<enter>[/] to accept)[/]")
+                    .AddChoices(choices)
+                    .NotRequired());
 
-        writer.WriteDescription("Selected modules", $"{string.Join(", ", selectedModules.Select(s => s.Split(' ').First()))}");
-        return selectedModules.Select(s => s.Split(' ').First()).ToList();
+            if (!selectedModules.Any())
+            {
+                writer.WriteLine("No modules selected.");
+                return new List<string>();
+            }
+
+            var selectedModuleNames = selectedModules.Select(s => s.Split(' ').First()).ToList();
+            writer.WriteDescription("Selected modules", $"{string.Join(", ", selectedModuleNames)}");
+
+            var confirmation = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .Title("Do you want to proceed with the selected modules?")
+                    .AddChoices("Yes", "No, redo selection", "Cancel"));
+
+            if (confirmation == "Yes")
+            {
+                return selectedModuleNames;
+            }
+            if (confirmation == "Cancel")
+            {
+                writer.WriteLine("Module selection canceled.");
+                return new List<string>();
+            }
+        }
     }
+    private bool ShowConfirmationDialog(string name, List<string> selectedModules, string outputDir)
+    {
+        var projectNameDisplay = $"[bold blue]{name}[/]";
+        var selectedModulesDisplay = selectedModules.Any() 
+            ? string.Join(", ", selectedModules.Select(m => $"[bold gray]{m}[/]"))
+            : "[bold red]None[/]";
+        var outputPathDisplay = $"[bold magenta]{outputDir}[/]";
+
+        var infoPanel = new Panel(
+                new Markup(
+                    $"[bold]Project Name:[/] {projectNameDisplay}\n" +
+                    $"[bold]Selected Modules:[/] {selectedModulesDisplay}\n" +
+                    $"[bold]Output Path:[/] {outputPathDisplay}\n\n" +
+                    "[bold red]Warning:[/] The output path will be [bold]deleted[/] if it already exists."
+                ))
+            .Header("[DarkMagenta]Project Configuration[/]")
+            .Border(BoxBorder.Double)
+            .BorderStyle(Style.Parse("Gray"))
+            .Padding(1, 1);
+
+        AnsiConsole.Write(infoPanel);
+
+        return AnsiConsole.Confirm("[gray]Do you want to proceed?[/]");
+    }
+
+
 }
