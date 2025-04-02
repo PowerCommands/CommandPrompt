@@ -10,15 +10,15 @@ public class TemplatePaths
         var coreLibRoot = Directory.GetParent(sourceModulePath)!.FullName;
         var root = Directory.GetParent(coreLibRoot)!.FullName;
         var promptKitRoot = Path.Combine(root, $"{nameof(PainKiller)}.{nameof(PromptKit)}");
-        var targetApplicationRoot = Path.Combine(outputPath, projectName, $"{projectName}Client");
+        var targetApplicationRoot = Path.Combine(outputPath, $"{projectName}Client");
         var readLineRoot = Path.Combine(root, $"{nameof(PainKiller)}.{nameof(ReadLine)}");
-        CoreLibRoot = new TemplatePath(Source: coreLibRoot, Target: Path.Combine(outputPath, projectName,$"{nameof(PainKiller)}.{nameof(CommandPrompt)}.CoreLib"));
+        CoreLibRoot = new TemplatePath(Source: coreLibRoot, Target: Path.Combine(outputPath,$"{nameof(PainKiller)}.{nameof(CommandPrompt)}.CoreLib"));
         ApplicationRoot = new TemplatePath(Source: promptKitRoot, Target: targetApplicationRoot);
         ModulesRoot = new TemplatePath(Source: sourceModulePath, Target: Path.Combine(outputPath, $"{nameof(PainKiller)}.{nameof(CommandPrompt)}.CoreLib", "Modules"));
         ConfigurationYamlPath = new TemplatePath(Source: Path.Combine(promptKitRoot,"Templates", configurationTemplate), Target: Path.Combine(targetApplicationRoot, $"{nameof(CommandPromptConfiguration)}.yaml"));
-        ModulesConfigurationPath = new TemplatePath(Source: Path.Combine(coreLibRoot, "Configuration", "DomainObjects", "ModulesConfiguration.cs"), Target: Path.Combine(outputPath, projectName, "PainKiller.CommandPrompt.CoreLib", "Configuration", "DomainObjects", "ModulesConfiguration.cs"));
+        ModulesConfigurationPath = new TemplatePath(Source: Path.Combine(coreLibRoot, "Configuration", "DomainObjects", "ModulesConfiguration.cs"), Target: Path.Combine(outputPath,"PainKiller.CommandPrompt.CoreLib", "Configuration", "DomainObjects", "ModulesConfiguration.cs"));
         Root = new TemplatePath(root, outputPath);
-        ReadLineRoot = new TemplatePath(readLineRoot, Path.Combine(outputPath, projectName ,$"{nameof(PainKiller)}.{nameof(ReadLine)}"));
+        ReadLineRoot = new TemplatePath(readLineRoot, Path.Combine(outputPath,$"{nameof(PainKiller)}.{nameof(ReadLine)}"));
     }
     public TemplatePath Root { get; init; }
     public TemplatePath ReadLineRoot { get; init; }

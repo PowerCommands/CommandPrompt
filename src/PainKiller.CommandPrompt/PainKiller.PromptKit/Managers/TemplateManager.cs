@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using PainKiller.CommandPrompt.CoreLib.Configuration.DomainObjects;
+using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
 using PainKiller.CommandPrompt.CoreLib.Core.Events;
 using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Core.Utils;
@@ -11,7 +12,7 @@ using Spectre.Console;
 
 namespace PainKiller.PromptKit.Managers;
 
-public class TemplateManager(string projectName, string modulesDirectory, string outputDirectory, string configurationTemplateName, List<string> ignores)
+public class TemplateManager(string projectName, string modulesDirectory, string outputDirectory, string configurationTemplateName, List<string> ignores, IConsoleWriter writer)
 {
     private readonly ILogger<TemplateManager> _logger = LoggerProvider.CreateLogger<TemplateManager>();
     public void Run()
@@ -24,27 +25,30 @@ public class TemplateManager(string projectName, string modulesDirectory, string
         if(Directory.Exists(paths.Root.Target)) Directory.Delete(outputDirectory, recursive: true);
         var copyManager = new CopyManager(paths);
         copyManager.CopyCoreProject(selectedModules, ignores);
-        ConsoleService.Writer.WriteSuccessLine("✅ Copy Core project");
+        writer.WriteSuccessLine("✅ Copy Core project");
         
         var configurationFileCreator = new ConfigurationTemplateManager(paths, projectName);
         configurationFileCreator.CreateYamlConfigurationFile(selectedModules.ToList());
-        ConsoleService.Writer.WriteSuccessLine($"✅ {nameof(CommandPromptConfiguration)}.yaml file created.");
+        writer.WriteSuccessLine($"✅ {nameof(CommandPromptConfiguration)}.yaml file created.");
         configurationFileCreator.ProcessCsConfiguration(paths.ModulesConfigurationPath.Source, paths.ModulesConfigurationPath.Target, selectedModules);
-        ConsoleService.Writer.WriteSuccessLine($"✅ {nameof(ModulesConfiguration)}.cs file created.");
+        writer.WriteSuccessLine($"✅ {nameof(ModulesConfiguration)}.cs file created.");
 
 
         var appCreationManager = new AppProjectCreationManager(paths, projectName);
         appCreationManager.CreateAppProject(ignores);
-        ConsoleService.Writer.WriteSuccessLine($"✅ {projectName} created.");
+        writer.WriteSuccessLine($"✅ {projectName} created.");
         
         IOService.CopyFolder(paths.ReadLineRoot.Source, paths.ReadLineRoot.Target);
-        ConsoleService.Writer.WriteSuccessLine($"✅ ReadLine project copied.");
+        writer.WriteSuccessLine($"✅ ReadLine project copied.");
         
         appCreationManager.CreateSolutionFile();
-        ConsoleService.Writer.WriteSuccessLine($"✅ VS Solution file created.");
+        writer.WriteSuccessLine($"✅ VS Solution file created.");
 
-        ConsoleService.Writer.WriteLine();
-        ConsoleService.Writer.WriteHeadLine("Everything is created!");
+        var dependencyManager = new DependencyManager(Path.Combine(paths.CoreLibRoot.Target, $"PainKiller.CommandPrompt.CoreLib.csproj"), paths.CoreLibRoot.Source, selectedModules, modules.Select(m => m.Name), writer);
+        dependencyManager.CleanDependencies();
+
+        writer.WriteLine();
+        writer.WriteHeadLine("Everything is created!");
 
         Environment.CurrentDirectory = outputDirectory;
         EventBusService.Service.Publish(new WorkingDirectoryChangedEventArgs(Environment.CurrentDirectory));
@@ -82,7 +86,7 @@ public class TemplateManager(string projectName, string modulesDirectory, string
                 .AddChoices(choices)
                 .NotRequired());
 
-        ConsoleService.Writer.WriteDescription("Selected modules", $"{string.Join(", ", selectedModules.Select(s => s.Split(' ').First()))}");
+        writer.WriteDescription("Selected modules", $"{string.Join(", ", selectedModules.Select(s => s.Split(' ').First()))}");
         return selectedModules.Select(s => s.Split(' ').First()).ToList();
     }
 }
