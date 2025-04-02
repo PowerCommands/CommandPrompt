@@ -20,7 +20,7 @@ public static class Startup
         
         var logger = LoggerProvider.CreateLogger<Program>();
         logger.LogInformation($"{config.Core.Name} started, configuration read and logging initialized.");
-        
+
         ShowLogo(config.Core);
         EventBusService.Service.Subscribe<SetupRequiredEventArgs>(args =>
         {

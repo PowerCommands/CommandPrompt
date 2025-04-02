@@ -12,7 +12,7 @@ public static class InteractiveFilter<T>
 
         while (true)
         {
-            AnsiConsole.Clear();
+            ConsoleService.Writer.Clear();
             AnsiConsole.MarkupLine("[grey]Use [italic]Up/Down Arrows[/] to navigate, [italic]Enter[/] to select, [italic]Escape[/] to exit, [italic]Backspace[/] to delete filter, [italic]Any character[/] to filter.[/]");
             display(filtered, selectedIndex);
 

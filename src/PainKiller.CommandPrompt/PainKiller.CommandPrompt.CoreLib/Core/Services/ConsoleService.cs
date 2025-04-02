@@ -1,7 +1,5 @@
 ﻿using Spectre.Console;
-
 namespace PainKiller.CommandPrompt.CoreLib.Core.Services;
-
 public static class ConsoleService
 {
     public static readonly IConsoleWriter Writer = new SpectreConsoleWriter();

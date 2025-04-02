@@ -5,8 +5,10 @@ using static Serilog.Log;
 namespace PainKiller.CommandPrompt.CoreLib.Core.Presentation;
 public class SpectreConsoleWriter : IConsoleWriter
 {
+    private int _reservedLines;
     public void WriteDescription(string label, string text, bool writeToLog = true, Color? consoleColor = null, string scope = "")
     {
+        EnforceMargin();
         var color = consoleColor ?? Color.Blue;
         var panel = new Panel(new Markup($"[{color}]{label}[/] : [grey]{text}[/]"))
         {
@@ -14,14 +16,12 @@ public class SpectreConsoleWriter : IConsoleWriter
             Padding = new Padding(1, 1),
             Header = new PanelHeader("[green]Description[/]", Justify.Center)
         };
-
         AnsiConsole.Write(panel);
-
-        if (writeToLog)
-            Information($"{label} : {text}", scope);
+        if (writeToLog) Information($"{label} : {text}", scope);
     }
     public void Write(string text, bool writeLog = true, Color? consoleColor = null, [CallerMemberName] string scope = "")
     {
+        EnforceMargin();
         var color = consoleColor ?? Color.Black;
         var escaped = Markup.Escape(text);
         AnsiConsole.Markup($"{ToDefaultColorIfBlack(escaped, color)}");
@@ -30,6 +30,7 @@ public class SpectreConsoleWriter : IConsoleWriter
 
     public void WriteLine(string text = "", bool writeLog = true, Color? consoleColor = null, [CallerMemberName] string scope = "")
     {
+        EnforceMargin();
         var color = consoleColor ?? Color.Black;
         var escaped = Markup.Escape(text);
         AnsiConsole.MarkupLine($"{ToDefaultColorIfBlack(escaped, color)}");
@@ -38,6 +39,7 @@ public class SpectreConsoleWriter : IConsoleWriter
 
     public void WriteSuccessLine(string text, bool writeLog = true, [CallerMemberName] string scope = "")
     {
+        EnforceMargin();
         var escaped = Markup.Escape(text);
         AnsiConsole.MarkupLine($"[green]{escaped}[/]");
         if (writeLog) Information("{Scope}: {Text}", scope, text);
@@ -45,6 +47,7 @@ public class SpectreConsoleWriter : IConsoleWriter
 
     public void WriteWarning(string text, [CallerMemberName] string scope = "")
     {
+        EnforceMargin();
         var escaped = Markup.Escape(text);
         AnsiConsole.MarkupLine($"[yellow]{escaped}[/]");
         Warning("{Scope}: {Text}", scope, text);
@@ -52,6 +55,7 @@ public class SpectreConsoleWriter : IConsoleWriter
 
     public void WriteError(string text, [CallerMemberName] string scope = "")
     {
+        EnforceMargin();
         var escaped = Markup.Escape(text);
         AnsiConsole.MarkupLine($"[red]{escaped}[/]");
         Error("{Scope}: {Text}", scope, text);
@@ -59,6 +63,7 @@ public class SpectreConsoleWriter : IConsoleWriter
 
     public void WriteCritical(string text, [CallerMemberName] string scope = "")
     {
+        EnforceMargin();
         var escaped = Markup.Escape(text);
         AnsiConsole.MarkupLine($"[bold red]{escaped}[/]");
         Fatal("{Scope}: {Text}", scope, text);
@@ -66,6 +71,7 @@ public class SpectreConsoleWriter : IConsoleWriter
 
     public void WriteHeadLine(string text, bool writeLog = true, [CallerMemberName] string scope = "")
     {
+        EnforceMargin();
         var escaped = Markup.Escape(text);
         AnsiConsole.MarkupLine($"[bold blue]{escaped}[/]");
         if (writeLog) Information("{Scope}: {Text}", scope, text);
@@ -73,6 +79,7 @@ public class SpectreConsoleWriter : IConsoleWriter
 
     public void WriteUrl(string text, bool writeLog = true, [CallerMemberName] string scope = "")
     {
+        EnforceMargin();
         var escaped = Markup.Escape(text);
         AnsiConsole.MarkupLine($"[underline blue]{escaped}[/]");
         if (writeLog) Information("{Scope} [URL]: {Text}", scope, text);
@@ -80,11 +87,13 @@ public class SpectreConsoleWriter : IConsoleWriter
 
     public void WritePrompt(string prompt)
     {
+        EnforceMargin();
         var escaped = Markup.Escape(prompt);
         AnsiConsole.Markup($"[bold]{escaped} [/]");
     }
     public void WriteRowWithColor(int top, ConsoleColor foregroundColor, ConsoleColor backgroundColor, string rowContent)
     {
+        EnforceMargin();
         int originalLeft = Console.CursorLeft;
         int originalTop = Console.CursorTop;
 
@@ -116,9 +125,15 @@ public class SpectreConsoleWriter : IConsoleWriter
         // Restore the original cursor position
         Console.SetCursorPosition(originalLeft, originalTop);
     }
-    public void Clear() => AnsiConsole.Clear();
+    public void Clear()
+    {
+        AnsiConsole.Clear();
+        EnforceMargin();
+    }
+
     public void WriteTable<T>(IEnumerable<T> items, string[]? columnNames = null, Color? consoleColor = null)
     {
+        EnforceMargin();
         var color = consoleColor ?? Color.DarkSlateGray1;
         var table = new Table().Expand().Border(TableBorder.Rounded).BorderColor(Color.DarkSlateGray3);
         var properties = typeof(T).GetProperties();
@@ -158,6 +173,15 @@ public class SpectreConsoleWriter : IConsoleWriter
 
         Console.Write(blankRow);
         Console.SetCursorPosition(originalLeft, originalTop);
+    }
+    public void SetMargin(int reservedLines) => _reservedLines = reservedLines;
+    private void EnforceMargin()
+    {
+        var cursorTop = Console.GetCursorPosition().Top;
+        if (cursorTop < _reservedLines)
+        {
+            Console.SetCursorPosition(0, _reservedLines);
+        }
     }
     private string ToDefaultColorIfBlack(string text, Color color) => color == Color.Black ? text : $"[{color}]{text}[/]";
 }
