@@ -33,14 +33,14 @@ public class TemplateManager(string projectName, string modulesDirectory, string
         ConsoleService.Writer.WriteSuccessLine($"✅ {nameof(ModulesConfiguration)}.cs file created.");
 
 
-        var appCreationMAnager = new AppProjectCreationManager(paths, projectName);
-        appCreationMAnager.CreateAppProject(ignores);
+        var appCreationManager = new AppProjectCreationManager(paths, projectName);
+        appCreationManager.CreateAppProject(ignores);
         ConsoleService.Writer.WriteSuccessLine($"✅ {projectName} created.");
         
         IOService.CopyFolder(paths.ReadLineRoot.Source, paths.ReadLineRoot.Target);
         ConsoleService.Writer.WriteSuccessLine($"✅ ReadLine project copied.");
         
-        appCreationMAnager.CreateSolutionFile();
+        appCreationManager.CreateSolutionFile();
         ConsoleService.Writer.WriteSuccessLine($"✅ VS Solution file created.");
 
         ConsoleService.Writer.WriteLine();
