@@ -3,52 +3,45 @@ Provides a flexible and dynamic information panel that reserves the top lines of
 
 ## Overview
 The InfoPanel module allows you to display important information or dynamic content in a reserved area at the top of the console. This makes it easy to keep essential data visible while still using the rest of the console for other tasks.
-You write your own Custom content that inherits from `IInfoPanelContent`. 
+You write your own custom content by implementing the `IInfoPanelContent` interface.
 
 ### Features:
 - Asynchronous updates: Continuously display information without blocking user interactions.
 - Modular content: Each project can inject its own custom content.
 - Flexible start and stop: Start, update, and stop the panel without affecting the console.
 - Manually update content at any time.
+- Updates the InfoPanel every time a Command has finished.
+- Custom content formatting: The content is entirely controlled by the `IInfoPanelContent` implementation.
 
 ## Console Space Reservation
 The InfoPanel reserves a fixed area at the **top of the console window** to display its content.
-- **Default size:** 2 lines (can be adjusted if needed).
+- **Default size:** 3 lines (can be adjusted if needed).
 - This reserved area is maintained even when the rest of the console is updated.
 - Regular console output will always start **below** this area.
 
-## Registering the InfoPanel
+### Why Reserve Space?
+By reserving space at the top of the console, the InfoPanel ensures that its displayed content:
+- Remains clearly visible at all times.
+- Is not accidentally overwritten by other console output.
+- Maintains a consistent and fixed position in the UI.
 
-UThe InfoPanel requires manual initialization due to its nature as a visual status display.
+---
+
+## Initialize the InfoPanel
 
 ### Where to register:
-You can register and start the InfoPanel in either:
-- `Startup.cs` (recommended for global use).
-- A specific Command class in the `OnInitialized()` method.
+You can register and start the InfoPanel in a Command class in the `OnInitialized()` method.
+Look in the example Command InfoPanelCommand class for a reference.
 
-### Example registration in `Startup.cs`:
 ```csharp
-public class Startup
+public class InfoPanelCommand(string identifier) : ConsoleCommandBase<ApplicationConfiguration>(identifier)
 {
-    public void Initialize()
+    public override void OnInitialized() => InfoPanelService.Instance.RegisterContent(new SpectreInfoPanel(new DefaultInfoPanelContent(), Color.Magenta1, Color.BlueViolet));
+    public override RunResult Run(ICommandLineInput input)
     {
-        var content = new DefaultPanelContent();
-        InfoPanelService.Instance.RegisterContent(content);
-        InfoPanelService.Instance.Start();
+        if(input.HasOption("stop")) InfoPanelService.Instance.Stop();
+        else InfoPanelService.Instance.Update(); 
+        return Ok();
     }
-}
-
-## Services
-- InfoPanelService
-
-## Concepts
-The InfoPanel module utilizes the **InfoPanelService**, a Singleton that manages the content and updates of the panel. Content is provided by classes implementing the **IInfoPanelContent** interface.
-
-### IInfoPanelContent Interface:
-```csharp
-public interface IInfoPanelContent
-{
-    string GetText();
-    string? ShortText { get; }
 }
 ```

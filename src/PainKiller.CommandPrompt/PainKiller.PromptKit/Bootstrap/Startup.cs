@@ -11,7 +11,6 @@ using PainKiller.ReadLine;
 using Serilog;
 using Serilog.Events;
 using Serilog.Extensions.Logging;
-
 namespace PainKiller.PromptKit.Bootstrap;
 
 public static class Startup
@@ -22,8 +21,6 @@ public static class Startup
         
         var logger = LoggerProvider.CreateLogger<Program>();
         logger.LogInformation($"{config.Core.Name} started, configuration read and logging initialized.");
-
-        InfoPanelService.Instance.RegisterContent(new DefaultInfoPanel(new DefaultInfoPanelContent()));
 
         ShowLogo(config.Core);
         EventBusService.Service.Subscribe<SetupRequiredEventArgs>(args =>
@@ -69,11 +66,11 @@ public static class Startup
         var loggerFactory = new SerilogLoggerFactory(serilogLogger);
         LoggerProvider.Configure(loggerFactory);
     }
-    private static void ShowLogo(CoreConfiguration config)
+    private static void ShowLogo(CoreConfiguration config, int margin = -1)
     {
         Console.OutputEncoding = System.Text.Encoding.UTF8;
         if(!config.ShowLogo) return;
-        ConsoleService.WriteCenteredText($" Version {config.Version} ", $"{config.Name}");
+        ConsoleService.WriteCenteredText($" Version {config.Version} ", $"{config.Name}", margin);
         Console.WriteLine();
     }
 }
