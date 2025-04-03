@@ -11,10 +11,16 @@ public class SpectreConsoleWriter : IConsoleWriter
     private SpectreConsoleWriter(){}
 
     private int _reservedLines;
-    public void WriteDescription(string label, string text, bool writeToLog = true, Color? consoleColor = null, string scope = "")
+    public void WriteDescription(string label, string text, bool writeToLog = true, Color? consoleColor = null, bool noBorder = false, string scope = "")
     {
         EnforceMargin();
         var color = consoleColor ?? Color.Blue;
+        if (noBorder)
+        {
+            Write($"{label} : ", writeToLog, color);
+            WriteLine(text, writeToLog, Color.Magenta1);
+            return;
+        }
         var panel = new Panel(new Markup($"[{color}]{label}[/] : [grey]{text}[/]"))
         {
             Border = BoxBorder.Rounded,
