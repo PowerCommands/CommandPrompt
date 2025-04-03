@@ -5,6 +5,8 @@ using PainKiller.CommandPrompt.CoreLib.Core.Events;
 using PainKiller.CommandPrompt.CoreLib.Core.Runtime;
 using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Logging.Services;
+using PainKiller.CommandPrompt.CoreLib.Modules.InfoPanelModule.DomainObjects;
+using PainKiller.CommandPrompt.CoreLib.Modules.InfoPanelModule.Services;
 using PainKiller.ReadLine;
 using Serilog;
 using Serilog.Events;
@@ -20,6 +22,8 @@ public static class Startup
         
         var logger = LoggerProvider.CreateLogger<Program>();
         logger.LogInformation($"{config.Core.Name} started, configuration read and logging initialized.");
+
+        InfoPanelService.Instance.RegisterContent(new DefaultInfoPanel(new DefaultInfoPanelContent()));
 
         ShowLogo(config.Core);
         EventBusService.Service.Subscribe<SetupRequiredEventArgs>(args =>

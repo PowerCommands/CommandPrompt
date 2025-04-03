@@ -25,6 +25,10 @@ configuration:
         model: gemma3:latest
       chatGpt:
         searchUri: https://chatgpt.com/?q=$QUERY$&hints=search
+      infoPanel:
+        enabled: true
+        height: 2
+        updateIntervalSeconds: -1
   log:
     fileName: commandprompt.log
     filePath: logs
