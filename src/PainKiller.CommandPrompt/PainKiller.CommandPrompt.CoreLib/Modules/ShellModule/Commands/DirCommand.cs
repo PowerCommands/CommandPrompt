@@ -45,7 +45,7 @@ public class DirCommand : ConsoleCommandBase<ApplicationConfiguration>
         if (input.Options.ContainsKey("delete")) return Delete(path);
         if (input.Options.ContainsKey("browse")) ShellService.Default.OpenDirectory(path);
         Environment.CurrentDirectory = path;
-
+        EventBusService.Service.Publish(new WorkingDirectoryChangedEventArgs(path));
         var entries = GetDirectoryEntries();
         SuggestionProviderManager.AppendContextBoundSuggestions(Identifier, entries.Select(e => e.Name).ToArray());
 
