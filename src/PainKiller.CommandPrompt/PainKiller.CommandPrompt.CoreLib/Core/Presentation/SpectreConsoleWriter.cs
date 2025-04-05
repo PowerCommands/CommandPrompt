@@ -141,27 +141,56 @@ public class SpectreConsoleWriter : IConsoleWriter
         AnsiConsole.Clear();
         EnforceMargin();
     }
-
-    public void WriteTable<T>(IEnumerable<T> items, string[]? columnNames = null, Color? consoleColor = null)
+    public void WriteTable<T>(IEnumerable<T> items, string[]? columnNames = null, Color? consoleColor = null, Color? borderColor = null, bool expand = true)
     {
         EnforceMargin();
         var color = consoleColor ?? Color.DarkSlateGray1;
-        var table = new Table().Expand().Border(TableBorder.Rounded).BorderColor(Color.DarkSlateGray3);
+        var bColor = borderColor ?? Color.DarkSlateGray3;
+        var table = new Table().Border(TableBorder.Rounded).BorderColor(bColor);
+
+        if (expand)
+        {
+            table.Expand();
+        }
+
         var properties = typeof(T).GetProperties();
+        bool isFirstColumn = true;
+
         if (columnNames != null && columnNames.Length == properties.Length)
         {
             foreach (var columnName in columnNames)
             {
-                table.AddColumn(new TableColumn($"[bold {color}]{columnName}[/]").Centered());
+                var column = new TableColumn($"[bold {color}]{columnName}[/]");
+                if (isFirstColumn)
+                {
+                    column.LeftAligned();
+                    isFirstColumn = false;
+                }
+                else
+                {
+                    column.Centered();
+                }
+                table.AddColumn(column);
             }
         }
         else
         {
             foreach (var property in properties)
             {
-                table.AddColumn(new TableColumn($"[bold {color}]{property.Name}[/]").Centered());
+                var column = new TableColumn($"[bold {color}]{property.Name}[/]");
+                if (isFirstColumn)
+                {
+                    column.LeftAligned();
+                    isFirstColumn = false;
+                }
+                else
+                {
+                    column.Centered();
+                }
+                table.AddColumn(column);
             }
         }
+
         foreach (var item in items)
         {
             var row = new List<Markup>();
@@ -172,8 +201,10 @@ public class SpectreConsoleWriter : IConsoleWriter
             }
             table.AddRow(row.ToArray());
         }
+
         AnsiConsole.Write(table);
     }
+
     public void ClearRow(int top)
     {
         var originalLeft = Console.CursorLeft;
@@ -196,4 +227,3 @@ public class SpectreConsoleWriter : IConsoleWriter
     }
     private string ToDefaultColorIfBlack(string text, Color color) => color == Color.Black ? text : $"[{color}]{text}[/]";
 }
-
