@@ -5,7 +5,7 @@ using PainKiller.CommandPrompt.CoreLib.Core.Extensions;
 using PainKiller.CommandPrompt.CoreLib.Core.Presentation;
 using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Metadata.Attributes;
-using PainKiller.PromptKit.Bootstrap;
+using PainKiller.PromptKit.Configuration;
 using PainKiller.PromptKit.Managers;
 
 namespace PainKiller.PromptKit.Commands;
@@ -25,8 +25,8 @@ public class NewCommand(string identifier) : ConsoleCommandBase<CommandPromptCon
         var outputDirectory = DialogService.PathDialog("Where do you want to output your new project? \n(a directory with the project name will be created in output folder)", Path.Combine(defaultPath, nameof(PromptKit), projectName));
         CommandDiscoveryService.TryGetCommand("cd", out var cdCommand);
         cdCommand!.Execute(options: new Dictionary<string, string> { { "modules", "" },{ "no-output", "" } });
-        var publisherManager = new TemplateManager(projectName, Environment.CurrentDirectory, outputDirectory, Configuration.PromptKit.ConfigurationTemplate, Configuration.PromptKit.Ignores, Writer);
-        publisherManager.Run();
+        var templateManager = new InstallManager(projectName, Environment.CurrentDirectory, outputDirectory, Configuration.PromptKit.ConfigurationTemplate, Configuration.PromptKit.Ignores, Writer);
+        templateManager.Install();
         return Ok();
     }
 }

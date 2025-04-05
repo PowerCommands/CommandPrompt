@@ -1,7 +1,6 @@
-﻿using PainKiller.PromptKit.Bootstrap;
-
-namespace PainKiller.PromptKit.DomainObjects;
+﻿namespace PainKiller.PromptKit.DomainObjects;
 using System.IO;
+using PainKiller.PromptKit.Configuration;
 
 public class TemplatePaths
 {

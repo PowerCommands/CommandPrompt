@@ -3,6 +3,7 @@ configuration:
   promptKit:
     outputPath: ""
     configurationTemplate: default_CommandPromptConfiguration.yaml
+    updateFilename: CommandPromptModules
     ignores:
     - bin
     - obj

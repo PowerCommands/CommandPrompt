@@ -35,12 +35,9 @@ public class DirCommand : ConsoleCommandBase<ApplicationConfiguration>
     public override RunResult Run(ICommandLineInput input)
     {
         if (input.Options.ContainsKey("drive-info")) return ShowDriveInfo();
-
-        var path = input.Arguments.FirstOrDefault() ?? Environment.CurrentDirectory;
-        if (!path.Contains('\\') && !Path.IsPathRooted(path))
-            path = Path.Combine(Environment.CurrentDirectory, path);
-
-        path = Path.GetFullPath(path);
+        
+        var path = input.GetFullPath();
+        
         if (!Directory.Exists(path)) return Nok($"Directory not found: {path}");
         if (input.Options.ContainsKey("delete")) return Delete(path);
         if (input.Options.ContainsKey("browse")) ShellService.Default.OpenDirectory(path);

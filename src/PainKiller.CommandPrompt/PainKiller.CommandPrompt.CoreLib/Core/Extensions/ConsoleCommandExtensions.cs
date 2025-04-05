@@ -57,4 +57,12 @@ public static class ConsoleCommandExtensions
     }
     public static bool HasOption(this ICommandLineInput input, string option) => input.Options.ContainsKey(option.ToLower());
     public static string GetOptionValue(this ICommandLineInput input, string option) => input.Options.TryGetValue(option.ToLower(), out var value) ? value : string.Empty;
+    public static string GetFullPath(this ICommandLineInput input)
+    {
+        var path = input.Arguments.FirstOrDefault() ?? Environment.CurrentDirectory;
+        if (!path.Contains('\\') && !Path.IsPathRooted(path))
+            path = Path.Combine(Environment.CurrentDirectory, path);
+        var retVal = Path.GetFullPath(path);
+        return retVal.GetReplacedPlaceHolderPath();
+    }
 }

@@ -2,7 +2,7 @@
 using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
 using PainKiller.CommandPrompt.CoreLib.Core.DomainObjects;
 using PainKiller.CommandPrompt.CoreLib.Metadata.Attributes;
-using PainKiller.PromptKit.Bootstrap;
+using PainKiller.PromptKit.Configuration;
 
 namespace PainKiller.PromptKit.Commands;
 
