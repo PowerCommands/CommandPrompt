@@ -26,6 +26,11 @@ public class ModuleManager(string modulesDirectory, IConsoleWriter writer)
         }
         return modules;
     }
+    public List<string> ModulesInstalled()
+    {
+        if (!Directory.Exists(modulesDirectory)) return new List<string>();
+        return Directory.GetDirectories(modulesDirectory).Select(d => new DirectoryInfo(d).Name).ToList()!;
+    }
     public List<string> DisplayModuleSelection(List<(string Name, string Description)> modules)
     {
         while (true)

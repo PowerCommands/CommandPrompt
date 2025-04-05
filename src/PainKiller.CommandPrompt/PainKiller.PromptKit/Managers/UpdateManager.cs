@@ -48,7 +48,7 @@ public class UpdateManager(string updateFileName, string outputDirectory, IConso
             }
             foreach (var module in selectedModules)
             {
-                var modulePath = Path.Combine(tempPath, module);
+                var modulePath = Path.Combine(tempPath, "Modules",module);
                 var destinationPath = Path.Combine(outputModulesPath, module);
 
                 if (Directory.Exists(destinationPath))
@@ -79,6 +79,7 @@ public class UpdateManager(string updateFileName, string outputDirectory, IConso
     private string CreateTemporaryDirectory()
     {
         var tempPath = Path.Combine(Path.GetTempPath(), $"{nameof(PromptKit)}_UpdateModules");
+        if (Directory.Exists(tempPath)) Directory.Delete(tempPath, true);
         Directory.CreateDirectory(tempPath);
         return tempPath;
     }

@@ -21,11 +21,11 @@ public class SpectreConsoleWriter : IConsoleWriter
             WriteLine(text, writeToLog, Color.Magenta1);
             return;
         }
-        var panel = new Panel(new Markup($"[{color}]{label}[/] : [grey]{text}[/]"))
+        var panel = new Panel(new Markup($"[{color}]{label}[/] : [white]{text}[/]"))
         {
             Border = BoxBorder.Rounded,
             Padding = new Padding(1, 1),
-            Header = new PanelHeader("[green]Description[/]", Justify.Center)
+            Header = new PanelHeader("[gray]Description[/]", Justify.Center)
         };
         AnsiConsole.Write(panel);
         if (writeToLog) Information($"{label} : {text}", scope);

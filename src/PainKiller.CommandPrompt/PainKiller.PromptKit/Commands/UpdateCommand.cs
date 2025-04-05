@@ -1,4 +1,5 @@
-﻿using PainKiller.CommandPrompt.CoreLib.Core.BaseClasses;
+﻿using PainKiller.CommandPrompt.CoreLib.Configuration.DomainObjects;
+using PainKiller.CommandPrompt.CoreLib.Core.BaseClasses;
 using PainKiller.CommandPrompt.CoreLib.Core.Contracts;
 using PainKiller.CommandPrompt.CoreLib.Core.DomainObjects;
 using PainKiller.CommandPrompt.CoreLib.Core.Events;
@@ -6,6 +7,7 @@ using PainKiller.CommandPrompt.CoreLib.Core.Extensions;
 using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Metadata.Attributes;
 using PainKiller.PromptKit.Configuration;
+using PainKiller.PromptKit.Extensions;
 using PainKiller.PromptKit.Managers;
 using PainKiller.ReadLine.Managers;
 
@@ -20,8 +22,16 @@ public class UpdateCommand : ConsoleCommandBase<CommandPromptConfiguration>
     public override RunResult Run(ICommandLineInput input)
     {
         var outputPath = input.GetFullPath();
+        Writer.WriteHeadLine("Update info.");
+        Writer.WriteDescription("Project to update:", outputPath);
+        var modulePath = Path.Combine(outputPath, "PainKiller.CommandPrompt.CoreLib", "Modules");
+        var moduleManager = new ModuleManager(modulePath, Writer);
+        Writer.WriteDescription("Modules installed:", string.Join(',', moduleManager.ModulesInstalled()));
+        Writer.WriteDescription("Nice to know?:", "You can add new modules, but you may have to do some manual steps to fully implement the new module.");
+
         var updateManager = new UpdateManager(Configuration.PromptKit.UpdateFilename, outputPath, Writer);
         updateManager.Update();
+        Writer.WriteDescription("Added new modules, instead of update?",$"New modules can have configuration values that you may need to add to the configuration file. (or use defaults)\nYou also need to add the Configuration Property to {nameof(ModulesConfiguration)}.cs class file in the Core project.\nA module can have dependencies, look in the README.md file.");
         return Ok();
     }
     private void UpdateSuggestions(string newWorkingDirectory)
