@@ -10,7 +10,7 @@ namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Commands;
 
 [CommandDesign(
     description: "Change or view the current working directory",
-    options: ["roaming", "startup", "recent", "documents", "programs", "windows", "profile", "templates", "videos", "pictures", "music","modules","no-output"],
+    options: ["roaming", "startup", "root", "recent", "documents", "programs", "windows", "profile", "templates", "videos", "pictures", "music","modules","no-output"],
     arguments: ["Path or navigation command such as .. or \\"],
     examples:
     [
@@ -70,6 +70,8 @@ public class CdCommand : ConsoleCommandBase<ApplicationConfiguration>
             path = Environment.GetFolderPath(Environment.SpecialFolder.Programs);
         else if (lowerArgs.Contains("temp"))
             path = Path.GetTempPath();
+        else if (lowerArgs.Contains("root"))
+            path = FindProjectRoot();
         else if (lowerArgs.Contains("modules"))
         {
             Environment.CurrentDirectory = AppContext.BaseDirectory;
@@ -158,5 +160,32 @@ public class CdCommand : ConsoleCommandBase<ApplicationConfiguration>
             new Markup($"{list.Count} entries")
         );
         AnsiConsole.Write(table);
+    }
+    public static string FindProjectRoot()
+    {
+        var currentDirectory = new DirectoryInfo(AppContext.BaseDirectory);
+
+        while (currentDirectory != null)
+        {
+            // Först: leta efter en .sln-fil
+            if (currentDirectory.GetFiles("*.sln").Any())
+            {
+                Console.WriteLine($"Solution root found: {currentDirectory.FullName}");
+                return currentDirectory.FullName;
+            }
+
+            // Därefter: leta efter en .git-katalog
+            if (currentDirectory.GetDirectories(".git").Any())
+            {
+                Console.WriteLine($"Git root found: {currentDirectory.FullName}");
+                return currentDirectory.FullName;
+            }
+
+            // Gå till överordnad katalog
+            currentDirectory = currentDirectory.Parent;
+        }
+
+        Console.WriteLine("Project root not found. Reached the root of the filesystem.");
+        return string.Empty;
     }
 }

@@ -1,13 +1,16 @@
 ﻿using PainKiller.CommandPrompt.CoreLib.Core.BaseClasses;
+using PainKiller.CommandPrompt.CoreLib.Core.Events;
 using PainKiller.CommandPrompt.CoreLib.Metadata.Attributes;
 using PainKiller.CommandPrompt.CoreLib.Metadata;
+using PainKiller.ReadLine.Managers;
 using Spectre.Console;
 
 namespace PainKiller.CommandPrompt.CoreLib.Core.Commands;
 
 [CommandDesign("Displays detailed information about a specific command", arguments: ["Command identifier"])]
-public class DescribeCommand(string identifier) : ConsoleCommandBase<ApplicationConfiguration>(identifier)
+public class DescribeCommand : ConsoleCommandBase<ApplicationConfiguration>
 {
+    public DescribeCommand(string identifier) : base(identifier) => EventBusService.Service.Subscribe<CommandsDiscoveredEventArgs>(e => { SuggestionProviderManager.AppendContextBoundSuggestions(Identifier, e.Identifiers); });
     public override RunResult Run(ICommandLineInput input)
     {
         var commandId = input.Arguments.FirstOrDefault();
