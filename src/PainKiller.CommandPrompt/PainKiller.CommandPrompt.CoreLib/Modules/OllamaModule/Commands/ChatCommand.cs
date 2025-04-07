@@ -22,7 +22,7 @@ public class ChatCommand(string identifier) : ConsoleCommandBase<ApplicationConf
                 return Nok("Could not start Ollama-server, server not installed?");
             }
         }
-        Writer.WriteLine("Startar konversation med modellen (skriv /bye för att avsluta):");
+        Writer.WriteLine($"Starts conversation with the model {Configuration.Core.Modules.Ollama.Model} (type /bye to end):");
         while (true)
         {
             Writer.Write("> ");

@@ -6,6 +6,7 @@ using PainKiller.CommandPrompt.CoreLib.Modules.OllamaModule.DomainObjects;
 using Microsoft.Extensions.Logging;
 using PainKiller.CommandPrompt.CoreLib.Logging.Services;
 using PainKiller.CommandPrompt.CoreLib.Modules.OllamaModule.Contracts;
+using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 
 namespace PainKiller.CommandPrompt.CoreLib.Modules.OllamaModule.Services;
 public class OllamaService : IOllamaService
@@ -93,4 +94,80 @@ public class OllamaService : IOllamaService
         return "Unexpected respond from Ollama-server.";
     }
     public void AddMessage(ChatMessage message) => _messages.Add(message);
+    public void ClearChatMessages()
+    {
+        _messages.Clear();
+        _logger.LogInformation("Chat history cleared.");
+    }
+    public void Reset()
+    {
+        ClearChatMessages();
+        AddMessage(new ChatMessage("system", "Forget all previous conversations. Start a new session."));
+        _logger.LogInformation("Chat history cleared and new session initiated.");
+    }
+    public void ShowInstalledModels()
+    {
+        try
+        {
+            var result = ShellService.Default.StartInteractiveProcess("ollama", "list");
+            Console.WriteLine("Installed Models:");
+            Console.WriteLine(result);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error executing ollama list: {ex.Message}");
+        }
+    }
+    public void ShowModelInfo(string model)
+    {
+        try
+        {
+            var result = ShellService.Default.StartInteractiveProcess("ollama", $"show {model}");
+            ConsoleService.Writer.WriteDescription(model, result);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error executing ollama list: {ex.Message}");
+        }
+    }
+    public bool RemoveModel(string modelName)
+    {
+        if (string.IsNullOrWhiteSpace(modelName))
+        {
+            _logger.LogWarning("Model name cannot be empty.");
+            return false;
+        }
+        try
+        {
+            var result = ShellService.Default.StartInteractiveProcess("ollama", "remove gemma3");
+            Console.WriteLine("Remove Result:");
+            Console.WriteLine(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error while removing model '{modelName}': {ex.Message}");
+            return false;
+        }
+        return true;
+    }
+    public bool DownloadModel(string modelName)
+    {
+        if (string.IsNullOrWhiteSpace(modelName))
+        {
+            _logger.LogWarning("Model name cannot be empty.");
+            return false;
+        }
+        try
+        {
+            var result = ShellService.Default.StartInteractiveProcess("ollama", "download DeepSeekCoder");
+            Console.WriteLine("Download Result:");
+            Console.WriteLine(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error while downloading model '{modelName}': {ex.Message}");
+            return false;
+        }
+        return true;
+    }
 }
