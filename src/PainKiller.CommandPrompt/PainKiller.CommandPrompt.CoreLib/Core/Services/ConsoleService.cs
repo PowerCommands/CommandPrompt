@@ -5,8 +5,8 @@ public static class ConsoleService
     public static readonly IConsoleWriter Writer = SpectreConsoleWriter.Instance;
     public static void WriteCenteredText(string headline, string text, int margin = -1)
     {
-        if(margin > 0) Console.SetCursorPosition(0, margin);
         AnsiConsole.Clear();
+        if(margin > 0) Console.SetCursorPosition(0, margin);
 
         var centeredText = new FigletText(text)
             .Centered()
