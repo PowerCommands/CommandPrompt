@@ -7,8 +7,8 @@ using PainKiller.CommandPrompt.CoreLib.Modules.StorageModule.Contracts;
 namespace PainKiller.CommandPrompt.CoreLib.Modules.StorageModule.Services;
 public class StorageService<T> : IStorageService<T> where T : new()
 {
-    private readonly string _applicationDataPath = "";
-    private readonly string _backupPath = "";
+    private readonly string _applicationDataPath;
+    private readonly string _backupPath;
     private StorageService()
     {
         var configuration = ConfigurationService.Service.GetFlexible<ApplicationConfiguration>(Path.Combine(AppContext.BaseDirectory, "CommandPromptConfiguration.yaml"));

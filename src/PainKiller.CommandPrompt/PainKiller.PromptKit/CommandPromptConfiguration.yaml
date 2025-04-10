@@ -38,7 +38,24 @@ configuration:
       infoPanel:
         enabled: true
         height: 2
-        updateIntervalSeconds: -1    
+        updateIntervalSeconds: -1
+      dbStorage:
+        connectionString: Server=192.168.0.16;Initial Catalog=PromptKit;User Id=promptKit_user;Password=Strong!Passw0rd;TrustServerCertificate=true;
+        provider: sqlserver        
+        typeMappingsRaw:
+          string: "NVARCHAR(100)"
+          int: "INT"
+          guid: "UNIQUEIDENTIFIER"
+          datetime: "DATETIME2"
+          bool: "BIT"
+          double: "FLOAT"
+          float: "REAL"
+          decimal: "DECIMAL(18, 2)"
+          long: "BIGINT"
+          short: "SMALLINT"
+          byte: "TINYINT"
+          char: "CHAR(1)"
+          byte[]: "VARBINARY(MAX)"
   log:
     fileName: commandprompt.log
     filePath: logs

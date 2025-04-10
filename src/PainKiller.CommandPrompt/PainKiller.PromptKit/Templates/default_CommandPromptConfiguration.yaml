@@ -9,7 +9,7 @@ configuration:
     showLogo: true
     suggestions: 
     - exit
-    roamingDirectory: CommandPrompt
+    roamingDirectory: $APPLICATION_NAME$
     modules:
       security:
         secrets:
@@ -29,6 +29,23 @@ configuration:
         enabled: true
         height: 2
         updateIntervalSeconds: -1
+      dbStorage:
+        connectionString: Server=localhost;Initial Catalog=$APPLICATION_NAME$Db;User Id=$APPLICATION_NAME$_user;Password=Strong!Passw0rd;TrustServerCertificate=true;
+        provider: sqlserver        
+        typeMappingsRaw:
+          string: "NVARCHAR(100)"
+          int: "INT"
+          guid: "UNIQUEIDENTIFIER"
+          datetime: "DATETIME2"
+          bool: "BIT"
+          double: "FLOAT"
+          float: "REAL"
+          decimal: "DECIMAL(18, 2)"
+          long: "BIGINT"
+          short: "SMALLINT"
+          byte: "TINYINT"
+          char: "CHAR(1)"
+          byte[]: "VARBINARY(MAX)"
   log:
     fileName: commandprompt.log
     filePath: logs
