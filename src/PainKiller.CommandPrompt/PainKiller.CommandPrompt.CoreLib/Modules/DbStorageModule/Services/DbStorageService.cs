@@ -1,24 +1,19 @@
 ﻿using System.Data;
 using Dapper;
 using System.Reflection;
+using System.Text.Json;
+using PainKiller.CommandPrompt.CoreLib.Modules.DbStorageModule.Attributes;
 using PainKiller.CommandPrompt.CoreLib.Modules.DbStorageModule.Configuration;
 using PainKiller.CommandPrompt.CoreLib.Modules.DbStorageModule.Extensions;
+using PainKiller.CommandPrompt.CoreLib.Modules.DbStorageModule.Utilities;
 
 namespace PainKiller.CommandPrompt.CoreLib.Modules.DbStorageModule.Services;
-
-public class DbStorageService<T> where T : new()
+public class DbStorageService<T>(DatabaseConfig config) where T : new()
 {
-    private readonly IDbConnection _dbConnection;
-    private readonly string _tableName;
-    private readonly DatabaseConfig _config;
+    private readonly IDbConnection _dbConnection = config.ConnectionString.CreateDbConnection(config.Provider);
+    private readonly string _tableName = typeof(T).Name;
 
-    public DbStorageService(DatabaseConfig config)
-    {
-        _config = config;
-        _tableName = typeof(T).Name;
-        _dbConnection = config.ConnectionString.CreateDbConnection(config.Provider);
-        EnsureTableExists();
-    }
+    public void Initialize() => EnsureTableExists();
 
     public TIdentity InsertObject<TIdentity>(T storeObject)
     {
@@ -50,9 +45,56 @@ public class DbStorageService<T> where T : new()
 
     public T GetObject(Func<T, bool> match) => GetAll().FirstOrDefault(match)!;
 
-    public List<T> GetAll() => _dbConnection.Query<T>($"SELECT * FROM {_tableName}").ToList();
+    public List<T> GetAll()
+    {
+        var sql = $"SELECT * FROM {_tableName}";
+        var rows = _dbConnection.Query(sql);
+
+        var result = new List<T>();
+        var props = typeof(T).GetProperties();
+
+        foreach (var row in rows)
+        {
+            var obj = new T();
+
+            foreach (var prop in props)
+            {
+                var value = ((IDictionary<string, object>)row).TryGetValue(prop.Name, out var rawVal) ? rawVal : null;
+
+                if (rawVal == null)
+                {
+                    prop.SetValue(obj, null);
+                    continue;
+                }
+
+                if (prop.GetCustomAttribute<JsonColumnAttribute>() != null)
+                {
+                    var json = rawVal.ToString();
+                    var deserialized = JsonSerializer.Deserialize(json!, prop.PropertyType, new JsonSerializerOptions(JsonSerializerDefaults.Web));
+                    prop.SetValue(obj, deserialized);
+                }
+                else
+                {
+                    // Enums stored as strings
+                    if (prop.PropertyType.IsEnum && rawVal is string enumStr)
+                    {
+                        var parsed = Enum.Parse(prop.PropertyType, enumStr);
+                        prop.SetValue(obj, parsed);
+                    }
+                    else
+                    {
+                        prop.SetValue(obj, Convert.ChangeType(rawVal, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType));
+                    }
+                }
+            }
+
+            result.Add(obj);
+        }
+        return result;
+    }
 
     // === Internal ===
+
     private string BuildInsertQuery(T storeObject, out DynamicParameters parameters)
     {
         var props = typeof(T).GetProperties();
@@ -64,7 +106,9 @@ public class DbStorageService<T> where T : new()
 
         parameters = new DynamicParameters();
         foreach (var prop in columns)
-            parameters.Add($"@{prop.Name}", prop.GetValue(storeObject));
+        {
+            parameters.Add($"@{prop.Name}", DbValueConverter.ConvertToDbValue(prop.GetValue(storeObject), prop));
+        }
 
         return $"INSERT INTO {_tableName} ({colNames}) VALUES ({colParams}); SELECT SCOPE_IDENTITY();";
     }
@@ -73,14 +117,18 @@ public class DbStorageService<T> where T : new()
     {
         var props = typeof(T).GetProperties();
         var identity = GetIdentityProperty();
-
         if (identity == null) throw new InvalidOperationException("No identity property found.");
 
-        var setClause = string.Join(", ", props.Where(p => p.Name != identity.Name).Select(p => $"{p.Name} = @{p.Name}"));
+        var setClause = string.Join(", ", props.Where(p => p.Name != identity.Name)
+                                               .Select(p => $"{p.Name} = @{p.Name}"));
 
-        parameters = new DynamicParameters(storeObject);
+        parameters = new DynamicParameters();
+        foreach (var prop in props)
+        {
+            parameters.Add($"@{prop.Name}", DbValueConverter.ConvertToDbValue(prop.GetValue(storeObject), prop));
+        }
+
         parameters.Add("@Id", GetIdentityValue(storeObject));
-
         return $"UPDATE {_tableName} SET {setClause} WHERE {identity.Name} = @Id";
     }
 
@@ -94,12 +142,14 @@ public class DbStorageService<T> where T : new()
 
         foreach (var prop in props)
         {
-            var type = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+            var rawType = prop.PropertyType;
+            var type = Nullable.GetUnderlyingType(rawType) ?? rawType;
             var isNullable = IsNullableProperty(prop);
 
-            if (!_config.TypeMappings.TryGetValue(type, out var sqlBaseType))
-                throw new NotSupportedException($"No SQL mapping defined for {type.Name}");
+            if (type.IsEnum) type = typeof(string);
 
+            
+            if (!config.TypeMappings.TryGetValue(type, out var sqlBaseType)) sqlBaseType = "NVARCHAR(MAX)";
             var nullability = isNullable ? "NULL" : "NOT NULL";
 
             var column = prop.Name == identity.Name
@@ -132,7 +182,7 @@ END";
                 var arg = nullableAttr.ConstructorArguments[0];
                 if (arg.ArgumentType == typeof(byte) && (byte)arg.Value! == 2) return true;
             }
-            return false; // assume non-nullable
+            return false;
         }
 
         return Nullable.GetUnderlyingType(propertyInfo.PropertyType) != null;

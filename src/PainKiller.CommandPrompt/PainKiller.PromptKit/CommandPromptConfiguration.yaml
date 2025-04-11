@@ -55,7 +55,7 @@ configuration:
           short: "SMALLINT"
           byte: "TINYINT"
           char: "CHAR(1)"
-          byte[]: "VARBINARY(MAX)"
+          byte[]: "VARBINARY(MAX)"          
   log:
     fileName: commandprompt.log
     filePath: logs
