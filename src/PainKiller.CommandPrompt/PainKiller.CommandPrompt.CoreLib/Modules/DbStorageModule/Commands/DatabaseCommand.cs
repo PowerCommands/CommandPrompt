@@ -7,7 +7,7 @@ using PainKiller.CommandPrompt.CoreLib.Modules.DbStorageModule.Services;
 namespace PainKiller.CommandPrompt.CoreLib.Modules.DbStorageModule.Commands;
 
 [CommandDesign(description:"Try out the DbStorage module",
-                   options: ["insert"],
+                   options: ["insert", "delete"],
                   examples: ["//Show database info","database","//Insert some products","database --insert"])]
 public class DatabaseCommand(string identifier) : ConsoleCommandBase<ApplicationConfiguration>(identifier)
 {
@@ -19,6 +19,8 @@ public class DatabaseCommand(string identifier) : ConsoleCommandBase<Application
         _dbStorageService?.Initialize();
 
         if (input.HasOption("insert")) Insert();
+        if (input.HasOption("delete")) Delete();
+
         var products = _dbStorageService?.GetAll() ?? [];
         Writer.WriteTable(products);
         return Ok();
@@ -41,6 +43,16 @@ public class DatabaseCommand(string identifier) : ConsoleCommandBase<Application
             _dbStorageService?.InsertObject<int>(product);
         }
     }
+    private void Delete()
+    {
+        var product = _dbStorageService?.GetAll().FirstOrDefault();
+        if (product != null)
+        {
+            _dbStorageService?.DeleteObject(x => x.Id == product.Id);
+            Writer.WriteSuccessLine($"Deleted product with ID: {product.Id}");
+        }
+    }
+
     public class Product
     {
         public int Id { get; set; }

@@ -12,17 +12,18 @@ public class DbStorageService<T>(DatabaseConfig config) where T : new()
 {
     private readonly IDbConnection _dbConnection = config.ConnectionString.CreateDbConnection(config.Provider);
     private readonly string _tableName = typeof(T).Name;
-
     public void Initialize() => EnsureTableExists();
-
     public TIdentity InsertObject<TIdentity>(T storeObject)
     {
         var insertQuery = BuildInsertQuery(storeObject, out var parameters);
         var id = _dbConnection.ExecuteScalar(insertQuery, parameters);
-        SetIdentityValue(storeObject, id!);
+
+        if (id == null)
+            throw new InvalidOperationException("Insert failed: no identity value returned.");
+
+        SetIdentityValue(storeObject, id);
         return (TIdentity)Convert.ChangeType(id, typeof(TIdentity));
     }
-
     public TIdentity UpdateObject<TIdentity>(T storeObject, Func<T, bool> match)
     {
         var existing = GetAll().FirstOrDefault(match);
@@ -32,8 +33,7 @@ public class DbStorageService<T>(DatabaseConfig config) where T : new()
         _dbConnection.Execute(updateQuery, parameters);
         return (TIdentity)GetIdentityValue(storeObject)!;
     }
-
-    public bool DeleteObject<TIdentity>(Func<T, bool> match)
+    public bool DeleteObject(Func<T, bool> match)
     {
         var obj = GetAll().FirstOrDefault(match);
         if (obj == null) return false;
@@ -42,9 +42,6 @@ public class DbStorageService<T>(DatabaseConfig config) where T : new()
         var sql = $"DELETE FROM {_tableName} WHERE {GetIdentityProperty()?.Name} = @Id";
         return _dbConnection.Execute(sql, new { Id = id }) > 0;
     }
-
-    public T GetObject(Func<T, bool> match) => GetAll().FirstOrDefault(match)!;
-
     public List<T> GetAll()
     {
         var sql = $"SELECT * FROM {_tableName}";
@@ -59,7 +56,7 @@ public class DbStorageService<T>(DatabaseConfig config) where T : new()
 
             foreach (var prop in props)
             {
-                var value = ((IDictionary<string, object>)row).TryGetValue(prop.Name, out var rawVal) ? rawVal : null;
+                _ = ((IDictionary<string, object>)row).TryGetValue(prop.Name, out var rawVal) ? rawVal : null;
 
                 if (rawVal == null)
                 {
@@ -92,9 +89,7 @@ public class DbStorageService<T>(DatabaseConfig config) where T : new()
         }
         return result;
     }
-
     // === Internal ===
-
     private string BuildInsertQuery(T storeObject, out DynamicParameters parameters)
     {
         var props = typeof(T).GetProperties();
@@ -112,7 +107,6 @@ public class DbStorageService<T>(DatabaseConfig config) where T : new()
 
         return $"INSERT INTO {_tableName} ({colNames}) VALUES ({colParams}); SELECT SCOPE_IDENTITY();";
     }
-
     private string BuildUpdateQuery(T storeObject, out DynamicParameters parameters)
     {
         var props = typeof(T).GetProperties();
@@ -131,7 +125,6 @@ public class DbStorageService<T>(DatabaseConfig config) where T : new()
         parameters.Add("@Id", GetIdentityValue(storeObject));
         return $"UPDATE {_tableName} SET {setClause} WHERE {identity.Name} = @Id";
     }
-
     private void EnsureTableExists()
     {
         var identity = GetIdentityProperty();
@@ -149,7 +142,7 @@ public class DbStorageService<T>(DatabaseConfig config) where T : new()
             if (type.IsEnum) type = typeof(string);
 
             
-            if (!config.TypeMappings.TryGetValue(type, out var sqlBaseType)) sqlBaseType = "NVARCHAR(MAX)";
+            var sqlBaseType = config.TypeMappings.GetValueOrDefault(type, "NVARCHAR(MAX)");
             var nullability = isNullable ? "NULL" : "NOT NULL";
 
             var column = prop.Name == identity.Name
