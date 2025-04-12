@@ -6,3 +6,7 @@ DEPENDENCY:System.Data.SqlClient
 
 ## Services
 - DbStorageService
+
+## Commands
+### DbStorageCommand
+This command is just an example to show you how the DbStorageService could be used.

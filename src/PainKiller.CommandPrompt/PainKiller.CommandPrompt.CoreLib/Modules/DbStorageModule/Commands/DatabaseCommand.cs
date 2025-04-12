@@ -2,6 +2,7 @@
 using PainKiller.CommandPrompt.CoreLib.Core.Extensions;
 using PainKiller.CommandPrompt.CoreLib.Metadata.Attributes;
 using PainKiller.CommandPrompt.CoreLib.Modules.DbStorageModule.Attributes;
+using PainKiller.CommandPrompt.CoreLib.Modules.DbStorageModule.Contracts;
 using PainKiller.CommandPrompt.CoreLib.Modules.DbStorageModule.Services;
 
 namespace PainKiller.CommandPrompt.CoreLib.Modules.DbStorageModule.Commands;
@@ -11,22 +12,19 @@ namespace PainKiller.CommandPrompt.CoreLib.Modules.DbStorageModule.Commands;
                   examples: ["//Show database info","database","//Insert some products","database --insert"])]
 public class DatabaseCommand(string identifier) : ConsoleCommandBase<ApplicationConfiguration>(identifier)
 {
-    private DbStorageService<Product>? _dbStorageService;
-    public override void OnInitialized() => _dbStorageService = new DbStorageService<Product>(Configuration.Core.Modules.DbStorage);
-
     public override RunResult Run(ICommandLineInput input)
     {
-        _dbStorageService?.Initialize();
+        var storage = DbStorageService<Product>.Initialize(Configuration.Core.Modules.DbStorage);
+        
+        if (input.HasOption("insert")) Insert(storage);
+        if (input.HasOption("delete")) Delete(storage);
 
-        if (input.HasOption("insert")) Insert();
-        if (input.HasOption("delete")) Delete();
-
-        var products = _dbStorageService?.GetAll() ?? [];
+        var products = storage?.GetAll() ?? [];
         Writer.WriteTable(products);
         return Ok();
     }
 
-    private void Insert()
+    private void Insert(IDbStorageService<Product> storage)
     {
         var rnd = new Random();
         var productNames = new[] { "Wireless Mouse", "Coffee Mug", "Notebook", "Bluetooth Speaker", "Desk Lamp" };
@@ -40,15 +38,15 @@ public class DatabaseCommand(string identifier) : ConsoleCommandBase<Application
                 CreatedAt = DateTime.Now.AddDays(-rnd.Next(1, 10)),
                 Orders = [new Order() { Id = 1, Quantity = 100 }, new Order() { Id = 2, Quantity = 32 + i }, new Order() { Id = 3 + i + 3, Quantity = 110 + i + 5 }]
             };
-            _dbStorageService?.InsertObject<int>(product);
+            storage.InsertObject<int>(product);
         }
     }
-    private void Delete()
+    private void Delete(IDbStorageService<Product> storage)
     {
-        var product = _dbStorageService?.GetAll().FirstOrDefault();
+        var product = storage.GetAll().FirstOrDefault();
         if (product != null)
         {
-            _dbStorageService?.DeleteObject(x => x.Id == product.Id);
+            storage.DeleteObject(x => x.Id == product.Id);
             Writer.WriteSuccessLine($"Deleted product with ID: {product.Id}");
         }
     }

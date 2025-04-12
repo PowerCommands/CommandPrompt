@@ -6,13 +6,26 @@ using PainKiller.CommandPrompt.CoreLib.Modules.DbStorageModule.Attributes;
 using PainKiller.CommandPrompt.CoreLib.Modules.DbStorageModule.Configuration;
 using PainKiller.CommandPrompt.CoreLib.Modules.DbStorageModule.Extensions;
 using PainKiller.CommandPrompt.CoreLib.Modules.DbStorageModule.Utilities;
+using PainKiller.CommandPrompt.CoreLib.Modules.DbStorageModule.Contracts;
 
 namespace PainKiller.CommandPrompt.CoreLib.Modules.DbStorageModule.Services;
-public class DbStorageService<T>(DatabaseConfig config) where T : new()
+public class DbStorageService<T> : IDbStorageService<T> where T : new()
 {
-    private readonly IDbConnection _dbConnection = config.ConnectionString.CreateDbConnection(config.Provider);
+    private readonly IDbConnection _dbConnection;
     private readonly string _tableName = typeof(T).Name;
-    public void Initialize() => EnsureTableExists();
+    private readonly DatabaseConfig _config;
+
+    private DbStorageService(DatabaseConfig config)
+    {
+        _config = config;
+        _dbConnection = config.ConnectionString.CreateDbConnection(config.Provider);
+    }
+    public static DbStorageService<T> Initialize(DatabaseConfig configuration)
+    {
+        var instance = new DbStorageService<T>(configuration);
+        instance.EnsureTableExists();
+        return instance;
+    }
     public TIdentity InsertObject<TIdentity>(T storeObject)
     {
         var insertQuery = BuildInsertQuery(storeObject, out var parameters);
@@ -142,7 +155,7 @@ public class DbStorageService<T>(DatabaseConfig config) where T : new()
             if (type.IsEnum) type = typeof(string);
 
             
-            var sqlBaseType = config.TypeMappings.GetValueOrDefault(type, "NVARCHAR(MAX)");
+            var sqlBaseType = _config.TypeMappings.GetValueOrDefault(type, "NVARCHAR(MAX)");
             var nullability = isNullable ? "NULL" : "NOT NULL";
 
             var column = prop.Name == identity.Name
