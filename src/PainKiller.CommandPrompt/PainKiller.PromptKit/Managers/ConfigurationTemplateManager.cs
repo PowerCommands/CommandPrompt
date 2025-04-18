@@ -79,24 +79,20 @@ public class ConfigurationTemplateManager(TemplatePaths paths, string projectNam
             if (line.TrimStart().StartsWith("using "))
             {
                 var usingLine = line.Trim();
-                var moduleName = usingLine.Replace(";", "").Split('.')
-                    .FirstOrDefault(part => selectedModules.Any(m => part.Contains(m.Replace("Module", ""), StringComparison.OrdinalIgnoreCase)));
+                var moduleName = usingLine.Replace(";", "").Split('.').FirstOrDefault(part => selectedModules.Any(m => part.StartsWith(m.Replace("Module", ""), StringComparison.OrdinalIgnoreCase)));
 
-                if (moduleName != null)
-                    outputLines.Add(line);
+                if (moduleName != null) outputLines.Add(line);
             }
             else if (line.Contains("get; set;"))
             {
                 var trimmed = line.Trim();
                 var words = trimmed.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-                if (words.Length >= 4)
+                if (words.Length < 4) continue;
+                var propertyName = words[2].Replace("{", "").Trim();
+                if (selectedModules.Any(m => m.Replace("Module", "").Equals(propertyName, StringComparison.OrdinalIgnoreCase)))
                 {
-                    var propertyName = words[2].Replace("{", "").Trim();
-                    if (selectedModules.Any(m => m.Replace("Module", "").Equals(propertyName, StringComparison.OrdinalIgnoreCase)))
-                    {
-                        outputLines.Add(line);
-                    }
+                    outputLines.Add(line);
                 }
             }
             else
