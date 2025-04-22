@@ -17,7 +17,8 @@ public static class Startup
     public static CommandLoop Build()
     {
         var config = ReadConfiguration();
-        
+        Console.Title = config.Core.Name;
+
         var logger = LoggerProvider.CreateLogger<Program>();
         logger.LogInformation($"{config.Core.Name} started, configuration read and logging initialized.");
 
@@ -32,6 +33,11 @@ public static class Startup
         var commands = CommandDiscoveryService.DiscoverCommands(config);
         foreach (var consoleCommand in commands) consoleCommand.OnInitialized();
         
+        EventBusService.Service.Subscribe<AfterCommandExecutionEvent>(eventData =>
+        {
+            Console.Title = config.Core.Name;
+        });
+
         var suggestions = new List<string>();
         suggestions.AddRange(config.Core.Suggestions);
         suggestions.AddRange(commands.Select(c => c.Identifier).ToArray());
