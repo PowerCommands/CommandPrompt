@@ -1,2 +1,2 @@
 ﻿using PainKiller.PromptKit.Bootstrap;
-Startup.Build().Start();
+Startup.Build().Start(args);
