@@ -2,4 +2,5 @@
 public class SecurityConfiguration
 {
     public List<SecretItemConfiguration> Secrets { get; set; } = [new SecretItemConfiguration(EnvironmentVariableTarget.User){Name = "Babar"}];
+    public EncryptionConfiguration Encryption { get; set; } = new();
 }
