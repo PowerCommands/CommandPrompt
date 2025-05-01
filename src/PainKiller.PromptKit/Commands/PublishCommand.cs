@@ -23,12 +23,12 @@ public class PublishCommand(string identifier) : ConsoleCommandBase<CommandPromp
 
             if (!Directory.Exists(modulesDirectory))
             {
-                ConsoleService.Writer.WriteError($"Modules directory not found: {modulesDirectory}");
+                ConsoleService.Writer.WriteError($"Modules directory not found: {modulesDirectory}", nameof(PublishCommand));
                 return Nok();
             }
             if (File.Exists(zipFilePath))
             {
-                ConsoleService.Writer.WriteWarning("Previous package found. Deleting...");
+                ConsoleService.Writer.WriteWarning("Previous package found. Deleting...", nameof(PublishCommand));
                 File.Delete(zipFilePath);
             }
 
@@ -73,7 +73,7 @@ public class PublishCommand(string identifier) : ConsoleCommandBase<CommandPromp
         }
         catch (Exception ex)
         {
-            ConsoleService.Writer.WriteError($"Failed to publish modules: {ex.Message}");
+            ConsoleService.Writer.WriteError($"Failed to publish modules: {ex.Message}", nameof(PublishCommand));
             return Nok();
         }
     }

@@ -15,7 +15,7 @@ public class UpdateManager(string updateFileName, string outputDirectory, IConso
 
         if (!File.Exists(zipFilePath))
         {
-            writer.WriteError($"ZIP-file '{zipFileName}' was not found in {AppContext.BaseDirectory}.");
+            writer.WriteError($"ZIP-file '{zipFileName}' was not found in {AppContext.BaseDirectory}.", nameof(UpdateManager));
             return;
         }
         var tempPath = CreateTemporaryDirectory();
@@ -31,7 +31,7 @@ public class UpdateManager(string updateFileName, string outputDirectory, IConso
 
             if (!modules.Any())
             {
-                writer.WriteError("No modules found in zip-file.");
+                writer.WriteError("No modules found in zip-file.", nameof(UpdateManager));
                 return;
             }
             var selectedModules = moduleManager.DisplayModuleSelection(modules);
@@ -43,7 +43,7 @@ public class UpdateManager(string updateFileName, string outputDirectory, IConso
             var outputModulesPath = Path.Combine(outputDirectory, "PainKiller.CommandPrompt.CoreLib", "Modules");
             if (!Directory.Exists(outputModulesPath))
             {
-                writer.WriteError($"Output directory '{outputModulesPath}' does not exist.");
+                writer.WriteError($"Output directory '{outputModulesPath}' does not exist.", nameof(UpdateManager));
                 return;
             }
             foreach (var module in selectedModules)
@@ -53,7 +53,7 @@ public class UpdateManager(string updateFileName, string outputDirectory, IConso
 
                 if (Directory.Exists(destinationPath))
                 {
-                    writer.WriteWarning($"Module {module} already exist and will be replaced with new version.");
+                    writer.WriteWarning($"Module {module} already exist and will be replaced with new version.", nameof(UpdateManager));
                     Directory.Delete(destinationPath, true);
                 }
 
@@ -65,7 +65,7 @@ public class UpdateManager(string updateFileName, string outputDirectory, IConso
         }
         catch (Exception ex)
         {
-            writer.WriteError($"Error in update process: {ex.Message}");
+            writer.WriteError($"Error in update process: {ex.Message}", nameof(UpdateManager));
         }
         finally
         {
@@ -92,7 +92,7 @@ public class UpdateManager(string updateFileName, string outputDirectory, IConso
         }
         catch (Exception ex)
         {
-            writer.WriteError($"Error unpacking zip file: {ex.Message}");
+            writer.WriteError($"Error unpacking zip file: {ex.Message}", nameof(UpdateManager));
             throw;
         }
     }
