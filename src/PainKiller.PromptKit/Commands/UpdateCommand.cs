@@ -7,13 +7,13 @@ using PainKiller.CommandPrompt.CoreLib.Core.Extensions;
 using PainKiller.CommandPrompt.CoreLib.Core.Services;
 using PainKiller.CommandPrompt.CoreLib.Metadata.Attributes;
 using PainKiller.PromptKit.Configuration;
-using PainKiller.PromptKit.Extensions;
 using PainKiller.PromptKit.Managers;
 using PainKiller.ReadLine.Managers;
 
 namespace PainKiller.PromptKit.Commands;
 
-[CommandDesign(description:"Update your modules in your CommandPrompt project.", 
+[CommandDesign(description:"Update your modules or your core project.", 
+                   options: ["core"],
                   examples: ["//Update project, you can use cd command and tab to navigate to the projects root directory","update <rootDirectory to project>"])]
 public class UpdateCommand : ConsoleCommandBase<CommandPromptConfiguration>
 {
@@ -22,6 +22,8 @@ public class UpdateCommand : ConsoleCommandBase<CommandPromptConfiguration>
     public override RunResult Run(ICommandLineInput input)
     {
         var outputPath = input.GetFullPath();
+        if (input.HasOption("core")) return UpdateCoreProject(outputPath);
+
         Writer.WriteHeadLine("Update info.");
         Writer.WriteDescription("Project to update:", outputPath);
         var modulePath = Path.Combine(outputPath, "PainKiller.CommandPrompt.CoreLib", "Modules");
@@ -41,5 +43,13 @@ public class UpdateCommand : ConsoleCommandBase<CommandPromptConfiguration>
             .Select(d => new DirectoryInfo(d).Name)
             .ToArray();
         SuggestionProviderManager.AppendContextBoundSuggestions(Identifier, directories.Select(e => e).ToArray());
+    }
+    private RunResult UpdateCoreProject(string targetPath)
+    {
+        Writer.WriteHeadLine("Update CoreLib Files");
+        Writer.WriteDescription("Project root path:", targetPath);
+        var manager = new UpdateCoreManager(targetPath, Writer);
+        manager.Update();
+        return Ok();
     }
 }
