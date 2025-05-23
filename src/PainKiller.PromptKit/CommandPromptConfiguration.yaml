@@ -39,6 +39,8 @@ configuration:
         enabled: true
         height: 2
         updateIntervalSeconds: -1
+        backgroundColor: DarkMagenta
+        foregroundColor: White
       dbStorage:
         connectionString: Server=192.168.0.16;Initial Catalog=PromptKit;User Id=promptKit_user;Password=Strong!Passw0rd;TrustServerCertificate=true;
         provider: sqlserver        

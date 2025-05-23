@@ -11,7 +11,7 @@ namespace PainKiller.CommandPrompt.CoreLib.Modules.InfoPanelModule.Commands;
                   examples: ["//Update the InfoPanel","infopanel","//Stop the InfoPanel refresh","infopanel --stop"])]
 public class InfoPanelCommand(string identifier) : ConsoleCommandBase<ApplicationConfiguration>(identifier)
 {
-    public override void OnInitialized() => InfoPanelService.Instance.RegisterContent(new DefaultInfoPanel(new DefaultInfoPanelContent()));
+    public override void OnInitialized() => InfoPanelService.Instance.RegisterContent(new DefaultInfoPanel(new DefaultInfoPanelContent(), Configuration.Core.Modules.InfoPanel));
     public override RunResult Run(ICommandLineInput input)
     {
         if(input.HasOption("stop")) InfoPanelService.Instance.Stop();
