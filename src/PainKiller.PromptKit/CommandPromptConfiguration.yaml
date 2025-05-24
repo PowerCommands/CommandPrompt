@@ -16,6 +16,7 @@ configuration:
     prompt: pcm>
     defaultCommand: ''
     showLogo: true
+    logoColor: DarkMagenta
     suggestions:
     - cd ..\..\..\..\PainKiller.CommandPrompt.CoreLib\modules
     - exit

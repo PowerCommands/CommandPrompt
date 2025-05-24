@@ -7,6 +7,7 @@ configuration:
     prompt: cp>
     defaultCommand: ''
     showLogo: true
+    logoColor: DarkMagenta
     suggestions: 
     - exit
     roamingDirectory: $APPLICATION_NAME$
