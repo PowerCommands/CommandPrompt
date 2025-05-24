@@ -29,6 +29,8 @@ configuration:
         enabled: true
         height: 2
         updateIntervalSeconds: -1
+        backgroundColor: DarkMagenta
+        foregroundColor: White
       dbStorage:
         connectionString: Server=localhost;Initial Catalog=$APPLICATION_NAME$Db;User Id=$APPLICATION_NAME$_user;Password=Strong!Passw0rd;TrustServerCertificate=true;
         provider: sqlserver        
