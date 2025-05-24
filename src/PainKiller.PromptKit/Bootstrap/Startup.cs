@@ -38,6 +38,9 @@ public static class Startup
             Console.Title = config.Core.Name;
         });
 
+        Console.WriteLine();
+        Console.WriteLine();
+
         var suggestions = new List<string>();
         suggestions.AddRange(config.Core.Suggestions);
         suggestions.AddRange(commands.Select(c => c.Identifier).ToArray());
