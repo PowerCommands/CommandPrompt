@@ -20,10 +20,10 @@ public static class ConsoleService
         var panel = new Panel(figlet)
         {
             Border = BoxBorder.Rounded,
+            BorderStyle = new Style(foreground: parsedColor),
             Padding = new Padding(1, 1),
             Header = new PanelHeader($"[{color}]{headline}[/]", Justify.Center)
         };
-
         AnsiConsole.Write(panel);
     }
 }
