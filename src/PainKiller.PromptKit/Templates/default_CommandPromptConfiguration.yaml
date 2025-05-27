@@ -49,6 +49,9 @@ configuration:
           byte: "TINYINT"
           char: "CHAR(1)"
           byte[]: "VARBINARY(MAX)"
+      pgp:
+        publicKeyFilePath: Modules\PgpModule\Bob_public.asc
+        privateKeyFilePath: Modules\PgpModule\Bob_private.asc
   log:
     fileName: commandprompt.log
     filePath: logs
