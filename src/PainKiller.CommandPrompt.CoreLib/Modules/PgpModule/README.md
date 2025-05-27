@@ -5,7 +5,7 @@ DEPENDENCY:BouncyCastle.Cryptography
 
 ## Commands:
 ## PgpCommand
-Create your own PGP keys, do not use the keys provided in this directory other for testing purposes.
+Create your own PGP keys, do not use the keys provided in this directory other then for testing purposes.
 
 To use PGP encryption and decryption in this application, you'll need a public/private key pair. You can generate these keys using GnuPG (GPG), a widely-used open-source tool for PGP operations.
 
