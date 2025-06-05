@@ -6,18 +6,6 @@
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 	<ItemGroup>
-	  <None Remove="Modules\PgpModule\Bob_private.asc" />
-	  <None Remove="Modules\PgpModule\Bob_public.asc" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Content Include="Modules\PgpModule\Bob_private.asc">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </Content>
-	  <Content Include="Modules\PgpModule\Bob_public.asc">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </Content>
-	</ItemGroup>
-	<ItemGroup>
 
 		<PackageReference Include="BouncyCastle.Cryptography" Version="2.6.1" />
 
@@ -36,8 +24,5 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\PainKiller.ReadLine\PainKiller.ReadLine.csproj" />
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="Modules\PgpModule\Commands\" />
 	</ItemGroup>
 </Project>

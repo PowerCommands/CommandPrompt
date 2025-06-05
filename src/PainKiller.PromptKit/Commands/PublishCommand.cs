@@ -9,7 +9,7 @@ using PainKiller.PromptKit.Extensions;
 
 namespace PainKiller.PromptKit.Commands;
 
-[CommandDesign(description:"Publish the current modules as an zipfile.", 
+[CommandDesign(description:  "Publish the current modules as an zipfile.", 
                   examples: ["//Publish current modules to zipfile.","publish"])]
 public class PublishCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {

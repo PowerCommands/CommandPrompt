@@ -11,7 +11,6 @@ using Spectre.Console;
 namespace PainKiller.PromptKit.Commands;
 
 [CommandDesign(     description: "Show information about the Command Prompt project", 
-                        options: [""],
                        examples: ["//Show information","information"])]
 public class InformationCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)
 {

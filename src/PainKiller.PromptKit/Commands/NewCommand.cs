@@ -11,7 +11,7 @@ using PainKiller.PromptKit.Managers;
 namespace PainKiller.PromptKit.Commands;
 
 
-[CommandDesign(description:"Create new CommandPrompt project", 
+[CommandDesign(description:  "Create new CommandPrompt project", 
                   examples: ["//Create new project","new",
                              "//Create new project with name Company.MagicPrompts","new Company.MagicPrompts"])]
 public class NewCommand(string identifier) : ConsoleCommandBase<CommandPromptConfiguration>(identifier)

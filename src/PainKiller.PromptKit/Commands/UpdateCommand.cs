@@ -12,7 +12,7 @@ using PainKiller.ReadLine.Managers;
 
 namespace PainKiller.PromptKit.Commands;
 
-[CommandDesign(description:"Update your modules or your core project.", 
+[CommandDesign(description:  "Update your modules or your core project.", 
                    options: ["core"],
                   examples: ["//Update project, you can use cd command and tab to navigate to the projects root directory","update <rootDirectory to project>"])]
 public class UpdateCommand : ConsoleCommandBase<CommandPromptConfiguration>
