@@ -54,6 +54,20 @@ public class ShellService : IShellService
             Console.WriteLine(output);
         }
     }
+    public void RunTerminalUntilUserQuits(string program, string args)
+    {
+        var psi = new ProcessStartInfo(program, args)
+        {
+            UseShellExecute = false,
+            RedirectStandardInput = false,
+            RedirectStandardOutput = false,
+            RedirectStandardError = false,
+        };
+
+        var process = new Process { StartInfo = psi };
+        process.Start();
+        process.WaitForExit();
+    }
     public string StartInteractiveProcess(string program, string args = "", string workingDirectory = "", bool waitForExit = true)
     {
         var output = new StringBuilder();
