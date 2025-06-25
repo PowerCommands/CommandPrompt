@@ -93,15 +93,13 @@ public class ShellService : IShellService
             }
 
             if (waitForExit)
-            {
-                // Läs utdata och felmeddelanden i realtid
+            {                
                 output.AppendLine(process.StandardOutput.ReadToEnd());
                 output.AppendLine(process.StandardError.ReadToEnd());
                 process.WaitForExit();
             }
             else
             {
-                // Läsa utdata utan att vänta på att processen ska avslutas
                 process.OutputDataReceived += (sender, e) => 
                 {
                     if (e.Data != null) 
