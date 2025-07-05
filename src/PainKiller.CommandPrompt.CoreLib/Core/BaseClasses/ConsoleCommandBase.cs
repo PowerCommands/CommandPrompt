@@ -1,5 +1,4 @@
 ﻿namespace PainKiller.CommandPrompt.CoreLib.Core.BaseClasses;
-
 public abstract class ConsoleCommandBase<TConfig>(string identifier) : IConsoleCommand
 {
     protected IConsoleWriter Writer => ConsoleService.Writer;
