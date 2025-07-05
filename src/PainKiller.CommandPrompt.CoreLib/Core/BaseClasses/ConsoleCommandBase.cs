@@ -10,4 +10,5 @@ public abstract class ConsoleCommandBase<TConfig>(string identifier) : IConsoleC
     public virtual void OnInitialized() { }
     protected RunResult Ok(string message = "") => new RunResult(Identifier, true, message);
     protected RunResult Nok(string message = "") => new RunResult(Identifier, false, message);
+    protected RunResult Quit(string message = "") => new RunResult(Identifier, true, message, true);
 }
