@@ -1,7 +1,7 @@
 ﻿using PainKiller.CommandPrompt.CoreLib.Core.Extensions;
 using PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Services;
 
-namespace PainKiller.CommandPrompt.CoreLib.Core.BaseClasses;
+namespace PainKiller.CommandPrompt.CoreLib.Modules.ShellModule.Commands;
 
 public class TerminalCommando<TConfig>(string identifier) : IConsoleCommand where TConfig : ApplicationConfiguration, new()
 {
