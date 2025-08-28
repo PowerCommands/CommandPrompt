@@ -33,7 +33,7 @@ configuration:
       ollama:
         baseAddress: localhost
         port: 11434
-        model: gemma3:latest
+        model: gemma3:27b
       chatGpt:
         searchUri: https://chatgpt.com/?q=$QUERY$&hints=search
       infoPanel:

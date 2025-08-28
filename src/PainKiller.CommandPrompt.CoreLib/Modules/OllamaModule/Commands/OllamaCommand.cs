@@ -9,6 +9,7 @@ namespace PainKiller.CommandPrompt.CoreLib.Modules.OllamaModule.Commands;
     description: "Manage and diagnose the Ollama server and its models.",
     options:
     [
+        "stop",
         "status",
         "model",
         "installed",
@@ -17,6 +18,7 @@ namespace PainKiller.CommandPrompt.CoreLib.Modules.OllamaModule.Commands;
     ],
     examples:
     [
+        "ollama --stop",
         "ollama --status",
         "ollama --details",
         "ollama --installed",
@@ -43,6 +45,12 @@ public class OllamaCommand(string identifier) : ConsoleCommandBase<ApplicationCo
                 Writer.WriteUrl("https://ollama.com/download");
                 return Nok("Could not start Ollama-server, server not installed?");
             }
+        }
+        if (input.HasOption("stop"))
+        {
+            Writer.WriteLine("Stopp Ollama server");
+            service.StopOllamaServer();
+            return Ok();
         }
         if (input.HasOption("status"))
         {

@@ -6,6 +6,7 @@ public interface IOllamaService
 {
     bool IsOllamaServerRunning();
     void StartOllamaServer();
+    void StopOllamaServer();
     Task<string> SendChatToOllama();
     void AddMessage(ChatMessage message);
     void ClearChatMessages();

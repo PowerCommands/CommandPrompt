@@ -60,6 +60,22 @@ public class OllamaService : IOllamaService
         };
         Process.Start(startInfo);
     }
+    public void StopOllamaServer()
+    {
+        foreach (var process in Process.GetProcessesByName("ollama"))
+        {
+            try
+            {
+                process.Kill();
+                process.WaitForExit();
+                Console.WriteLine("Ollama server stopped successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to stop Ollama server: {ex.Message}");
+            }
+        }
+    }
     public async Task<string> SendChatToOllama()
     {
         var ollamaBaseAddress = $"http://{_baseAddress}:{_port}";
