@@ -8,6 +8,7 @@ public interface IOllamaService
     void StartOllamaServer();
     void StopOllamaServer();
     Task<string> SendChatToOllama();
+    Task<string> SendChatToOllamaStreamAsync(Action<string>? onChunk, int? numCtx = null, CancellationToken cancellationToken = default);
     void AddMessage(ChatMessage message);
     void ClearChatMessages();
     void Reset();
