@@ -18,7 +18,7 @@ public class TerminalCommando<TConfig>(string identifier) : IConsoleCommand wher
         Console.Title = $"{Identifier} (ext. terminal session)";
         try
         {
-            var argument = input.GetRawStringWithIdentifierRemoved();
+            var argument = input.GetSearchString();
             ShellService.Default.RunTerminalUntilUserQuits(Identifier, argument);
             return Ok();
         }

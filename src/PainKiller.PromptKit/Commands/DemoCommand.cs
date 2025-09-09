@@ -18,7 +18,7 @@ public class DemoCommand(string identifier) : ConsoleCommandBase<CommandPromptCo
         Writer.WriteHeadLine($"Hello there {Environment.UserName}");
         Writer.WriteLine();
         Writer.WriteSuccessLine("Congrats to your first command");
-        Writer.WriteDescription("Did you input something?", $"{string.Join(",", input.Arguments)} {string.Join(",", input.Quotes)} {string.Join(",", input.Options.Keys)}");
+        Writer.WriteDescription("Did you input something?", input.GetSearchString());
         Writer.WriteLine();
         Writer.WriteUrl("https://github.com/PowerCommands/CommandPrompt");
         if (input.HasOption("quit"))
