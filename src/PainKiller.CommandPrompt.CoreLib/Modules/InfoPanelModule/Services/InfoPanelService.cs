@@ -16,7 +16,7 @@ public sealed class InfoPanelService : IInfoPanelService
     private IInfoPanel? _infoPanel;
 
     private InfoPanelService() { }
-    public void RegisterContent(IInfoPanel panel)
+    public void RegisterContent(IInfoPanel panel, bool autoUpdate = false)
     {
         var configuration = ConfigurationService.Service.GetFlexible<ApplicationConfiguration>(Path.Combine(AppContext.BaseDirectory, "CommandPromptConfiguration.yaml"));
         _enabled = configuration.Configuration.Core.Modules.InfoPanel.Enabled;
@@ -25,7 +25,7 @@ public sealed class InfoPanelService : IInfoPanelService
         _infoPanel = panel;
         ConsoleService.Writer.SetMargin(_margin);
         Console.CursorTop = _margin+1;
-        EventBusService.Service.Subscribe<AfterCommandExecutionEvent>(eventData => Update());
+        if (autoUpdate) EventBusService.Service.Subscribe<AfterCommandExecutionEvent>(eventData => Update());
         Console.CursorTop = 10;
         Start();
     }
