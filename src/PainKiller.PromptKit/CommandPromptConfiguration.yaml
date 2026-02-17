@@ -62,6 +62,8 @@ configuration:
       pgp:
         publicKeyFilePath: Modules\PgpModule\Bob_public.asc
         privateKeyFilePath: Modules\PgpModule\Bob_private.asc
+      git:
+        defaultRepositoryPath: ""
   log:
     fileName: commandprompt.log
     filePath: logs

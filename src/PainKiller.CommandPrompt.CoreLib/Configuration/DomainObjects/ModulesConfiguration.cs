@@ -1,5 +1,6 @@
 ﻿using PainKiller.CommandPrompt.CoreLib.Modules.ChatGptModule.Configuration;
 using PainKiller.CommandPrompt.CoreLib.Modules.DbStorageModule.Configuration;
+using PainKiller.CommandPrompt.CoreLib.Modules.GitModule.Configuration;
 using PainKiller.CommandPrompt.CoreLib.Modules.InfoPanelModule.Configuration;
 using PainKiller.CommandPrompt.CoreLib.Modules.OllamaModule.Configuration;
 using PainKiller.CommandPrompt.CoreLib.Modules.PgpModule.Configuration;
@@ -16,4 +17,5 @@ public class ModulesConfiguration
     public InfoPanelConfiguration InfoPanel { get; set; } = new();
     public DatabaseConfig DbStorage { get; set; } = new();
     public PgpConfiguration Pgp { get; set; } = new();
+    public GitConfiguration Git { get; set; } = new();
 }
