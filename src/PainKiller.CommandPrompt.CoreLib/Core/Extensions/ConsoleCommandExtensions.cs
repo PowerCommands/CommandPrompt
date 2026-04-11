@@ -120,4 +120,19 @@ public static class ConsoleCommandExtensions
         return retVal.GetReplacedPlaceHolderPath();
     }
     public static string GetSearchString(this ICommandLineInput input) => input.Raw.Trim().StartsWith(input.Identifier) ? input.Raw.Substring(input.Identifier.Length).TrimStart() : input.Raw.Trim();
+
+    /// <summary>
+    /// Returns all search terms from the input, correctly handling the case where the command
+    /// is invoked as the default command. In that scenario the parser treats the first raw word
+    /// as the identifier rather than an argument, so this method reconstructs the full term list
+    /// from <see cref="ICommandLineInput.Raw"/> instead of relying solely on
+    /// <see cref="ICommandLineInput.Arguments"/>.
+    /// </summary>
+    public static string[] GetSearchStrings(this ICommandLineInput input)
+    {
+        var rawParts = input.Raw.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return rawParts.Length > 0 && rawParts[0].Equals(input.Identifier, StringComparison.OrdinalIgnoreCase)
+            ? rawParts.Skip(1).ToArray()   // invoked by name: "find work docs"
+            : rawParts;                    // invoked as default: "work docs"
+    }
 }
