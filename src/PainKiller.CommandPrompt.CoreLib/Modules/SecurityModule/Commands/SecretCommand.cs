@@ -19,7 +19,7 @@ public class SecretCommand(string identifier) : ConsoleCommandBase<ApplicationCo
     public override void OnInitialized()
     {
         if (CheckEncryptConfiguration()) return;
-        var setupManager = new SetupSecretManager(Configuration);
+        var setupManager = new SetupSecretManager();
         EventBusService.Service.Publish(new SetupRequiredEventArgs("Encryption key needs to be initialized", setupManager.InitSecret));
     }
     public override RunResult Run(ICommandLineInput input)
@@ -51,7 +51,7 @@ public class SecretCommand(string identifier) : ConsoleCommandBase<ApplicationCo
     }
     private RunResult Init()
     {
-        var setup = new SetupSecretManager(Configuration);
+        var setup = new SetupSecretManager();
         setup.InitSecret();
         return Ok();
     }

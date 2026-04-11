@@ -2,7 +2,7 @@
 using PainKiller.CommandPrompt.CoreLib.Modules.SecurityModule.Configuration;
 
 namespace PainKiller.CommandPrompt.CoreLib.Modules.SecurityModule.Managers;
-public class SetupSecretManager(ApplicationConfiguration applicationConfiguration)
+public class SetupSecretManager()
 {
     public void InitSecret()
     {

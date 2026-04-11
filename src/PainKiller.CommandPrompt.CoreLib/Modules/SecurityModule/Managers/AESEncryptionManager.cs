@@ -33,8 +33,7 @@ public class AESEncryptionManager(string salt, int keySize, int iterationsCount)
             aesAlg.KeySize = _keySize;
             try
             {
-                var key = new Rfc2898DeriveBytes(sharedSecret, _saltBytes, iterations: _iterationsCount, HashAlgorithmName.SHA256);
-                aesAlg.Key = key.GetBytes(aesAlg.KeySize / 8);
+                aesAlg.Key = Rfc2898DeriveBytes.Pbkdf2(sharedSecret, _saltBytes, _iterationsCount, HashAlgorithmName.SHA256, aesAlg.KeySize / 8);
                 aesAlg.Mode = CipherMode.CBC;
 
                 var encryption = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
@@ -78,12 +77,10 @@ public class AESEncryptionManager(string salt, int keySize, int iterationsCount)
             try
             {
                 // generate the key from the shared secret and the salt
-                var key = new Rfc2898DeriveBytes(sharedSecret, _saltBytes, iterations: _iterationsCount, HashAlgorithmName.SHA256);
-
                 var bytes = Convert.FromBase64String(cipherText);
                 using var msDecrypt = new MemoryStream(bytes);
                 aesAlg = Aes.Create();
-                aesAlg.Key = key.GetBytes(aesAlg.KeySize / 8);
+                aesAlg.Key = Rfc2898DeriveBytes.Pbkdf2(sharedSecret, _saltBytes, _iterationsCount, HashAlgorithmName.SHA256, aesAlg.KeySize / 8);
                 aesAlg.IV = ReadByteArray(msDecrypt);
                 aesAlg.Mode = CipherMode.CBC;
                 var decryption = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
